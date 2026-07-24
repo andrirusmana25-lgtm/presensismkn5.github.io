@@ -186,7 +186,7 @@
                 </h1>
                 
                 <p class="text-slate-300 text-xs sm:text-sm md:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-                    Pengelolaan presensi harian terintegrasi untuk Administrator Sekolah, Wali Kelas, Guru Mata Pelajaran, Guru BP/BK dan Seksi Absensi.
+                    Pengelolaan presensi harian terintegrasi untuk Administrator Sekolah, Kepala Sekolah/Wakasek, Wali Kelas, Guru Mata Pelajaran, Guru BP/BK dan Seksi Absensi Siswa.
                 </p>
 
                 <div class="grid grid-cols-2 gap-2 sm:gap-3 pt-1 max-w-lg mx-auto lg:mx-0 text-left">
@@ -228,7 +228,7 @@
                             <label class="block text-xs font-bold uppercase text-slate-700 mb-1 ml-1">Pilih Hak Akses</label>
                             <div class="relative">
                                 <select id="login-role" class="w-full appearance-none bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-bold focus:ring-2 focus:ring-brand-500/30 shadow-xs">
-                                    <option value="admin">👨‍💻 Administrator</option>
+                                    <option value="admin">👨‍💻 Administrator / Kepsek / Wakasek</option>
                                     <option value="wali">👨‍🏫 Wali Kelas</option>
                                     <option value="guru_bp">👨‍🏫 Guru BP / BK</option>
                                     <option value="guru_mapel">📖 Guru Mata Pelajaran</option>
@@ -323,7 +323,7 @@
                         <i class="ph-bold ph-moon-stars text-sm"></i>
                     </button>
 
-                    <button type="button" onclick="synchronizeDatabase(true)" class="flex items-center gap-1 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-xs transition-all" title="Refresh Data Firebase">
+                    <button type="button" onclick="synchronizeDatabase(true)" class="flex items-center gap-1 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-xs transition-all" title="Refresh Data Cloud">
                         <i class="ph-bold ph-arrows-counter-clockwise text-xs"></i> <span class="hidden sm:inline">Refresh</span>
                     </button>
 
@@ -355,7 +355,7 @@
                     <div class="p-2.5 sm:p-3 bg-white rounded-xl text-brand-600 shadow-sm shrink-0"><i class="ph-duotone ph-hand-waving text-xl sm:text-2xl"></i></div>
                     <div>
                         <h4 class="font-extrabold text-slate-800 text-xs sm:text-base">Selamat Datang di Sistem Absensi SMKN 5 Pangalengan</h4>
-                        <p class="text-[10px] sm:text-xs font-semibold text-slate-500 mt-0.5">Pantau data kelas, seksi absensi, guru pengampu, persentase kehadiran, dan rekapitulasi harian.</p>
+                        <p class="text-[10px] sm:text-xs font-semibold text-slate-500 mt-0.5">Pantau data kelas, seksi absensi, guru pengampu, persentase kehadiran, jejak pembuat data, dan rekapitulasi harian.</p>
                     </div>
                 </div>
                 <div id="admin-user-mgmt-btn-wrapper" class="hidden-app shrink-0 w-full md:w-auto">
@@ -375,7 +375,7 @@
                     <h3 class="text-xl sm:text-3xl font-extrabold text-slate-800 mt-0.5 sm:mt-1" id="stat-total-siswa">0</h3>
                 </div>
                 <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-card border border-slate-100">
-                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase">Total Guru & Wali</p>
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase">Total Guru & Staff</p>
                     <h3 class="text-xl sm:text-3xl font-extrabold text-slate-800 mt-0.5 sm:mt-1" id="stat-total-wali">0</h3>
                 </div>
                 <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-card border border-slate-100">
@@ -451,12 +451,12 @@
             <div class="bg-white rounded-2xl shadow-card border overflow-hidden min-w-0">
                 <div class="p-3.5 sm:p-4 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-3 bg-slate-50/50">
                     <div>
-                        <h3 class="text-sm font-extrabold">Daftar Wali Kelas, Guru Mapel, BP/BK & Manajemen</h3>
-                        <p class="text-[10px] sm:text-[11px] text-slate-400">Pengelolaan akun pengampu dan pengawas presensi</p>
+                        <h3 class="text-sm font-extrabold">Daftar Guru, Wali Kelas, BP/BK & Pimpinan</h3>
+                        <p class="text-[10px] sm:text-[11px] text-slate-400">Pengelolaan akun pengampu, pimpinan, dan pengawas presensi</p>
                     </div>
                     <div class="flex flex-wrap gap-2 w-full md:w-auto">
                         <input type="text" id="search-wali-input" onkeyup="filterWaliTable()" placeholder="🔍 Cari Guru / NIP..." class="bg-white border rounded-xl px-3 py-2 text-xs font-semibold flex-1 md:w-48">
-                        <button type="button" onclick="openAddWaliModal()" class="bg-brand-600 hover:bg-brand-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold">+ Tambah Guru / Pimpinan</button>
+                        <button type="button" onclick="openAddWaliModal()" class="bg-brand-600 hover:bg-brand-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold">+ Tambah Guru / Akun</button>
                     </div>
                 </div>
                 <div class="overflow-x-auto w-full custom-scroll"><table class="w-full text-left whitespace-nowrap min-w-[550px]"><tbody id="wali-table-body" class="divide-y text-xs sm:text-sm"></tbody></table></div>
@@ -545,8 +545,8 @@
                     <form id="form-save-bulk-attendance" onsubmit="saveBulkAttendance(event)" class="flex flex-col flex-1 min-w-0 max-w-full">
                         <div id="bulk-absen-action-bar" class="hidden-app p-3 sm:p-4 bg-slate-50 border-b flex gap-2 items-center justify-between no-print">
                             <div class="flex gap-2">
-                                <button type="button" onclick="markAllPresent()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-1.5 px-3 rounded-xl text-xs uppercase flex items-center gap-1"><i class="ph-bold ph-checks"></i> Hadir Semua</button>
-                                <button type="button" onclick="markAllHoliday()" class="bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold py-1.5 px-3 rounded-xl text-xs uppercase flex items-center gap-1"><i class="ph-bold ph-calendar-x"></i> Libur Semua</button>
+                                <button type="button" id="btn-mark-all-present" onclick="markAllPresent()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-1.5 px-3 rounded-xl text-xs uppercase flex items-center gap-1"><i class="ph-bold ph-checks"></i> Hadir Semua</button>
+                                <button type="button" id="btn-mark-all-holiday" onclick="markAllHoliday()" class="bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold py-1.5 px-3 rounded-xl text-xs uppercase flex items-center gap-1"><i class="ph-bold ph-calendar-x"></i> Libur Semua</button>
                             </div>
                         </div>
 
@@ -703,7 +703,7 @@
         </div>
     </div>
 
-    <!-- MODAL EDIT / TAMBAH WALI / GURU -->
+    <!-- MODAL EDIT / TAMBAH WALI / GURU / PIMPINAN -->
     <div id="modal-wali" class="hidden-app fixed inset-0 bg-slate-950/60 z-[120] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
@@ -713,32 +713,32 @@
             <form id="form-wali" onsubmit="saveTeacher(event)" class="space-y-3">
                 <input type="hidden" id="wali-edit-mode" value="add">
                 <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">NIP / ID Pengguna</label>
-                    <input type="text" id="wali-nip" required placeholder="Masukkan NIP atau Username" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">NIP / ID Akun</label>
+                    <input type="text" id="wali-nip" required placeholder="Masukkan NIP atau Username Akun" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nama Lengkap & Gelar</label>
-                    <input type="text" id="wali-name" required placeholder="Contoh: Dr. H. Ahmad, M.Pd." class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nama Lengkap</label>
+                    <input type="text" id="wali-name" required placeholder="Nama Lengkap Beserta Gelar" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Tugas / Peran / Jabatan</label>
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Tugas / Jabatan Peran</label>
                     <select id="wali-dept" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold">
                         <option value="Wali Kelas">👨‍🏫 Wali Kelas</option>
                         <option value="BP/BK">👨‍🏫 Guru BP / BK</option>
                         <option value="Mapel">📖 Guru Mata Pelajaran</option>
-                        <option value="Kepala Sekolah">🏫 Kepala Sekolah</option>
-                        <option value="Wakasek">👔 Wakil Kepala Sekolah (Wakasek)</option>
+                        <option value="Kepala Sekolah">👑 Kepala Sekolah / Pimpinan</option>
+                        <option value="Wakasek">⭐ Wakasek / Staf Pengawas</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Wali Kelas Untuk (Jika Wali Kelas)</label>
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Wali Kelas Untuk (Khusus Wali Kelas)</label>
                     <select id="wali-class" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold"></select>
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Password Akses</label>
-                    <input type="text" id="wali-pass" required placeholder="Password Login" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
+                    <input type="text" id="wali-pass" required placeholder="Password Login Akun" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
                 </div>
-                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase transition-all">Simpan Data Pengguna</button>
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase transition-all">Simpan Akun Guru / Pimpinan</button>
             </form>
         </div>
     </div>
@@ -764,7 +764,7 @@
                     <span id="diag-total-siswa" class="font-extrabold text-slate-800">0</span>
                 </div>
                 <div class="p-3 bg-slate-50 border rounded-xl flex items-center justify-between">
-                    <span class="font-bold text-slate-600">Total Guru/Wali/Pimpinan:</span>
+                    <span class="font-bold text-slate-600">Total Guru/Staff Tersimpan:</span>
                     <span id="diag-total-guru" class="font-extrabold text-slate-800">0</span>
                 </div>
             </div>
@@ -775,33 +775,31 @@
         </div>
     </div>
 
-    <!-- MODAL KELOLA PASSWORD (KHUSUS ADMIN) -->
+    <!-- MODAL KELOLA PASSWORD & AKUN (KHUSUS ADMIN / PIMPINAN) -->
     <div id="modal-manage-users" class="hidden-app fixed inset-0 bg-slate-950/60 z-[120] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-base font-extrabold text-slate-800">🔑 Kelola Password & Pengguna (Admin)</h3>
+                <h3 class="text-base font-extrabold text-slate-800">🔑 Kelola Password & Pengguna</h3>
                 <button type="button" onclick="closeManageUsersModal()" class="text-slate-400 p-1"><i class="ph-bold ph-x"></i></button>
             </div>
             <form id="form-manage-pass" onsubmit="saveUserPasswordByAdmin(event)" class="space-y-3">
                 <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Pilih Kategori User</label>
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Pilih Kategori Pengguna</label>
                     <select id="admin-target-type" onchange="populateAdminTargetUsers()" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold">
-                        <option value="guru">Wali Kelas / Guru / Pimpinan</option>
+                        <option value="admin">Administrator / Kepsek / Wakasek</option>
+                        <option value="guru">Wali Kelas / Guru / BP BK</option>
                         <option value="siswa">Siswa / Seksi Absensi</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Pilih Pengguna / User</label>
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Pilih Akun User Target</label>
                     <select id="admin-target-user" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold"></select>
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Password Baru</label>
                     <input type="text" id="admin-target-pass" required placeholder="Masukkan kata sandi baru..." class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
                 </div>
-                <div class="flex gap-2 pt-2">
-                    <button type="submit" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs uppercase transition-all">Update Kata Sandi</button>
-                    <button type="button" onclick="openAddWaliModal(); closeManageUsersModal();" class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs uppercase transition-all">+ Tambah Guru/Pimpinan Baru</button>
-                </div>
+                <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs uppercase transition-all">Update Kata Sandi Real-Time</button>
             </form>
         </div>
     </div>
@@ -830,7 +828,7 @@
                     <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Password Baru</label>
                     <input type="text" id="self-new-password" required placeholder="Masukkan kata sandi baru..." class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
                 </div>
-                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase transition-all">Simpan Kata Sandi</button>
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase transition-all">Simpan Kata Sandi Real-Time</button>
             </form>
         </div>
     </div>
@@ -909,7 +907,10 @@
         }
 
         const DEFAULT_DATABASE = {
-            admins: [{ username: "admin", name: "Sistem Administrator", pass: "admin" }],
+            admins: [
+                { username: "admin", name: "Sistem Administrator", pass: "admin" },
+                { username: "kepsek", name: "Dini Puji Setiani, S.PdI.", pass: "kepsek123" }
+            ],
             dailyLocks: {},
             departments: [
                 { id: "PPLG", name: "Pengembangan Perangkat Lunak & Gim" },
@@ -942,9 +943,19 @@
 
         function getWaliForClass(classId) {
             if (!classId || classId === 'SEMUA') return { name: "Wali Kelas Pengampu", nip: "-" };
-            const found = MOCK_DB.teachers.find(t => t.classId === classId && t.dept !== 'BP/BK' && t.dept !== 'Mapel');
+            const found = MOCK_DB.teachers.find(t => t.classId === classId && t.dept !== 'BP/BK' && t.dept !== 'Mapel' && t.dept !== 'Kepala Sekolah' && t.dept !== 'Wakasek');
             if (found) return { name: found.name, nip: found.nip || "-" };
             return { name: "Wali Kelas " + classId, nip: "-" };
+        }
+
+        function getRoleLabelFormatted(user) {
+            if (!user) return "User";
+            if (user.role === 'admin') return user.username === 'kepsek' ? 'Kepala Sekolah' : 'Administrator';
+            if (user.role === 'siswa') return `Seksi Absen ${user.classId || ''}`;
+            if (user.role === 'wali') return `Wali Kelas ${user.classId || ''}`;
+            if (user.role === 'guru_bp') return `Guru BP/BK`;
+            if (user.role === 'guru_mapel') return `Guru Mapel`;
+            return user.dept || user.role;
         }
 
         async function callCloudAPI(action, payload = null) {
@@ -994,7 +1005,7 @@
                 if (result.classes && result.classes.length) MOCK_DB.classes = result.classes;
                 if (result.teachers && result.teachers.length) MOCK_DB.teachers = result.teachers;
                 if (result.students && result.students.length) MOCK_DB.students = result.students;
-                if (result.admins) MOCK_DB.admins = result.admins;
+                if (result.admins && result.admins.length) MOCK_DB.admins = result.admins;
                 
                 saveToStorage();
 
@@ -1003,8 +1014,8 @@
                     badgeText.innerHTML = '<span class="w-2 h-2 rounded-full bg-white animate-ping inline-block mr-1"></span>🔥 FIREBASE INSTANT';
                 }
 
-                // JIKA TERJADI PERUBAHAN LOCK / ABSEN DARI ADMIN, FORMULIR DIBATALKAN ATAU DIKUNCI LANGSUNG REALTIME
-                if (stateChanged && activeAbsenTab === 'isi' && document.getElementById('input-absen-kelas')) {
+                // SINKRONISASI REALTIME KUNCIAN & ABSENSI DI LAYAR HAK AKSES
+                if (activeAbsenTab === 'isi' && document.getElementById('input-absen-kelas')) {
                     loadStudentAttendanceForm(true);
                 }
 
@@ -1012,7 +1023,7 @@
             }
         }
 
-        // POLLING REALTIME TIAP 3 DETIK UNTUK REAL-TIME SYNCHRONIZATION DARI ADMIN
+        // POLLING REALTIME TIAP 3 DETIK UNTUK SYNCHRONIZATION LINTAS GADGET
         setInterval(() => {
             if (currentUser) synchronizeDatabase(false);
         }, 3000);
@@ -1163,7 +1174,7 @@
             saveToStorage();
             closeSiswaModal();
             initMenuSiswa();
-            showMessage('Sukses', 'Data siswa berhasil disimpan.');
+            showMessage('Sukses', 'Data siswa berhasil disimpan & disinkronkan.');
             callCloudAPI("saveSiswa", { nis, name, classId, pass });
         }
 
@@ -1179,7 +1190,7 @@
         // KELOLA GURU / WALI / PIMPINAN
         function openAddWaliModal() {
             document.getElementById('wali-edit-mode').value = 'add';
-            document.getElementById('modal-wali-title').textContent = 'Tambah Guru / Pimpinan';
+            document.getElementById('modal-wali-title').textContent = 'Tambah Guru / Akun Pimpinan';
             document.getElementById('wali-nip').disabled = false;
             document.getElementById('form-wali').reset();
 
@@ -1196,7 +1207,7 @@
             if (!tr) return;
 
             document.getElementById('wali-edit-mode').value = 'edit';
-            document.getElementById('modal-wali-title').textContent = 'Edit Data Guru / Pimpinan';
+            document.getElementById('modal-wali-title').textContent = 'Edit Data Akun Guru/Pimpinan';
             document.getElementById('wali-nip').value = tr.nip;
             document.getElementById('wali-nip').disabled = true;
             document.getElementById('wali-name').value = tr.name;
@@ -1228,7 +1239,7 @@
 
             if (mode === 'add') {
                 if (MOCK_DB.teachers.some(t => t.nip.toString() === nip)) {
-                    showMessage('Peringatan', 'NIP / ID ini sudah terdaftar.');
+                    showMessage('Peringatan', 'NIP / ID Guru ini sudah terdaftar.');
                     return;
                 }
                 MOCK_DB.teachers.push({ nip, name, dept, classId, pass });
@@ -1240,16 +1251,16 @@
             saveToStorage();
             closeWaliModal();
             initMenuWali();
-            showMessage('Sukses', 'Data berhasil disimpan dan disinkronkan ke cloud.');
+            showMessage('Sukses', 'Data akun berhasil disimpan & disinkronkan.');
             callCloudAPI("saveTeacher", { nip, name, dept, classId, pass });
         }
 
         function deleteWali(nip) {
-            if (!confirm(`Hapus data pengampu NIP/ID: ${nip}?`)) return;
+            if (!confirm(`Hapus guru/wali NIP: ${nip}?`)) return;
             MOCK_DB.teachers = MOCK_DB.teachers.filter(t => t.nip.toString() !== nip.toString());
             saveToStorage();
             initMenuWali();
-            showMessage('Sukses', `Data pengampu ${nip} berhasil dihapus.`);
+            showMessage('Sukses', `Data guru ${nip} berhasil dihapus.`);
             callCloudAPI("deleteTeacher", { nip });
         }
 
@@ -1270,7 +1281,7 @@
             setTimeout(() => modal.classList.add('hidden-app'), 300);
         }
 
-        // KELOLA PASSWORD OLEH ADMIN & DIRI SENDIRI (TERPERBAIKI REAL-TIME KE SPREADSHEET/FIREBASE)
+        // KELOLA PASSWORD OLEH ADMIN & DIRI SENDIRI (REALTIME ALL GADGETS)
         function openManageUsersModal() {
             populateAdminTargetUsers();
             const modal = document.getElementById('modal-manage-users');
@@ -1287,10 +1298,12 @@
         function populateAdminTargetUsers() {
             const type = document.getElementById('admin-target-type').value;
             const select = document.getElementById('admin-target-user');
-            if (type === 'guru') {
-                select.innerHTML = MOCK_DB.teachers.map(t => `<option value="${t.nip}">${t.name} (${t.nip} - ${t.dept})</option>`).join('');
+            if (type === 'admin') {
+                select.innerHTML = MOCK_DB.admins.map(a => `<option value="${a.username}">${a.name} (${a.username})</option>`).join('');
+            } else if (type === 'guru') {
+                select.innerHTML = MOCK_DB.teachers.map(t => `<option value="${t.nip}">${t.name} - ${t.dept} (${t.nip})</option>`).join('');
             } else {
-                select.innerHTML = MOCK_DB.students.map(s => `<option value="${s.nis}">${s.name} (${s.nis})</option>`).join('');
+                select.innerHTML = MOCK_DB.students.map(s => `<option value="${s.nis}">${s.name} - ${s.classId} (${s.nis})</option>`).join('');
             }
         }
 
@@ -1300,7 +1313,12 @@
             const targetId = document.getElementById('admin-target-user').value.toString();
             const newPass = document.getElementById('admin-target-pass').value.trim();
 
-            if (type === 'guru') {
+            if (!newPass) return;
+
+            if (type === 'admin') {
+                const adm = MOCK_DB.admins.find(a => a.username.toString() === targetId);
+                if (adm) adm.pass = newPass;
+            } else if (type === 'guru') {
                 const tr = MOCK_DB.teachers.find(t => t.nip.toString() === targetId);
                 if (tr) tr.pass = newPass;
             } else {
@@ -1311,7 +1329,7 @@
             saveToStorage();
             closeManageUsersModal();
             document.getElementById('admin-target-pass').value = '';
-            showMessage('Sukses', 'Password user berhasil diperbarui dan disinkronkan ke cloud.');
+            showMessage('Sukses', 'Password user berhasil diperbarui & disinkronkan ke seluruh gadget.');
             callCloudAPI("updateUserPasswordByAdmin", { type, id: targetId, pass: newPass });
         }
 
@@ -1338,11 +1356,11 @@
             saveToStorage();
             document.getElementById('self-new-password').value = '';
             closeChangePasswordModal();
-            showMessage('Sukses', 'Kata sandi Anda berhasil diperbarui dan disimpan ke database cloud.');
+            showMessage('Sukses', 'Kata sandi Anda berhasil diperbarui & disinkronkan.');
             callCloudAPI("updateSelfPassword", { role: currentUser.role, id, pass: newPass });
         }
 
-        // TOMBOL PINTAR KESIANGAN & BOLOS
+        // TOMBOL PINTAR KESIANGAN & BOLOS DENGAN REKAM JEJAK
         function setQuickRemark(nis, remarkText, isBolos = false) {
             const input = document.getElementById(`ket-input-${nis}`);
             if (input) input.value = remarkText;
@@ -1572,7 +1590,7 @@
                     authenticated = true;
                 }
             } else if (role === 'wali') {
-                const tr = MOCK_DB.teachers.find(t => t.nip.toString() === uid && t.pass.toString() === pass && t.dept !== 'BP/BK' && t.dept !== 'Mapel' && t.dept !== 'Kepala Sekolah' && t.dept !== 'Wakasek');
+                const tr = MOCK_DB.teachers.find(t => t.nip.toString() === uid && t.pass.toString() === pass && t.dept !== 'BP/BK' && t.dept !== 'Mapel');
                 if (tr) { foundUser = { ...tr, role: 'wali' }; authenticated = true; }
             } else if (role === 'guru_bp') {
                 const tr = MOCK_DB.teachers.find(t => t.nip.toString() === uid && t.pass.toString() === pass);
@@ -1642,7 +1660,7 @@
                 navMenu.appendChild(createMenuBtn('dashboard_admin', 'ph-chart-pie', 'Dashboard', 'Dashboard Admin'));
                 navMenu.appendChild(createMenuBtn('menu_kelas', 'ph-chalkboard', 'Menu Kelas', 'Manajemen Kelas'));
                 navMenu.appendChild(createMenuBtn('menu_siswa', 'ph-users', 'Menu Siswa', 'Manajemen Siswa'));
-                navMenu.appendChild(createMenuBtn('menu_wali', 'ph-user-gear', 'Kelola Guru & Pimpinan', 'Manajemen Akun Guru & Pimpinan'));
+                navMenu.appendChild(createMenuBtn('menu_wali', 'ph-user-gear', 'Kelola Guru & Staff', 'Manajemen Akun Guru'));
                 navMenu.appendChild(createMenuBtn('menu_absen', 'ph-calendar-blank', 'Menu Absen', 'Sistem Absensi Terpadu'));
                 navigateTo('dashboard_admin');
             } else if (currentUser.role === 'guru_bp') {
@@ -1895,8 +1913,8 @@
                     <td class="px-4 py-3 font-bold text-center">${idx + 1}</td>
                     <td class="px-4 py-3 font-mono font-bold">${t.nip}</td>
                     <td class="px-4 py-3 font-extrabold">${t.name}</td>
-                    <td class="px-4 py-3 font-bold text-emerald-700">${t.classId || '-'}</td>
-                    <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-50 text-brand-800 border border-brand-200">${t.dept}</span></td>
+                    <td class="px-4 py-3 font-bold text-emerald-700">${t.classId}</td>
+                    <td class="px-4 py-3 font-bold">${t.dept}</td>
                     <td class="px-4 py-3 text-center">
                         <div class="flex justify-center items-center gap-1">
                             <button onclick="openEditTeacherModal('${t.nip}')" class="p-1.5 text-brand-600 hover:bg-brand-50 rounded-lg active:scale-95"><i class="ph-bold ph-pencil-simple text-base"></i></button>
@@ -1953,29 +1971,11 @@
             }
         }
 
-        // INPUT ABSENSI HARIAN (DENGAN PENGECEKAN KUNCI KELAS YANG AKURAT & REAL-TIME)
-        function loadStudentAttendanceForm(isSilent = false) {
-            const classId = document.getElementById('input-absen-kelas') ? document.getElementById('input-absen-kelas').value : '';
-            const selectedDateStr = document.getElementById('input-absen-date') ? normalizeDateStr(document.getElementById('input-absen-date').value) : '';
+        // INPUT ABSENSI HARIAN (PERBAIKAN KUNCI ABSEN KETAT & JEJAK PEMBUAT DATA REALTIME)
+        function checkDailyIsLocked(selectedDateStr, classId) {
             const todayStr = normalizeDateStr(new Date());
-
-            const tbody = document.getElementById('bulk-absen-table-body');
-            const submitBar = document.getElementById('bulk-absen-submit-bar');
-            const dailyRecapBanner = document.getElementById('daily-recap-banner');
-            const actionBar = document.getElementById('bulk-absen-action-bar');
-
-            if (!classId || !selectedDateStr || !tbody) return;
-
-            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
-            if (classStudents.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-semibold">Tidak ada siswa terdaftar</td></tr>`;
-                submitBar.classList.add('hidden-app'); return;
-            }
-
             const isFutureDate = selectedDateStr > todayStr;
-            const isPastDate = selectedDateStr < todayStr;
 
-            // KUNCIAN: CEK APAKAH KELAS INI / SEMUA KELAS / TANGGAL INI DITUTUP ADMIN SECARA EKSPLISIT
             const lockKeySpecific = `${selectedDateStr}_${classId}`;
             const lockKeyAll = `${selectedDateStr}_SEMUA`;
 
@@ -1991,21 +1991,39 @@
                                     (lockAll === false || lockAll === 'false') ||
                                     (lockDate === false || lockDate === 'false');
 
-            let isLocked = false;
-            if (currentUser.role === 'guru_bp') {
-                isLocked = true; // Mode baca untuk BP/BK
-            } else if (currentUser.role === 'admin') {
-                isLocked = isFutureDate; // Admin bisa mengisi kapanpun kecuali tanggal depan
-            } else {
-                // Untuk Seksi Absen / Wali / Guru Mapel
-                if (isExplicitlyClosed) {
-                    isLocked = true; // Kunci AKTIF jika Admin menutup kelas ini atau semua kelas
-                } else if (isExplicitlyOpened) {
-                    isLocked = false; // Terbuka jika Admin sengaja membuka
-                } else {
-                    isLocked = isFutureDate; // Hari berjalan (hari ini) dan masa lalu DIBUKA untuk diisi, kecuali masa depan
-                }
+            if (currentUser.role === 'guru_bp') return true; // Hanya baca untuk BP/BK
+            if (currentUser.role === 'admin') return isFutureDate; // Admin bisa menginput kapanpun kecuali tanggal depan
+
+            // UNTUK SEKSI ABSEN / WALI KELAS / GURU MAPEL
+            if (isExplicitlyClosed) return true;
+            if (isExplicitlyOpened) return false;
+            return isFutureDate;
+        }
+
+        function loadStudentAttendanceForm(isSilent = false) {
+            const classId = document.getElementById('input-absen-kelas') ? document.getElementById('input-absen-kelas').value : '';
+            const selectedDateStr = document.getElementById('input-absen-date') ? normalizeDateStr(document.getElementById('input-absen-date').value) : '';
+            const todayStr = normalizeDateStr(new Date());
+
+            const tbody = document.getElementById('bulk-absen-table-body');
+            const submitBar = document.getElementById('bulk-absen-submit-bar');
+            const dailyRecapBanner = document.getElementById('daily-recap-banner');
+            const actionBar = document.getElementById('bulk-absen-action-bar');
+
+            if (!classId || !selectedDateStr || !tbody) return;
+
+            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
+            if (classStudents.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-semibold">Tidak ada siswa terdaftar</td></tr>`;
+                if (submitBar) submitBar.classList.add('hidden-app'); 
+                return;
             }
+
+            const isLocked = checkDailyIsLocked(selectedDateStr, classId);
+            const isFutureDate = selectedDateStr > todayStr;
+
+            const lockKeySpecific = `${selectedDateStr}_${classId}`;
+            const isExplicitlyClosed = MOCK_DB.dailyLocks && (MOCK_DB.dailyLocks[lockKeySpecific] === true || MOCK_DB.dailyLocks[lockKeySpecific] === 'true' || MOCK_DB.dailyLocks[`${selectedDateStr}_SEMUA`] === true);
 
             const lockBanner = document.getElementById('lock-banner');
             const lockText = document.getElementById('lock-banner-text');
@@ -2015,9 +2033,9 @@
                     if (isFutureDate) {
                         lockText.textContent = "Penginputan absen untuk tanggal mendatang (besok & seterusnya) ditutup.";
                     } else if (isExplicitlyClosed) {
-                        lockText.textContent = `Penginputan absen tanggal ${selectedDateStr} untuk ${classId === 'SEMUA' ? 'Semua Kelas' : 'Kelas ' + classId} DITUTUP oleh Administrator.`;
+                        lockText.textContent = `Penginputan absen tanggal ${selectedDateStr} untuk ${classId === 'SEMUA' ? 'Semua Kelas' : 'Kelas ' + classId} DITUTUP / DIKUNCI oleh Administrator.`;
                     } else {
-                        lockText.textContent = "Formulir absensi dalam mode terkunci.";
+                        lockText.textContent = "Formulir absensi tanggal ini dalam mode baca saja.";
                     }
                 } else {
                     lockBanner.classList.add('hidden-app');
@@ -2036,11 +2054,11 @@
                     const targetName = classId === 'SEMUA' ? 'Semua Kelas' : `Kelas ${classId}`;
 
                     if (isExplicitlyClosed) {
-                        btn.className = "bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase";
+                        btn.className = "bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase shrink-0";
                         btn.textContent = `Buka Absen (${targetName})`;
                         desc.innerHTML = `Status penginputan absen <b class="text-amber-300">${targetName}</b> saat ini <b class="text-rose-400">DITUTUP</b>.`;
                     } else {
-                        btn.className = "bg-rose-600 hover:bg-rose-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase";
+                        btn.className = "bg-rose-600 hover:bg-rose-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase shrink-0";
                         btn.textContent = `Tutup Absen (${targetName})`;
                         desc.innerHTML = `Status penginputan absen <b class="text-amber-300">${targetName}</b> saat ini <b class="text-emerald-400">DIBUKA</b>.`;
                     }
@@ -2049,8 +2067,20 @@
                 }
             }
 
-            if (isLocked) { submitBar.classList.add('hidden-app'); if (actionBar) actionBar.classList.add('hidden-app'); }
-            else { submitBar.classList.remove('hidden-app'); if (actionBar) actionBar.classList.remove('hidden-app'); }
+            if (submitBar) {
+                if (isLocked) submitBar.classList.add('hidden-app');
+                else submitBar.classList.remove('hidden-app');
+            }
+            if (actionBar) {
+                if (isLocked) actionBar.classList.add('hidden-app');
+                else actionBar.classList.remove('hidden-app');
+            }
+
+            const btnPresent = document.getElementById('btn-mark-all-present');
+            const btnHoliday = document.getElementById('btn-mark-all-holiday');
+            if (btnPresent) btnPresent.disabled = isLocked;
+            if (btnHoliday) btnHoliday.disabled = isLocked;
+
             dailyRecapBanner.classList.remove('hidden-app');
 
             const statuses = [
@@ -2212,16 +2242,24 @@
             document.getElementById('recap-live-progress').style.width = pct + '%';
         }
 
-        // SIMPAN ABSEN DENGAN MENYIMPAN NAMA AKUN PENGISI DATA
+        // SIMPAN ABSEN DENGAN VERIFIKASI KUNCI KETAT & REKAM JEJAK JELEK/BAIK
         async function saveBulkAttendance(e) {
             e.preventDefault();
             const classId = document.getElementById('input-absen-kelas').value;
             const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+
+            // PROTEKSI GANDA BILA ABSENSI TERKUNCI
+            const isLocked = checkDailyIsLocked(dateStr, classId);
+            if (isLocked) {
+                showMessage('Gagal', 'Absensi kelas/tanggal ini TERKUNCI. Data tidak dapat disimpan.');
+                return;
+            }
+
             const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
             const recordsToSave = [];
             const submitBtn = document.getElementById('btn-submit-bulk-absen');
 
-            const recorderTag = `${currentUser.name} (${currentUser.role === 'siswa' ? 'Seksi Absen ' + currentUser.classId : currentUser.role === 'admin' ? 'Administrator' : currentUser.role === 'wali' ? 'Wali Kelas ' + currentUser.classId : 'Guru'})`;
+            const recorderTag = `${currentUser.name} (${getRoleLabelFormatted(currentUser)})`;
 
             if (submitBtn) {
                 submitBtn.disabled = true;
@@ -2257,7 +2295,7 @@
                 submitBtn.innerHTML = `<span>Simpan Data Absensi</span>`;
             }
 
-            showMessage('Berhasil', 'Data absensi harian berhasil disimpan dan disinkronkan.');
+            showMessage('Berhasil', 'Data absensi harian berhasil disimpan & disinkronkan ke seluruh gadget.');
             callCloudAPI("saveBulkAttendance", { records: recordsToSave });
         }
 
@@ -2277,7 +2315,7 @@
             callCloudAPI("resetDailyAttendance", { classId, date: dateStr });
         }
 
-        // KONTROL KUNCI / BUKA ABSEN HARIAN PER KELAS OLEH ADMIN SECARA REAL-TIME
+        // TUTUP ABSEN HARI INI PER KELAS OLEH ADMIN REALTIME REALTIME LINTAS GADGET
         async function toggleDailyLockByAdmin() {
             const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
             const classId = document.getElementById('input-absen-kelas').value;
@@ -2292,11 +2330,14 @@
             MOCK_DB.dailyLocks[lockKeySpecific] = nextStatus;
             if (classId === 'SEMUA') {
                 MOCK_DB.dailyLocks[dateStr] = nextStatus;
+                MOCK_DB.classes.forEach(c => {
+                    MOCK_DB.dailyLocks[`${dateStr}_${c.id}`] = nextStatus;
+                });
             }
             saveToStorage();
 
             const targetLabel = classId === 'SEMUA' ? 'Semua Kelas' : `Kelas ${classId}`;
-            showMessage('Sukses', `Status absen tanggal ${dateStr} untuk ${targetLabel} berhasil di-${nextStatus ? 'TUTUP' : 'BUKA'}.`);
+            showMessage('Sukses', `Penginputan absen tanggal ${dateStr} untuk ${targetLabel} berhasil di-${nextStatus ? 'TUTUP' : 'BUKA'}.`);
 
             loadStudentAttendanceForm();
             callCloudAPI("toggleDailyLock", { date: dateStr, classId, locked: nextStatus, lockKey: lockKeySpecific });
@@ -2452,7 +2493,7 @@
                     const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === dateVal);
                     const statusText = att ? getStatusBadge(att.status) : '-';
                     const remarkText = att ? (att.remark || '-') : '-';
-                    const updaterTag = att && att.updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit mt-1"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${att.updatedBy}</span>` : '';
+                    const updaterTag = att && att.updatedBy ? `<span class="text-[9px] text-brand-700 font-bold block mt-0.5 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded w-fit"><i class="ph-bold ph-user-check"></i> Pengisi: ${att.updatedBy}</span>` : '';
                     const hasAttach = att && (att.attachment || att.attachmentUrl || att.attachmentName);
                     const attachBtn = hasAttach 
                         ? `<button type="button" onclick="viewAttachmentFromRecap('${student.nis}', '${dateVal}')" class="text-brand-600 font-bold bg-brand-50 border border-brand-200 px-2 py-0.5 rounded-lg text-xs active:scale-95 transition-transform"><i class="ph-bold ph-file-text"></i> Lihat / Unduh</button>` 
@@ -2473,7 +2514,7 @@
             }
         }
 
-        // EXPORT EXCEL
+        // EXPORT EXCEL DENGAN PEMASUK DATA
         function exportToExcel() {
             const classId = document.getElementById('rekap-absen-kelas').value;
             const type = document.getElementById('rekap-type').value;
