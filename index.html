@@ -549,8 +549,8 @@
                     <form id="form-save-bulk-attendance" onsubmit="saveBulkAttendance(event)" class="flex flex-col flex-1 min-w-0 max-w-full">
                         <div id="bulk-absen-action-bar" class="hidden-app p-3 sm:p-4 bg-slate-50 border-b flex gap-2 items-center justify-between no-print">
                             <div class="flex gap-2">
-                                <button type="button" onclick="markAllPresent()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-1.5 px-3 rounded-xl text-xs uppercase"><i class="ph-bold ph-checks"></i> Hadir Semua</button>
-                                <button type="button" onclick="markAllHoliday()" class="bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold py-1.5 px-3 rounded-xl text-xs uppercase"><i class="ph-bold ph-calendar-x"></i> Libur Semua</button>
+                                <button type="button" onclick="markAllPresent()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-1.5 px-3 rounded-xl text-xs uppercase flex items-center gap-1"><i class="ph-bold ph-checks"></i> Hadir Semua</button>
+                                <button type="button" onclick="markAllHoliday()" class="bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold py-1.5 px-3 rounded-xl text-xs uppercase flex items-center gap-1"><i class="ph-bold ph-calendar-x"></i> Libur Semua</button>
                             </div>
                         </div>
 
@@ -1005,27 +1005,27 @@
             };
         }
 
-        // HADIR SEMUA & LIBUR SEMUA
+        // HADIR SEMUA & LIBUR SEMUA (DIRECT DOM TARGETING PERBAIKAN)
         function markAllPresent() {
-            const classId = document.getElementById('input-absen-kelas').value;
-            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
-            classStudents.forEach(student => {
-                const radioH = document.querySelector(`input[name="status-${student.nis}"][value="H"]`);
-                if (radioH && !radioH.disabled) {
-                    radioH.checked = true;
-                    handleStatusChange(student.nis, 'H');
+            const radios = document.querySelectorAll('#bulk-absen-table-body input[type="radio"][value="H"]');
+            if (radios.length === 0) return;
+            radios.forEach(radio => {
+                if (!radio.disabled) {
+                    radio.checked = true;
+                    const nis = radio.name.replace('status-', '');
+                    handleStatusChange(nis, 'H');
                 }
             });
         }
 
         function markAllHoliday() {
-            const classId = document.getElementById('input-absen-kelas').value;
-            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
-            classStudents.forEach(student => {
-                const radioL = document.querySelector(`input[name="status-${student.nis}"][value="L"]`);
-                if (radioL && !radioL.disabled) {
-                    radioL.checked = true;
-                    handleStatusChange(student.nis, 'L');
+            const radios = document.querySelectorAll('#bulk-absen-table-body input[type="radio"][value="L"]');
+            if (radios.length === 0) return;
+            radios.forEach(radio => {
+                if (!radio.disabled) {
+                    radio.checked = true;
+                    const nis = radio.name.replace('status-', '');
+                    handleStatusChange(nis, 'L');
                 }
             });
         }
@@ -1928,7 +1928,7 @@
             }
         }
 
-        // INPUT ABSENSI HARIAN
+        // INPUT ABSENSI HARIAN (LOGIKA PENGUNCIAN/DIBUKA TERPERBAIKI)
         function loadStudentAttendanceForm() {
             const classId = document.getElementById('input-absen-kelas').value;
             const selectedDateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
@@ -1949,11 +1949,25 @@
 
             const isFutureDate = selectedDateStr > todayStr;
             const isPastDate = selectedDateStr < todayStr;
-            const isClosedByAdmin = MOCK_DB.dailyLocks && MOCK_DB.dailyLocks[selectedDateStr] === true;
+            const lockState = (MOCK_DB.dailyLocks && MOCK_DB.dailyLocks[selectedDateStr] !== undefined) ? MOCK_DB.dailyLocks[selectedDateStr] : undefined;
             
-            let isLocked = isFutureDate;
-            if (currentUser.role !== 'admin') {
-                isLocked = isFutureDate || isPastDate || isClosedByAdmin || currentUser.role === 'guru_bp';
+            const isExplicitlyClosed = (lockState === true || lockState === 'true');
+            const isExplicitlyOpened = (lockState === false || lockState === 'false');
+
+            let isLocked = false;
+            if (currentUser.role === 'guru_bp') {
+                isLocked = true; // Guru BP/BK hanya membaca
+            } else if (currentUser.role === 'admin') {
+                isLocked = isFutureDate; // Admin bisa mengedit kapan saja kecuali tanggal depan
+            } else {
+                // Untuk Wali Kelas, Guru Mapel, Seksi Absen (Siswa)
+                if (isExplicitlyOpened) {
+                    isLocked = false; // Jika Admin sengaja membuka
+                } else if (isExplicitlyClosed) {
+                    isLocked = true; // Jika Admin sengaja menutup
+                } else {
+                    isLocked = isFutureDate || isPastDate; // Bawaan standar: hanya hari ini yang terbuka
+                }
             }
 
             const lockBanner = document.getElementById('lock-banner');
@@ -1963,7 +1977,7 @@
                     lockBanner.classList.remove('hidden-app');
                     if (isFutureDate) {
                         lockText.textContent = "Penginputan absen untuk tanggal mendatang (besok & seterusnya) ditutup.";
-                    } else if (isClosedByAdmin) {
+                    } else if (isExplicitlyClosed) {
                         lockText.textContent = "Penginputan absen untuk tanggal ini ditutup oleh Administrator.";
                     } else {
                         lockText.textContent = "Formulir absensi tanggal lalu dalam mode baca saja.";
@@ -1982,7 +1996,7 @@
                     closeAttendanceBar.classList.remove('hidden-app');
                     const btn = document.getElementById('btn-toggle-daily-lock');
                     const desc = document.getElementById('close-status-desc');
-                    if (isClosedByAdmin) {
+                    if (isExplicitlyClosed) {
                         btn.className = "bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase";
                         btn.textContent = "Buka Absensi Hari Ini";
                         desc.innerHTML = `Status penginputan absen saat ini <b class="text-rose-400">DITUTUP</b>.`;
@@ -2220,14 +2234,15 @@
         async function toggleDailyLockByAdmin() {
             const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
             if (!dateStr) return;
-            const isCurrentlyLocked = MOCK_DB.dailyLocks && MOCK_DB.dailyLocks[dateStr] === true;
-            const nextStatus = !isCurrentlyLocked;
 
             if (!MOCK_DB.dailyLocks) MOCK_DB.dailyLocks = {};
+            const isCurrentlyClosed = (MOCK_DB.dailyLocks[dateStr] === true || MOCK_DB.dailyLocks[dateStr] === 'true');
+            const nextStatus = !isCurrentlyClosed;
+
             MOCK_DB.dailyLocks[dateStr] = nextStatus;
             saveToStorage();
 
-            showMessage('Sukses', `Penginputan absen tanggal ${dateStr} di-${nextStatus ? 'tutup' : 'buka'}.`);
+            showMessage('Sukses', `Penginputan absen tanggal ${dateStr} berhasil di-${nextStatus ? 'TUTUP' : 'BUKA'}.`);
             loadStudentAttendanceForm();
             callCloudAPI("toggleDailyLock", { date: dateStr, locked: nextStatus });
         }
