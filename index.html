@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="id" class="w-full max-w-full overflow-x-hidden select-none">
+<html lang="id" class="w-full max-w-full overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- MEMUNGKINKAN ZOOM IN & ZOOM OUT DI APK ANDROID -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <title>Sistem Absensi Modern - SMKN 5 Pangalengan</title>
     
     <!-- Tailwind CSS -->
@@ -65,14 +66,12 @@
         html, body { 
             background-color: #f8fafc; color: #334155; 
             width: 100%; max-width: 100vw; 
-            overflow-x: hidden !important; 
             font-family: 'Outfit', sans-serif;
             -webkit-tap-highlight-color: transparent;
-            user-select: none; -webkit-user-select: none;
         }
         
         .hidden-app { display: none !important; }
-        .touch-pill { min-height: 40px; min-width: 40px; }
+        .touch-pill { min-height: 38px; min-width: 38px; }
 
         .glass {
             background: rgba(255, 255, 255, 0.88);
@@ -316,7 +315,7 @@
                     <div class="p-2.5 sm:p-3 bg-white rounded-xl text-brand-600 shadow-sm shrink-0"><i class="ph-duotone ph-hand-waving text-xl sm:text-2xl"></i></div>
                     <div>
                         <h4 class="font-extrabold text-slate-800 text-xs sm:text-base">Selamat Datang di Sistem Absensi SMKN 5 Pangalengan</h4>
-                        <p class="text-[10px] sm:text-xs font-semibold text-slate-500 mt-0.5">Pantau data kelas, seksi absensi, guru pengampu, dan rekapitulasi harian.</p>
+                        <p class="text-[10px] sm:text-xs font-semibold text-slate-500 mt-0.5">Pantau data kelas, seksi absensi, guru pengampu, persentase kehadiran, dan rekapitulasi harian.</p>
                     </div>
                 </div>
                 <div id="admin-user-mgmt-btn-wrapper" class="hidden-app shrink-0 w-full md:w-auto">
@@ -326,6 +325,7 @@
                 </div>
             </div>
 
+            <!-- KARTU STATISTIK DENGAN PERSENTASE KELAS UNTUK SISWA/WALI -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
                 <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-card border border-slate-100">
                     <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase">Total Kelas</p>
@@ -340,8 +340,8 @@
                     <h3 class="text-xl sm:text-3xl font-extrabold text-slate-800 mt-0.5 sm:mt-1" id="stat-total-wali">0</h3>
                 </div>
                 <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-card border border-slate-100">
-                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase">Total Jurusan</p>
-                    <h3 class="text-xl sm:text-3xl font-extrabold text-slate-800 mt-0.5 sm:mt-1" id="stat-total-jurusan">0</h3>
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase" id="stat-pct-label">Rasio Kehadiran</p>
+                    <h3 class="text-xl sm:text-3xl font-extrabold text-brand-600 mt-0.5 sm:mt-1" id="stat-pct-val">0%</h3>
                 </div>
             </div>
 
@@ -353,8 +353,8 @@
                     </div>
                 </div>
                 <div class="bg-white rounded-2xl shadow-card border border-slate-100 p-4 sm:p-6 flex flex-col min-w-0">
-                    <h3 class="text-xs sm:text-base font-extrabold text-slate-800 mb-3 sm:mb-4">Program Keahlian (Jurusan)</h3>
-                    <div class="space-y-2.5 sm:space-y-3 flex-1 overflow-y-auto" id="dashboard-jurusan-list"></div>
+                    <h3 class="text-xs sm:text-base font-extrabold text-slate-800 mb-3 sm:mb-4">Program Keahlian & Persentase Jurusan</h3>
+                    <div class="space-y-2.5 sm:space-y-3 flex-1 overflow-y-auto custom-scroll max-h-[300px]" id="dashboard-jurusan-list"></div>
                 </div>
             </div>
         </div>
@@ -443,7 +443,6 @@
                             <div class="flex justify-between items-center mb-1"><span class="text-xs font-bold text-slate-500 uppercase">Rasio Kehadiran</span><span id="recap-live-pct" class="text-base sm:text-lg font-black text-brand-600">0%</span></div>
                             <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden"><div id="recap-live-progress" class="bg-brand-600 h-2.5 transition-all duration-500" style="width: 0%"></div></div>
                         </div>
-                        <div class="px-3 py-1.5 bg-slate-50 border rounded-xl shrink-0"><span id="recap-live-status-label" class="text-xs font-extrabold text-slate-700">Memuat...</span></div>
                     </div>
                 </div>
 
@@ -465,14 +464,16 @@
                         </div>
                     </div>
 
+                    <!-- BANNER PEMBERITAHUAN PENGUNCIAN TANGGAL -->
                     <div id="lock-banner" class="hidden-app mx-3 sm:mx-4 mt-3 p-3 sm:p-4 bg-rose-50 border border-rose-200 rounded-2xl flex gap-3 items-center text-rose-800 no-print">
                         <i class="ph-fill ph-lock-key text-xl sm:text-2xl text-rose-600 shrink-0"></i>
                         <div>
                             <h4 class="font-extrabold text-xs sm:text-sm text-rose-900">Formulir Absensi Terkunci</h4>
-                            <p class="text-[11px] sm:text-xs text-rose-600" id="lock-banner-text">Penginputan absen untuk tanggal ini tidak dapat di-edit oleh Seksi Absensi.</p>
+                            <p class="text-[11px] sm:text-xs text-rose-600" id="lock-banner-text">Penginputan absen untuk tanggal ini telah dikuncikan.</p>
                         </div>
                     </div>
 
+                    <!-- KONTROL RESET ABSEN KHUSUS ADMIN -->
                     <div id="admin-reset-bar" class="hidden-app mx-3 sm:mx-4 mt-3 p-3 sm:p-4 bg-amber-50 border border-amber-200 rounded-2xl flex justify-between items-center gap-3 no-print">
                         <div class="flex gap-2.5 items-center">
                             <i class="ph-fill ph-arrow-counter-clockwise text-xl sm:text-2xl text-amber-700"></i>
@@ -484,6 +485,7 @@
                         <button type="button" onclick="resetDailyAttendance()" class="bg-amber-600 hover:bg-amber-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase shrink-0">Reset Absen</button>
                     </div>
 
+                    <!-- KONTROL KUNCI ABSEN KHUSUS ADMIN -->
                     <div id="admin-close-attendance-bar" class="hidden-app mx-3 sm:mx-4 mt-3 p-3 sm:p-4 bg-slate-900 text-white rounded-2xl flex justify-between items-center gap-3 no-print">
                         <div class="flex gap-2.5 items-center">
                             <i class="ph-fill ph-shield-check text-xl sm:text-2xl text-brand-400"></i>
@@ -503,16 +505,16 @@
                             </div>
                         </div>
 
+                        <!-- TABEL ABSENSI: NAMA DAN KELAS DIDEKATKAN AGAR RAPI -->
                         <div class="overflow-x-auto w-full max-w-full p-2 custom-scroll">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[620px]">
                                 <thead class="bg-slate-50 border-b">
                                     <tr class="text-slate-400 text-[11px] sm:text-xs font-bold uppercase">
-                                        <th class="px-2.5 sm:px-3 py-3 w-10 text-center">NO</th>
-                                        <th class="px-2.5 sm:px-3 py-3 w-24">NIS</th>
-                                        <th class="px-2.5 sm:px-3 py-3">NAMA SISWA</th>
-                                        <th class="px-2 py-3 w-16 sm:w-20 text-center">KELAS</th>
-                                        <th class="px-3 sm:px-4 py-3 text-center">STATUS KEHADIRAN</th>
-                                        <th class="px-3 sm:px-4 py-3">CATATAN KETERANGAN & BUKTI SURAT</th>
+                                        <th class="px-2 py-3 w-10 text-center">NO</th>
+                                        <th class="px-2 py-3 w-28">NIS</th>
+                                        <th class="px-2 py-3">NAMA SISWA & KELAS</th>
+                                        <th class="px-3 py-3 text-center">STATUS KEHADIRAN</th>
+                                        <th class="px-3 py-3">CATATAN KETERANGAN & BUKTI SURAT</th>
                                     </tr>
                                 </thead>
                                 <tbody id="bulk-absen-table-body" class="text-xs sm:text-sm divide-y divide-slate-100"></tbody>
@@ -528,7 +530,7 @@
                 </div>
             </div>
 
-            <!-- SECTION 2: REKAPITULASI & CETAK -->
+            <!-- SECTION 2: REKAPITULASI & CETAK (HARIAN, MINGGUAN, BULANAN) -->
             <div id="section-absen-rekap" class="hidden-app grid grid-cols-1 gap-6 min-w-0">
                 <div class="bg-white rounded-2xl shadow-card border overflow-hidden flex flex-col min-h-[450px] min-w-0 max-w-full">
                     <div class="p-3.5 sm:p-4 border-b flex flex-col xl:flex-row gap-3 sm:gap-4 items-stretch xl:items-center bg-slate-50/50 justify-between no-print">
@@ -571,6 +573,7 @@
                         </div>
                     </div>
 
+                    <!-- KOP SURAT RESMI DENGAN LOGO SEKOLAH -->
                     <div class="hidden print:flex items-center justify-between pb-4 mb-4 kop-border-double" style="page-break-inside: avoid;">
                         <div class="w-20 h-20 flex items-center justify-center border border-black rounded-full bg-slate-50 shrink-0 overflow-hidden p-1">
                             <img src="https://i.ibb.co.com/HDHzkCT8/LVUke-CNhdr-Gdd-Ut6-Bnl-Bj-Mr9-XCSJb-Uy-Vxdv-CAzd-T.png" alt="Logo SMKN 5 Pangalengan" class="w-full h-full object-contain" onerror="handleLogoError(this)">
@@ -608,7 +611,7 @@
                             <p class="font-medium">Mengetahui,</p>
                             <p class="font-bold mt-0.5">Wali Kelas</p>
                             <div class="h-20"></div>
-                            <p class="font-bold border-t border-black pt-1" id="print-signature-name">Nama</p>
+                            <p class="font-bold border-t border-black pt-1" id="print-signature-name">Nama Wali</p>
                             <p class="text-[10px] mt-0.5" id="print-signature-nip">NIP. -</p>
                         </div>
                         <div class="text-center w-56">
@@ -666,191 +669,11 @@
         </div>
     </div>
 
-    <div id="change-self-password-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[116] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-base font-extrabold text-slate-800">🔑 Ganti Password Saya</h3>
-                <button type="button" onclick="closeChangePasswordModal()" class="text-slate-400 p-1"><i class="ph-bold ph-x"></i></button>
-            </div>
-            <form id="form-self-pass" onsubmit="saveSelfPassword(event)" class="space-y-3">
-                <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Password Baru</label>
-                    <input type="text" id="self-new-password" required placeholder="Masukkan kata sandi baru..." class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
-                </div>
-                <button type="submit" class="w-full bg-brand-600 text-white font-bold py-2.5 rounded-xl text-xs uppercase">Simpan Kata Sandi</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="edit-kelas-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[115] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border p-6 space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-lg font-extrabold text-slate-800">Edit Data Kelas</h3>
-                <button type="button" onclick="closeEditKelasModal()" class="text-slate-400 p-1"><i class="ph-bold ph-x"></i></button>
-            </div>
-            <form id="form-edit-kelas" onsubmit="saveEditedKelas(event)" class="space-y-3">
-                <input type="hidden" id="edit-kelas-old-id">
-                <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nama Kelas</label>
-                    <input type="text" id="edit-kelas-name" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Jurusan</label>
-                    <select id="edit-kelas-dept" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold"></select>
-                </div>
-                <button type="submit" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl text-xs uppercase">Simpan Perubahan</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="edit-siswa-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[115] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border p-6 space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-lg font-extrabold text-slate-800">Edit Data Siswa</h3>
-                <button type="button" onclick="closeEditSiswaModal()" class="text-slate-400 p-1"><i class="ph-bold ph-x"></i></button>
-            </div>
-            <form id="form-edit-siswa" onsubmit="saveEditedSiswa(event)" class="space-y-3">
-                <input type="hidden" id="edit-siswa-nis-hidden">
-                <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nama Lengkap Siswa</label>
-                    <input type="text" id="edit-siswa-name" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Kelas</label>
-                    <select id="edit-siswa-class" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold"></select>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Password Login</label>
-                    <input type="text" id="edit-siswa-pass" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
-                </div>
-                <button type="submit" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl text-xs uppercase">Simpan Perubahan</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="edit-wali-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[115] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border p-6 space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-lg font-extrabold text-slate-800">Edit Data Guru / Wali</h3>
-                <button type="button" onclick="closeEditTeacherModal()" class="text-slate-400 p-1"><i class="ph-bold ph-x"></i></button>
-            </div>
-            <form id="form-edit-teacher" onsubmit="saveEditedTeacher(event)" class="space-y-3">
-                <input type="hidden" id="edit-teacher-nip-hidden">
-                <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nama Lengkap Guru</label>
-                    <input type="text" id="edit-teacher-name" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Peran / Pengampu</label>
-                    <select id="edit-teacher-class" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold"></select>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Kategori Departemen</label>
-                    <input type="text" id="edit-teacher-dept" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Password Login</label>
-                    <input type="text" id="edit-teacher-pass" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
-                </div>
-                <button type="submit" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl text-xs uppercase">Simpan Perubahan</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="add-wali-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[115] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border">
-            <div class="p-6 md:p-8 space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-extrabold text-slate-800">Tambah Guru / Wali Kelas</h3>
-                    <button type="button" onclick="closeAddWaliModal()" class="text-slate-400 p-1 rounded-lg"><i class="ph-bold ph-x"></i></button>
-                </div>
-                <form id="form-add-teacher" onsubmit="saveNewWali(event)" class="space-y-3">
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">NIP / Username</label>
-                        <input type="text" id="add-teacher-nip" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nama Lengkap Guru</label>
-                        <input type="text" id="add-teacher-name" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Peran / Kategori</label>
-                        <select id="add-teacher-role-type" onchange="toggleTeacherRoleFields()" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold">
-                            <option value="wali">Wali Kelas</option>
-                            <option value="guru_mapel">Guru Mata Pelajaran</option>
-                            <option value="guru_bp">Guru BP / BK</option>
-                        </select>
-                    </div>
-                    <div id="teacher-class-select-group">
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Kelas Diampu</label>
-                        <select id="add-teacher-class" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold"></select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Password Login</label>
-                        <input type="text" id="add-teacher-pass" required value="12345" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs">
-                    </div>
-                    <button type="submit" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl text-xs uppercase">Simpan Data Guru</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div id="add-siswa-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[115] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border">
-            <div class="p-6 md:p-8 space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-extrabold text-slate-800">Tambah Siswa Baru</h3>
-                    <button type="button" onclick="closeAddSiswaModal()" class="text-slate-400 p-1 rounded-lg"><i class="ph-bold ph-x"></i></button>
-                </div>
-                <form id="form-add-siswa" onsubmit="saveNewSiswa(event)" class="space-y-3">
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">NIS / ID Siswa</label>
-                        <input type="text" id="add-student-nis" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nama Lengkap Siswa</label>
-                        <input type="text" id="add-student-name" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Kelas</label>
-                        <select id="add-student-class" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold"></select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Password Login</label>
-                        <input type="text" id="add-student-pass" required value="12345" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs">
-                    </div>
-                    <button type="submit" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl text-xs uppercase">Simpan Data Siswa</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div id="diagnostic-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[120] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 text-center space-y-4">
-            <h3 class="text-lg font-extrabold">Diagnostik Koneksi Cloud</h3>
-            <p class="text-xs text-slate-500">Status Endpoint API Google Apps Script saat ini.</p>
-            <div class="bg-slate-50 p-3 rounded-xl border text-left text-xs font-mono break-all" id="diag-url-info">API URL: -</div>
-            <button onclick="synchronizeDatabase(); closeDiagnosticModal();" class="w-full py-3 bg-brand-600 text-white font-bold rounded-xl text-xs uppercase">Uji & Sync Database</button>
-            <button onclick="closeDiagnosticModal()" class="w-full py-2 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs uppercase">Tutup</button>
-        </div>
-    </div>
-
     <div id="msg-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[130] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center">
             <h3 id="msg-title" class="text-lg font-extrabold text-slate-800 mb-1">Pemberitahuan</h3>
             <p id="msg-text" class="text-slate-500 text-xs font-semibold mb-6">Pesan pemberitahuan.</p>
             <button id="msg-btn-ok" class="w-full py-3 rounded-xl font-bold text-xs uppercase text-white bg-brand-600">Mengerti</button>
-        </div>
-    </div>
-
-    <div id="doc-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[140] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-sm font-extrabold text-slate-800">Bukti Surat: <span id="doc-modal-student" class="text-brand-600">Nama</span></h3>
-                <button onclick="closeDocModal()" class="text-slate-400 p-1"><i class="ph-bold ph-x"></i></button>
-            </div>
-            <div id="doc-modal-body" class="mb-4"></div>
-            <button onclick="closeDocModal()" class="w-full py-3 bg-slate-800 text-white font-bold rounded-xl text-xs uppercase">Tutup Pratinjau</button>
         </div>
     </div>
 
@@ -932,7 +755,6 @@
             }
         }
 
-        // SINKRONISASI BEBAS LOADING (BACKGROUND ASYNC)
         async function synchronizeDatabase() {
             const badge = document.getElementById('db-status-badge');
             const badgeText = document.getElementById('db-status-text');
@@ -956,6 +778,9 @@
                     badge.className = "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-black bg-emerald-500 text-white shadow-md shadow-emerald-500/30 uppercase tracking-wider cursor-pointer hover:scale-105 active:scale-95 transition-transform animate-pulse-slow";
                     badgeText.innerHTML = '<span class="w-2 h-2 rounded-full bg-white animate-ping inline-block mr-1"></span>🔥 FIREBASE INSTANT';
                 }
+                
+                // Refilter dashboard persentase setelah sinkronisasi selesai
+                if (document.getElementById('stat-total-kelas')) initDashboardAdmin();
             }
         }
 
@@ -969,20 +794,6 @@
                 modal.classList.add('opacity-0');
                 setTimeout(() => modal.classList.add('hidden-app'), 300);
             };
-        }
-
-        function openDiagnosticModal() {
-            const modal = document.getElementById('diagnostic-modal');
-            const urlInfo = document.getElementById('diag-url-info');
-            if (urlInfo) urlInfo.textContent = "API URL: " + (API_URL || "Belum Dikonfigurasi");
-            modal.classList.remove('hidden-app');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function closeDiagnosticModal() {
-            const modal = document.getElementById('diagnostic-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden-app'), 300);
         }
 
         function markAllPresent() {
@@ -1003,269 +814,7 @@
             });
         }
 
-        async function saveNewKelas(e) {
-            e.preventDefault();
-            const nameInput = document.getElementById('add-kelas-name');
-            const deptInput = document.getElementById('add-kelas-dept');
-            const name = nameInput.value.trim().toUpperCase();
-            const department = deptInput.value;
-
-            if (!name) return;
-            if (MOCK_DB.classes.some(c => c.id === name)) {
-                showMessage('Peringatan', `Kelas ${name} sudah terdaftar.`);
-                return;
-            }
-
-            const newClass = { id: name, name: name, department: department };
-            MOCK_DB.classes.push(newClass);
-            saveToStorage();
-            showMessage('Sukses', `Kelas ${name} berhasil ditambahkan.`);
-            nameInput.value = '';
-            initMenuKelas();
-            callCloudAPI("addClass", { data: newClass });
-        }
-
-        function openAddWaliModal() {
-            const modal = document.getElementById('add-wali-modal');
-            const classSelect = document.getElementById('add-teacher-class');
-            classSelect.innerHTML = MOCK_DB.classes.map(cls => `<option value="${cls.id}">${cls.name}</option>`).join('');
-            modal.classList.remove('hidden-app');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function closeAddWaliModal() {
-            const modal = document.getElementById('add-wali-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden-app'), 300);
-        }
-
-        function openAddSiswaModal() {
-            const modal = document.getElementById('add-siswa-modal');
-            const classSelect = document.getElementById('add-student-class');
-            classSelect.innerHTML = MOCK_DB.classes.map(cls => `<option value="${cls.id}">${cls.name}</option>`).join('');
-            modal.classList.remove('hidden-app');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function closeAddSiswaModal() {
-            const modal = document.getElementById('add-siswa-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden-app'), 300);
-        }
-
-        async function saveNewSiswa(e) {
-            e.preventDefault();
-            const nis = document.getElementById('add-student-nis').value.trim();
-            const name = document.getElementById('add-student-name').value.trim();
-            const classId = document.getElementById('add-student-class').value;
-            const pass = document.getElementById('add-student-pass').value.trim();
-
-            const newStudent = { nis, name, classId, pass };
-            MOCK_DB.students.push(newStudent);
-            saveToStorage();
-            showMessage('Sukses', 'Data siswa berhasil disimpan.');
-            closeAddSiswaModal();
-            initMenuSiswa();
-            callCloudAPI("addStudent", { data: newStudent });
-        }
-
-        function openEditSiswaModal(nis) {
-            const student = MOCK_DB.students.find(s => s.nis.toString() === nis.toString());
-            if (!student) return;
-            document.getElementById('edit-siswa-nis-hidden').value = student.nis;
-            document.getElementById('edit-siswa-name').value = student.name;
-            document.getElementById('edit-siswa-pass').value = student.pass || '12345';
-            
-            const classSelect = document.getElementById('edit-siswa-class');
-            classSelect.innerHTML = MOCK_DB.classes.map(cls => `<option value="${cls.id}" ${cls.id === student.classId ? 'selected' : ''}>${cls.name}</option>`).join('');
-
-            const modal = document.getElementById('edit-siswa-modal');
-            modal.classList.remove('hidden-app');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function closeEditSiswaModal() {
-            const modal = document.getElementById('edit-siswa-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden-app'), 300);
-        }
-
-        async function saveEditedSiswa(e) {
-            e.preventDefault();
-            const nis = document.getElementById('edit-siswa-nis-hidden').value;
-            const name = document.getElementById('edit-siswa-name').value.trim();
-            const classId = document.getElementById('edit-siswa-class').value;
-            const pass = document.getElementById('edit-siswa-pass').value.trim();
-
-            const updatedStudent = { nis, name, classId, pass };
-            const idx = MOCK_DB.students.findIndex(s => s.nis.toString() === nis.toString());
-            if (idx !== -1) MOCK_DB.students[idx] = updatedStudent;
-            saveToStorage();
-            showMessage('Sukses', 'Data siswa berhasil diperbarui.');
-            closeEditSiswaModal();
-            initMenuSiswa();
-            callCloudAPI("editStudent", { data: updatedStudent });
-        }
-
-        async function deleteSiswa(nis) {
-            if (!confirm(`Apakah Anda yakin ingin menghapus siswa NIS ${nis}?`)) return;
-            MOCK_DB.students = MOCK_DB.students.filter(s => s.nis.toString() !== nis.toString());
-            saveToStorage();
-            showMessage('Sukses', 'Data siswa berhasil dihapus.');
-            initMenuSiswa();
-            callCloudAPI("deleteStudent", { id: nis });
-        }
-
-        function openEditTeacherModal(nip) {
-            const teacher = MOCK_DB.teachers.find(t => t.nip.toString() === nip.toString());
-            if (!teacher) return;
-            document.getElementById('edit-teacher-nip-hidden').value = teacher.nip;
-            document.getElementById('edit-teacher-name').value = teacher.name;
-            document.getElementById('edit-teacher-dept').value = teacher.dept || 'Wali Kelas';
-            document.getElementById('edit-teacher-pass').value = teacher.pass || '12345';
-
-            const classSelect = document.getElementById('edit-teacher-class');
-            classSelect.innerHTML = `<option value="SEMUA">SEMUA (Guru Mapel / BP)</option>` + 
-                MOCK_DB.classes.map(cls => `<option value="${cls.id}" ${cls.id === teacher.classId ? 'selected' : ''}>${cls.name}</option>`).join('');
-
-            const modal = document.getElementById('edit-wali-modal');
-            modal.classList.remove('hidden-app');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function closeEditTeacherModal() {
-            const modal = document.getElementById('edit-wali-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden-app'), 300);
-        }
-
-        async function saveEditedTeacher(e) {
-            e.preventDefault();
-            const nip = document.getElementById('edit-teacher-nip-hidden').value;
-            const name = document.getElementById('edit-teacher-name').value.trim();
-            const classId = document.getElementById('edit-teacher-class').value;
-            const dept = document.getElementById('edit-teacher-dept').value.trim();
-            const pass = document.getElementById('edit-teacher-pass').value.trim();
-
-            const updatedTeacher = { nip, name, classId, dept, pass };
-            const idx = MOCK_DB.teachers.findIndex(t => t.nip.toString() === nip.toString());
-            if (idx !== -1) MOCK_DB.teachers[idx] = updatedTeacher;
-            saveToStorage();
-            showMessage('Sukses', 'Data Guru/Wali berhasil diperbarui.');
-            closeEditTeacherModal();
-            initMenuWali();
-            callCloudAPI("editTeacher", { data: updatedTeacher });
-        }
-
-        async function deleteWali(nip) {
-            if (!confirm(`Apakah Anda yakin ingin menghapus Guru/Wali dengan NIP ${nip}?`)) return;
-            MOCK_DB.teachers = MOCK_DB.teachers.filter(t => t.nip.toString() !== nip.toString());
-            saveToStorage();
-            showMessage('Sukses', 'Data Guru/Wali berhasil dihapus.');
-            initMenuWali();
-            callCloudAPI("deleteTeacher", { id: nip });
-        }
-
-        function openEditKelasModal(classId) {
-            const cls = MOCK_DB.classes.find(c => c.id === classId);
-            if (!cls) return;
-            document.getElementById('edit-kelas-old-id').value = cls.id;
-            document.getElementById('edit-kelas-name').value = cls.name;
-
-            const selectDept = document.getElementById('edit-kelas-dept');
-            selectDept.innerHTML = MOCK_DB.departments.map(d => `<option value="${d.name}" ${d.name === cls.department ? 'selected' : ''}>${d.name}</option>`).join('');
-
-            const modal = document.getElementById('edit-kelas-modal');
-            modal.classList.remove('hidden-app');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function closeEditKelasModal() {
-            const modal = document.getElementById('edit-kelas-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden-app'), 300);
-        }
-
-        async function saveEditedKelas(e) {
-            e.preventDefault();
-            const oldId = document.getElementById('edit-kelas-old-id').value;
-            const name = document.getElementById('edit-kelas-name').value.trim();
-            const department = document.getElementById('edit-kelas-dept').value;
-
-            const updated = { oldId, name, department };
-            const idx = MOCK_DB.classes.findIndex(c => c.id === oldId);
-            if (idx !== -1) {
-                MOCK_DB.classes[idx].id = name;
-                MOCK_DB.classes[idx].name = name;
-                MOCK_DB.classes[idx].department = department;
-            }
-            saveToStorage();
-            showMessage('Sukses', 'Data Kelas berhasil diperbarui.');
-            closeEditKelasModal();
-            initMenuKelas();
-            callCloudAPI("editClass", { data: updated });
-        }
-
-        async function deleteKelas(classId) {
-            if (!confirm(`Apakah Anda yakin ingin menghapus kelas ${classId}?`)) return;
-            MOCK_DB.classes = MOCK_DB.classes.filter(c => c.id !== classId);
-            saveToStorage();
-            showMessage('Sukses', 'Data kelas berhasil dihapus.');
-            initMenuKelas();
-            callCloudAPI("deleteClass", { id: classId });
-        }
-
-        function openChangePasswordModal() {
-            const modal = document.getElementById('change-self-password-modal');
-            modal.classList.remove('hidden-app');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function closeChangePasswordModal() {
-            const modal = document.getElementById('change-self-password-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden-app'), 300);
-        }
-
-        async function saveSelfPassword(e) {
-            e.preventDefault();
-            const newPass = document.getElementById('self-new-password').value.trim();
-            if (!newPass) return;
-
-            const id = currentUser.id || currentUser.nip || currentUser.nis || currentUser.username;
-            currentUser.pass = newPass;
-            localStorage.setItem('smkn5_user_session', JSON.stringify(currentUser));
-            showMessage('Sukses', 'Kata sandi Anda berhasil diperbarui.');
-            closeChangePasswordModal();
-            callCloudAPI("updateSelfPassword", { role: currentUser.role, id, pass: newPass });
-        }
-
-        function toggleTeacherRoleFields() {
-            const roleType = document.getElementById('add-teacher-role-type').value;
-            const group = document.getElementById('teacher-class-select-group');
-            if (roleType === 'wali') group.classList.remove('hidden-app');
-            else group.classList.add('hidden-app');
-        }
-
-        async function saveNewWali(e) {
-            e.preventDefault();
-            const nip = document.getElementById('add-teacher-nip').value.trim();
-            const name = document.getElementById('add-teacher-name').value.trim();
-            const roleType = document.getElementById('add-teacher-role-type').value;
-            const classId = roleType === 'wali' ? document.getElementById('add-teacher-class').value : 'SEMUA';
-            const pass = document.getElementById('add-teacher-pass').value.trim();
-            const dept = roleType === 'guru_bp' ? 'BP/BK' : roleType === 'guru_mapel' ? 'Mapel' : 'Wali Kelas';
-
-            const newTeacher = { nip, name, classId, dept, pass };
-            MOCK_DB.teachers.push(newTeacher);
-            saveToStorage();
-            showMessage('Sukses', 'Data Guru/Wali berhasil disimpan.');
-            closeAddWaliModal();
-            initMenuWali();
-            callCloudAPI("addTeacher", { data: newTeacher });
-        }
-
-        // LOGIN INSTAN BEBAS DARI DUKUNGAN BLOCKING API
+        // LOGIN ENGINE
         async function handleLogin(e) {
             e.preventDefault();
             const role = document.getElementById('login-role').value;
@@ -1309,8 +858,6 @@
                 setupAppUI();
                 document.getElementById('login-view').classList.add('hidden-app');
                 document.getElementById('app-view').classList.remove('hidden-app');
-                
-                // Sync di latar belakang tanpa menahan UI
                 synchronizeDatabase();
             } else {
                 errorEl.classList.remove('hidden-app');
@@ -1404,34 +951,101 @@
             }
         }
 
+        // DASHBOARD DENGAN HITUNGAN PERSENTASE KELAS DAN JURUSAN
         function initDashboardAdmin() {
             if (currentUser && currentUser.role === 'admin') {
-                document.getElementById('admin-user-mgmt-btn-wrapper').classList.remove('hidden-app');
+                const btnWrap = document.getElementById('admin-user-mgmt-btn-wrapper');
+                if (btnWrap) btnWrap.classList.remove('hidden-app');
             }
 
             let classStudents = MOCK_DB.students;
+            let isIndividualClass = false;
+
             if (currentUser && (currentUser.role === 'wali' || currentUser.role === 'siswa')) {
                 classStudents = MOCK_DB.students.filter(s => s.classId === currentUser.classId);
+                isIndividualClass = true;
+                const chartTitle = document.getElementById('dashboard-chart-title');
+                if (chartTitle) chartTitle.textContent = `Kehadiran Kumulatif Kelas ${currentUser.classId}`;
             }
 
-            document.getElementById('stat-total-kelas').textContent = MOCK_DB.classes.length;
+            document.getElementById('stat-total-kelas').textContent = isIndividualClass ? 1 : MOCK_DB.classes.length;
             document.getElementById('stat-total-siswa').textContent = classStudents.length;
             document.getElementById('stat-total-wali').textContent = MOCK_DB.teachers.length;
-            document.getElementById('stat-total-jurusan').textContent = MOCK_DB.departments.length;
-        }
 
-        function openManageUsersModal() {
-            const modal = document.getElementById('manage-users-modal');
-            const select = document.getElementById('admin-user-select');
-            select.innerHTML = MOCK_DB.admins.map(a => `<option value="${a.username}">${a.name} (${a.username})</option>`).join('');
-            modal.classList.remove('hidden-app');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
+            // Hitung Rasio Kehadiran Kelas / Sekolah
+            const studentNises = classStudents.map(s => s.nis.toString());
+            let h = 0, i = 0, s = 0, a = 0, dVal = 0, l = 0;
+            MOCK_DB.attendance.forEach(rec => {
+                if (studentNises.includes(rec.nis.toString())) {
+                    if (rec.status === 'H') h++;
+                    else if (rec.status === 'I') i++;
+                    else if (rec.status === 'S') s++;
+                    else if (rec.status === 'A') a++;
+                    else if (rec.status === 'D') dVal++;
+                    else if (rec.status === 'L') l++;
+                }
+            });
 
-        function closeManageUsersModal() {
-            const modal = document.getElementById('manage-users-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden-app'), 300);
+            const totalActive = h + i + s + a + dVal;
+            const overallPct = totalActive > 0 ? Math.round(((h + dVal) / totalActive) * 100) : 100;
+
+            const statPctLabel = document.getElementById('stat-pct-label');
+            const statPctVal = document.getElementById('stat-pct-val');
+            if (statPctLabel) statPctLabel.textContent = isIndividualClass ? `Kehadiran Kelas ${currentUser.classId}` : "Rasio Kehadiran Sekolah";
+            if (statPctVal) statPctVal.textContent = overallPct + "%";
+
+            // Render Chart Kumulatif
+            const ctx = document.getElementById('weeklyCombinedChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Hadir (H)', 'Izin (I)', 'Sakit (S)', 'Alpa (A)', 'Disp (D)', 'Libur (L)'],
+                        datasets: [{
+                            data: [h || 1, i || 0, s || 0, a || 0, dVal || 0, l || 0],
+                            backgroundColor: ['#22c55e', '#f59e0b', '#3b82f6', '#ef4444', '#a855f7', '#0ea5e9'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            // Hitung Persentase & Jumlah Siswa per Jurusan (Program Keahlian)
+            const jList = document.getElementById('dashboard-jurusan-list');
+            if (jList) {
+                jList.innerHTML = MOCK_DB.departments.map(dept => {
+                    const deptClasses = MOCK_DB.classes.filter(c => c.department === dept.name || c.department === dept.id).map(c => c.id);
+                    const deptStudents = MOCK_DB.students.filter(s => deptClasses.includes(s.classId));
+                    const deptNises = deptStudents.map(s => s.nis.toString());
+
+                    let dH = 0, dI = 0, dS = 0, dA = 0, dD = 0;
+                    MOCK_DB.attendance.forEach(rec => {
+                        if (deptNises.includes(rec.nis.toString())) {
+                            if (rec.status === 'H') dH++;
+                            else if (rec.status === 'I') dI++;
+                            else if (rec.status === 'S') dS++;
+                            else if (rec.status === 'A') dA++;
+                            else if (rec.status === 'D') dD++;
+                        }
+                    });
+                    const dTotal = dH + dI + dS + dA + dD;
+                    const dPct = dTotal > 0 ? Math.round(((dH + dD) / dTotal) * 100) : 100;
+
+                    return `
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold text-slate-800">${dept.name}</span>
+                                <span class="text-[10px] font-black bg-brand-100 text-brand-800 px-2 py-0.5 rounded">${dPct}% Hadir</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] text-slate-500 font-semibold">
+                                <span>Total: <b>${deptStudents.length} Siswa</b></span>
+                                <span>${deptClasses.length} Kelas</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
         }
 
         function initMenuKelas() {
@@ -1456,7 +1070,6 @@
             if (select) select.innerHTML = MOCK_DB.departments.map(d => `<option value="${d.name}">${d.name}</option>`).join('');
         }
 
-        // PERBAIKAN HIGH-SPEED UNTUK 2.000 SISWA (RENDER 1x BATCH INSTAN)
         function initMenuSiswa() {
             const tbody = document.getElementById('siswa-table-body');
             if (!tbody) return;
@@ -1515,13 +1128,6 @@
             `).join('');
         }
 
-        function filterWaliTable() {
-            const q = document.getElementById('search-wali-input').value.toLowerCase();
-            document.querySelectorAll('#wali-table-body tr').forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
-            });
-        }
-
         function initMenuAbsen() {
             const inputDate = document.getElementById('input-absen-date');
             const inputKelas = document.getElementById('input-absen-kelas');
@@ -1568,7 +1174,7 @@
             }
         }
 
-        // PEMUATAN FORM ABSENSI INSTAN (SERENTAK 1x BATCH RENDER)
+        // PEMUATAN FORM ABSENSI (KUNCI OTOMATIS TANGGAL BESOK & SATERUSNYA)
         function loadStudentAttendanceForm() {
             const classId = document.getElementById('input-absen-kelas').value;
             const selectedDateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
@@ -1583,13 +1189,60 @@
 
             const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
             if (classStudents.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-semibold">Tidak ada siswa terdaftar</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 font-semibold">Tidak ada siswa terdaftar</td></tr>`;
                 submitBar.classList.add('hidden-app'); return;
             }
 
+            // KONTROL PENGUNCIAN: HARI BESOK & MENDATANG SELALU DITUTUP
+            const isFutureDate = selectedDateStr > todayStr;
             const isPastDate = selectedDateStr < todayStr;
             const isClosedByAdmin = MOCK_DB.dailyLocks && MOCK_DB.dailyLocks[selectedDateStr] === true;
-            const isLocked = (currentUser.role !== 'admin') && (isPastDate || isClosedByAdmin || currentUser.role === 'guru_bp');
+            
+            let isLocked = isFutureDate; // Hari besok & seterusnya wajib terkunci
+            if (currentUser.role !== 'admin') {
+                isLocked = isFutureDate || isPastDate || isClosedByAdmin || currentUser.role === 'guru_bp';
+            }
+
+            const lockBanner = document.getElementById('lock-banner');
+            const lockText = document.getElementById('lock-banner-text');
+            if (lockBanner && lockText) {
+                if (isLocked) {
+                    lockBanner.classList.remove('hidden-app');
+                    if (isFutureDate) {
+                        lockText.textContent = "Penginputan absen untuk tanggal mendatang (besok & seterusnya) ditutup.";
+                    } else if (isClosedByAdmin) {
+                        lockText.textContent = "Penginputan absen untuk tanggal ini ditutup oleh Administrator.";
+                    } else {
+                        lockText.textContent = "Formulir absensi tanggal lalu dalam mode baca saja.";
+                    }
+                } else {
+                    lockBanner.classList.add('hidden-app');
+                }
+            }
+
+            // BAR KONTROL ADMIN
+            const resetBar = document.getElementById('admin-reset-bar');
+            if (resetBar) resetBar.classList.toggle('hidden-app', currentUser.role !== 'admin');
+
+            const closeAttendanceBar = document.getElementById('admin-close-attendance-bar');
+            if (closeAttendanceBar) {
+                if (currentUser.role === 'admin') {
+                    closeAttendanceBar.classList.remove('hidden-app');
+                    const btn = document.getElementById('btn-toggle-daily-lock');
+                    const desc = document.getElementById('close-status-desc');
+                    if (isClosedByAdmin) {
+                        btn.className = "bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase";
+                        btn.textContent = "Buka Absensi Hari Ini";
+                        desc.innerHTML = `Status penginputan absen saat ini <b class="text-rose-400">DITUTUP</b>.`;
+                    } else {
+                        btn.className = "bg-rose-600 hover:bg-rose-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase";
+                        btn.textContent = "Tutup Absen Hari Ini";
+                        desc.innerHTML = `Status penginputan absen saat ini <b class="text-emerald-400">DIBUKA</b>.`;
+                    }
+                } else {
+                    closeAttendanceBar.classList.add('hidden-app');
+                }
+            }
 
             if (isLocked) { submitBar.classList.add('hidden-app'); if (actionBar) actionBar.classList.add('hidden-app'); }
             else { submitBar.classList.remove('hidden-app'); if (actionBar) actionBar.classList.remove('hidden-app'); }
@@ -1604,11 +1257,11 @@
                 { val: 'L', label: 'L', desc: 'Libur', active: 'bg-sky-500 text-white border-sky-500 shadow-md scale-105', base: 'hover:bg-sky-50 text-sky-600 border-sky-200' }
             ];
 
+            // TAMPILAN KELAS DAN NAMA SISWA DIDEKATKAN SECARA RAPI
             const rowsHtml = classStudents.map((student, idx) => {
                 const existing = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === selectedDateStr);
                 const status = existing ? existing.status : '';
                 const remark = existing ? (existing.remark || '') : '';
-                const attachName = existing && existing.attachment ? (existing.attachment.name || 'Dokumen Surat') : '';
 
                 let radioHtml = `<div class="flex items-center gap-1 justify-center">`;
                 statuses.forEach(st => {
@@ -1627,15 +1280,15 @@
 
                 return `
                     <tr class="hover:bg-slate-50 transition-colors">
-                        <td class="px-2.5 sm:px-3 py-3 font-bold text-slate-400 text-center">${idx + 1}</td>
-                        <td class="px-2.5 sm:px-3 py-3 font-mono font-bold">${student.nis}</td>
-                        <td class="px-2.5 sm:px-3 py-3 font-extrabold max-w-[140px] sm:max-w-none truncate">${student.name}</td>
-                        <td class="px-2 py-3 text-center text-xs font-bold text-slate-600">${student.classId}</td>
-                        <td class="px-3 sm:px-4 py-3 text-center">${radioHtml}</td>
-                        <td class="px-3 sm:px-4 py-3 min-w-[240px]">
-                            <div id="ket-container-${student.nis}" class="flex flex-col gap-2">
-                                <input type="text" id="ket-input-${student.nis}" value="${remark}" ${!isLocked ? '' : 'disabled'} placeholder="Catatan Hadir / Alasan S, I, A, D..." class="w-full bg-slate-50 border rounded-xl px-3 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-brand-500/20">
-                            </div>
+                        <td class="px-2 py-3 font-bold text-slate-400 text-center">${idx + 1}</td>
+                        <td class="px-2 py-3 font-mono font-bold text-slate-700">${student.nis}</td>
+                        <td class="px-2 py-3 min-w-[160px]">
+                            <div class="font-extrabold text-slate-800 text-xs sm:text-sm leading-snug">${student.name}</div>
+                            <div class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded inline-block mt-0.5">${student.classId}</div>
+                        </td>
+                        <td class="px-3 py-3 text-center">${radioHtml}</td>
+                        <td class="px-3 py-3 min-w-[200px]">
+                            <input type="text" id="ket-input-${student.nis}" value="${remark}" ${!isLocked ? '' : 'disabled'} placeholder="Catatan Hadir / Alasan S, I, A, D..." class="w-full bg-slate-50 border rounded-xl px-3 py-1.5 text-xs font-semibold">
                         </td>
                     </tr>
                 `;
@@ -1739,7 +1392,6 @@
                 });
             });
 
-            // Simpan lokal instan (0 detik)
             recordsToSave.forEach(rec => {
                 const idx = MOCK_DB.attendance.findIndex(a => a.nis.toString() === rec.nis.toString() && normalizeDateStr(a.date) === dateStr);
                 if (idx !== -1) MOCK_DB.attendance[idx] = rec;
@@ -1753,9 +1405,37 @@
             }
 
             showMessage('Berhasil', 'Data absensi harian berhasil disimpan.');
-            
-            // Sync ke Firebase di latar belakang
             callCloudAPI("saveBulkAttendance", { records: recordsToSave });
+        }
+
+        async function resetDailyAttendance() {
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (!confirm(`RESET ABSENSI: Kosongkan seluruh data absen kelas ${classId} tanggal ${dateStr}?`)) return;
+
+            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
+            const classStudentNises = classStudents.map(s => s.nis.toString());
+            MOCK_DB.attendance = MOCK_DB.attendance.filter(a => !(classStudentNises.includes(a.nis.toString()) && normalizeDateStr(a.date) === dateStr));
+            saveToStorage();
+
+            showMessage('Sukses', 'Data absensi kelas ini berhasil di-reset.');
+            loadStudentAttendanceForm();
+            callCloudAPI("resetDailyAttendance", { classId, date: dateStr });
+        }
+
+        async function toggleDailyLockByAdmin() {
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (!dateStr) return;
+            const isCurrentlyLocked = MOCK_DB.dailyLocks && MOCK_DB.dailyLocks[dateStr] === true;
+            const nextStatus = !isCurrentlyLocked;
+
+            if (!MOCK_DB.dailyLocks) MOCK_DB.dailyLocks = {};
+            MOCK_DB.dailyLocks[dateStr] = nextStatus;
+            saveToStorage();
+
+            showMessage('Sukses', `Penginputan absen tanggal ${dateStr} di-${nextStatus ? 'tutup' : 'buka'}.`);
+            loadStudentAttendanceForm();
+            callCloudAPI("toggleDailyLock", { date: dateStr, locked: nextStatus });
         }
 
         function toggleFilterInputs() {
@@ -1766,6 +1446,7 @@
             document.getElementById(`filter-wrapper-${rekapType}`).classList.remove('hidden-app');
         }
 
+        // RENDER REKAPITULASI (HARIAN, MINGGUAN & BULANAN)
         function renderAttendanceRecap() {
             const classId = document.getElementById('rekap-absen-kelas').value;
             const type = document.getElementById('rekap-type').value;
@@ -1779,6 +1460,7 @@
             document.getElementById('print-signature-name').textContent = waliObj.name;
             document.getElementById('print-signature-nip').textContent = "NIP. " + waliObj.nip;
             document.getElementById('print-class-label').textContent = classId;
+            document.getElementById('print-today-date').textContent = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
 
             const getStatusBadge = (st) => {
                 if (!st || st === '-') return '-';
@@ -1798,12 +1480,12 @@
                 const month = parseInt(monthVal.split('-')[1]);
                 const daysInMonth = new Date(year, month, 0).getDate();
 
-                let headerHtml = `<tr><th class="px-2.5 py-2 text-center">No</th><th class="px-2.5 py-2 text-left">NIS</th><th class="px-3 py-2 text-left">Nama Siswa</th><th class="px-2 py-2 text-center">Kelas</th>`;
+                let headerHtml = `<tr><th class="px-2.5 py-2 text-center">No</th><th class="px-2.5 py-2 text-left">NIS</th><th class="px-3 py-2 text-left">Nama Siswa & Kelas</th>`;
                 for (let d = 1; d <= daysInMonth; d++) headerHtml += `<th class="px-1 py-2 text-center text-[9px]">${d}</th>`;
                 headerHtml += `<th class="bg-emerald-50 text-emerald-700">H</th><th class="bg-amber-50 text-amber-700">I</th><th class="bg-blue-50 text-blue-700">S</th><th class="bg-rose-50 text-rose-700">A</th><th class="bg-purple-50 text-purple-700">D</th><th class="bg-sky-50 text-sky-700">L</th><th>%</th></tr>`;
                 headerEl.innerHTML = headerHtml;
 
-                const rowsHtml = classStudents.map((student, idx) => {
+                tbody.innerHTML = classStudents.map((student, idx) => {
                     let rH = 0, rI = 0, rS = 0, rA = 0, rD = 0, rL = 0;
                     let daysHtml = '';
                     for (let d = 1; d <= daysInMonth; d++) {
@@ -1819,17 +1501,19 @@
                             else if (att.status === 'D') rD++;
                             else if (att.status === 'L') rL++;
                         }
-                        daysHtml += `<td class="px-1 py-1.5 text-center text-[10px] border">${cellContent}</td>`;
+                        daysHtml += `<td class="px-1 py-1 text-center text-[10px] border">${cellContent}</td>`;
                     }
                     const totalActive = rH + rI + rS + rA + rD;
                     const pct = totalActive > 0 ? Math.round(((rH + rD) / totalActive) * 100) : 100;
 
                     return `
                         <tr>
-                            <td class="px-2.5 py-1.5 text-center">${idx + 1}</td>
-                            <td class="px-2.5 py-1.5 font-mono font-bold">${student.nis}</td>
-                            <td class="px-3 py-1.5 font-extrabold text-left max-w-[140px] truncate">${student.name}</td>
-                            <td class="px-2 py-1.5 font-bold text-center text-slate-600">${student.classId}</td>
+                            <td class="px-2 py-1 text-center">${idx + 1}</td>
+                            <td class="px-2 py-1 font-mono font-bold">${student.nis}</td>
+                            <td class="px-2 py-1">
+                                <div class="font-extrabold text-slate-800 text-xs">${student.name}</div>
+                                <div class="text-[9px] font-bold text-emerald-700">${student.classId}</div>
+                            </td>
                             ${daysHtml}
                             <td class="font-bold text-emerald-700 text-center">${rH}</td>
                             <td class="font-bold text-amber-700 text-center">${rI}</td>
@@ -1842,13 +1526,254 @@
                     `;
                 }).join('');
 
-                tbody.innerHTML = rowsHtml;
+            } else if (type === 'weekly') {
+                const startWeekVal = document.getElementById('rekap-absen-week').value || normalizeDateStr(new Date());
+                const startDate = new Date(startWeekVal);
+                document.getElementById('print-month-label').textContent = `Minggu ${startWeekVal}`;
+
+                let headerHtml = `<tr><th class="px-2.5 py-2 text-center">No</th><th class="px-2.5 py-2 text-left">NIS</th><th class="px-3 py-2 text-left">Nama Siswa & Kelas</th>`;
+                const dateCols = [];
+                for (let d = 0; d < 7; d++) {
+                    const currentDay = new Date(startDate);
+                    currentDay.setDate(startDate.getDate() + d);
+                    const dateStr = normalizeDateStr(currentDay);
+                    dateCols.push(dateStr);
+                    const dayLabel = currentDay.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' });
+                    headerHtml += `<th class="px-2 py-2 text-center text-[10px]">${dayLabel}</th>`;
+                }
+                headerHtml += `<th class="bg-emerald-50 text-emerald-700">H</th><th class="bg-amber-50 text-amber-700">I</th><th class="bg-blue-50 text-blue-700">S</th><th class="bg-rose-50 text-rose-700">A</th><th class="bg-purple-50 text-purple-700">D</th><th class="bg-sky-50 text-sky-700">L</th><th>%</th></tr>`;
+                headerEl.innerHTML = headerHtml;
+
+                tbody.innerHTML = classStudents.map((student, idx) => {
+                    let rH = 0, rI = 0, rS = 0, rA = 0, rD = 0, rL = 0;
+                    let daysHtml = '';
+                    dateCols.forEach(targetDate => {
+                        const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === targetDate);
+                        let cellContent = '-';
+                        if (att) {
+                            cellContent = getStatusBadge(att.status);
+                            if (att.status === 'H') rH++;
+                            else if (att.status === 'I') rI++;
+                            else if (att.status === 'S') rS++;
+                            else if (att.status === 'A') rA++;
+                            else if (att.status === 'D') rD++;
+                            else if (att.status === 'L') rL++;
+                        }
+                        daysHtml += `<td class="px-2 py-1 text-center text-xs border">${cellContent}</td>`;
+                    });
+                    const totalActive = rH + rI + rS + rA + rD;
+                    const pct = totalActive > 0 ? Math.round(((rH + rD) / totalActive) * 100) : 100;
+
+                    return `
+                        <tr>
+                            <td class="px-2 py-1 text-center">${idx + 1}</td>
+                            <td class="px-2 py-1 font-mono font-bold">${student.nis}</td>
+                            <td class="px-2 py-1">
+                                <div class="font-extrabold text-slate-800 text-xs">${student.name}</div>
+                                <div class="text-[9px] font-bold text-emerald-700">${student.classId}</div>
+                            </td>
+                            ${daysHtml}
+                            <td class="font-bold text-emerald-700 text-center">${rH}</td>
+                            <td class="font-bold text-amber-700 text-center">${rI}</td>
+                            <td class="font-bold text-blue-700 text-center">${rS}</td>
+                            <td class="font-bold text-rose-700 text-center">${rA}</td>
+                            <td class="font-bold text-purple-700 text-center">${rD}</td>
+                            <td class="font-bold text-sky-700 text-center">${rL}</td>
+                            <td class="font-bold bg-slate-50 text-center">${pct}%</td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } else if (type === 'daily') {
+                const dateVal = document.getElementById('rekap-absen-date').value || normalizeDateStr(new Date());
+                document.getElementById('print-month-label').textContent = dateVal;
+                headerEl.innerHTML = `<tr><th class="px-3 py-2 w-10 text-center">No</th><th class="px-3 py-2 w-24">NIS</th><th class="px-3 py-2 text-left">Nama Siswa & Kelas</th><th class="px-3 py-2 text-center">Status</th><th class="px-3 py-2">Catatan Keterangan</th></tr>`;
+                
+                tbody.innerHTML = classStudents.map((student, idx) => {
+                    const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === dateVal);
+                    const statusText = att ? getStatusBadge(att.status) : '-';
+                    const remarkText = att ? (att.remark || '-') : '-';
+
+                    return `
+                        <tr>
+                            <td class="px-3 py-2 text-center">${idx + 1}</td>
+                            <td class="px-3 py-2 font-mono font-bold">${student.nis}</td>
+                            <td class="px-3 py-2">
+                                <div class="font-extrabold text-slate-800 text-xs">${student.name}</div>
+                                <div class="text-[9px] font-bold text-emerald-700">${student.classId}</div>
+                            </td>
+                            <td class="px-3 py-2 text-center font-extrabold">${statusText}</td>
+                            <td class="px-3 py-2 text-xs">${remarkText}</td>
+                        </tr>
+                    `;
+                }).join('');
             }
+        }
+
+        // EKSPOR EXCEL MATRIKS KELAS, NAMA & NIS
+        function exportToExcel() {
+            const classId = document.getElementById('rekap-absen-kelas').value;
+            const type = document.getElementById('rekap-type').value;
+            if (!classId) return;
+
+            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
+            const waliObj = getWaliForClass(classId);
+
+            let rows = [
+                ["PEMERINTAH PROVINSI JAWA BARAT"],
+                ["DINAS PENDIDIKAN CABANG DINAS WILAYAH VIII"],
+                ["SMK NEGERI 5 PANGALENGAN"],
+                ["REKAPITULASI PRESENSI KEHADIRAN SISWA"],
+                [`Kelas: ${classId}`],
+                []
+            ];
+
+            if (type === 'monthly') {
+                const monthVal = document.getElementById('rekap-absen-month').value || new Date().toISOString().slice(0,7);
+                const year = parseInt(monthVal.split('-')[0]);
+                const month = parseInt(monthVal.split('-')[1]);
+                const daysInMonth = new Date(year, month, 0).getDate();
+
+                let header = ["No", "NIS", "Nama Siswa", "Kelas"];
+                for (let d = 1; d <= daysInMonth; d++) header.push(d.toString());
+                header.push("H", "I", "S", "A", "D", "L", "% Kehadiran");
+                rows.push(header);
+
+                classStudents.forEach((student, idx) => {
+                    let r = [idx + 1, student.nis, student.name, student.classId];
+                    let rH = 0, rI = 0, rS = 0, rA = 0, rD = 0, rL = 0;
+                    for (let d = 1; d <= daysInMonth; d++) {
+                        const targetDate = `${monthVal}-${String(d).padStart(2, '0')}`;
+                        const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === targetDate);
+                        if (att) {
+                            r.push(att.status);
+                            if (att.status === 'H') rH++;
+                            else if (att.status === 'I') rI++;
+                            else if (att.status === 'S') rS++;
+                            else if (att.status === 'A') rA++;
+                            else if (att.status === 'D') rD++;
+                            else if (att.status === 'L') rL++;
+                        } else r.push("-");
+                    }
+                    const totalActive = rH + rI + rS + rA + rD;
+                    const pct = totalActive > 0 ? Math.round(((rH + rD) / totalActive) * 100) : 100;
+                    r.push(rH, rI, rS, rA, rD, rL, `${pct}%`);
+                    rows.push(r);
+                });
+            } else {
+                let header = ["No", "NIS", "Nama Siswa", "Kelas", "Status", "Keterangan"];
+                rows.push(header);
+                const dateVal = document.getElementById('rekap-absen-date').value || normalizeDateStr(new Date());
+                classStudents.forEach((student, idx) => {
+                    const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === dateVal);
+                    rows.push([idx + 1, student.nis, student.name, student.classId, att ? att.status : '-', att ? att.remark : '-']);
+                });
+            }
+
+            rows.push([], []);
+            rows.push(["", "", "Mengetahui,", "", "Bandung, " + new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })]);
+            rows.push(["", "", "Wali Kelas Pengampu", "", "Kepala SMKN 5 Pangalengan"]);
+            rows.push([], []);
+            rows.push(["", "", waliObj.name, "", "Dini Puji Setiani, S.PdI."]);
+            rows.push(["", "", "NIP. " + waliObj.nip, "", "NIP. 197912012014102001"]);
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            XLSX.utils.book_append_sheet(wb, ws, "Rekap Absen");
+            XLSX.writeFile(wb, `Laporan_Absensi_SMKN5_${classId}_${type}.xlsx`);
+        }
+
+        // EKSPOR WORD (.DOC)
+        async function exportToWord() {
+            renderAttendanceRecap();
+            const classId = document.getElementById('rekap-absen-kelas').value;
+            const type = document.getElementById('rekap-type').value;
+            const waliObj = getWaliForClass(classId);
+
+            const headerHtml = document.getElementById('rekap-table-header').innerHTML;
+            const bodyHtml = document.getElementById('rekap-matrix-table-body').innerHTML;
+
+            const wordDocument = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset="utf-8">
+                    <title>Laporan Absensi SMKN 5 Pangalengan</title>
+                    <style>
+                        body { font-family: 'Times New Roman', serif; font-size: 10pt; color: #000; }
+                        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+                        th, td { border: 1px solid #000; padding: 5px; text-align: center; }
+                        th { background-color: #f2f2f2; font-weight: bold; }
+                    </style>
+                </head>
+                <body>
+                    <div style="text-align: center; font-weight: bold; border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 15px;">
+                        <h3 style="margin:0; text-transform: uppercase;">PEMERINTAH PROVINSI JAWA BARAT</h3>
+                        <h2 style="margin:0; text-transform: uppercase;">DINAS PENDIDIKAN CABANG DINAS WILAYAH VIII</h2>
+                        <h1 style="margin:0; font-size: 16pt; text-transform: uppercase;">SMK NEGERI 5 PANGALENGAN</h1>
+                        <p style="margin:0; font-size: 8pt; font-weight: normal; font-style: italic;">JL. Cinchona No 08 Tlp. 082316075702, Pangalengan, Kab. Bandung, Jawa Barat 40378</p>
+                    </div>
+                    <h3 style="text-align: center; text-decoration: underline; margin-bottom: 4px;">REKAPITULASI PRESENSI KEHADIRAN SISWA</h3>
+                    <p style="text-align: center; margin-top:0;">Kelas: <b>${classId}</b> | Periode: <b>${type.toUpperCase()}</b></p>
+                    <table>
+                        <thead>${headerHtml}</thead>
+                        <tbody>${bodyHtml}</tbody>
+                    </table>
+                    <br><br>
+                    <table style="border: none; width: 100%;">
+                        <tr style="border: none;">
+                            <td style="border: none; width: 50%; text-align: center;">
+                                Mengetahui,<br>Wali Kelas<br><br><br><br><b><u>${waliObj.name}</u></b><br>NIP. ${waliObj.nip}
+                            </td>
+                            <td style="border: none; width: 50%; text-align: center;">
+                                Bandung, ${new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}<br>Kepala SMKN 5 Pangalengan<br><br><br><br><b><u>Dini Puji Setiani, S.PdI.</u></b><br>NIP. 197912012014102001
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff' + wordDocument], { type: 'application/msword;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Laporan_Absensi_SMKN5_${classId}_${type}.doc`;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+        }
+
+        // CETAK PRINT / PDF
+        async function triggerPrint() {
+            renderAttendanceRecap();
+            const type = document.getElementById('rekap-type').value;
+
+            let styleEl = document.getElementById('print-style-dynamic');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'print-style-dynamic';
+                document.head.appendChild(styleEl);
+            }
+
+            if (type === 'monthly' || type === 'weekly') {
+                styleEl.innerHTML = '@media print { @page { size: A4 landscape; margin: 1cm; } }';
+            } else {
+                styleEl.innerHTML = '@media print { @page { size: A4 portrait; margin: 1cm; } }';
+            }
+
+            window.focus();
+            setTimeout(() => {
+                try {
+                    window.print();
+                } catch (e) {
+                    alert("Gunakan menu browser/APK untuk menyimpan ke PDF.");
+                }
+            }, 150);
         }
 
         function handleLogoError(img) { if (img) img.src = "https://i.ibb.co.com/HDHzkCT8/LVUke-CNhdr-Gdd-Ut6-Bnl-Bj-Mr9-XCSJb-Uy-Vxdv-CAzd-T.png"; }
 
-        // MULAILAH APLIKASI SECARA INSTAN TANPA WAIT APIS
+        // MULAILAH APLIKASI
         document.addEventListener('DOMContentLoaded', () => {
             setInterval(() => {
                 const clock = document.getElementById('current-time');
@@ -1880,7 +1805,6 @@
                 }
             }
 
-            // Lakukan sinkronisasi Firebase di latar belakang secara otomatis
             synchronizeDatabase();
         });
     </script>
