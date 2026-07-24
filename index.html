@@ -173,7 +173,7 @@
                         </div>
                         <div class="min-w-0">
                             <h4 class="text-xs font-bold text-white truncate">Surat Bukti</h4>
-                            <p class="text-[9px] sm:text-[10px] text-slate-400 truncate">Upload S, I, A, D</p>
+                            <p class="text-[9px] sm:text-[10px] text-slate-400 truncate">Kamera HP & File</p>
                         </div>
                     </div>
                 </div>
@@ -325,7 +325,6 @@
                 </div>
             </div>
 
-            <!-- KARTU STATISTIK DENGAN PERSENTASE KELAS UNTUK SISWA/WALI -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
                 <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-card border border-slate-100">
                     <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase">Total Kelas</p>
@@ -505,14 +504,15 @@
                             </div>
                         </div>
 
-                        <!-- TABEL ABSENSI: NAMA DAN KELAS DIDEKATKAN AGAR RAPI -->
+                        <!-- TABEL ABSENSI: KOLOM NAMA SISWA DAN KELAS DIPISAH DENGAN JARAK DEKAT & RAPI -->
                         <div class="overflow-x-auto w-full max-w-full p-2 custom-scroll">
-                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-[620px]">
+                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-[650px]">
                                 <thead class="bg-slate-50 border-b">
                                     <tr class="text-slate-400 text-[11px] sm:text-xs font-bold uppercase">
-                                        <th class="px-2 py-3 w-10 text-center">NO</th>
-                                        <th class="px-2 py-3 w-28">NIS</th>
-                                        <th class="px-2 py-3">NAMA SISWA & KELAS</th>
+                                        <th class="px-2 py-3 w-8 text-center">NO</th>
+                                        <th class="px-2 py-3 w-24">NIS</th>
+                                        <th class="px-2 py-3">NAMA SISWA</th>
+                                        <th class="px-1 py-3 text-center w-20">KELAS</th>
                                         <th class="px-3 py-3 text-center">STATUS KEHADIRAN</th>
                                         <th class="px-3 py-3">CATATAN KETERANGAN & BUKTI SURAT</th>
                                     </tr>
@@ -627,45 +627,15 @@
         </div>
     </template>
 
-    <!-- MODALS -->
-    <div id="manage-users-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[115] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border">
-            <div class="p-6 md:p-8 max-h-[90vh] overflow-y-auto space-y-6">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-extrabold text-slate-800">Kelola Password & Admin</h3>
-                    <button type="button" onclick="closeManageUsersModal()" class="text-slate-400 hover:text-slate-700 bg-slate-100 p-1.5 rounded-lg"><i class="ph-bold ph-x"></i></button>
-                </div>
-
-                <form id="form-change-admin-pass" onsubmit="saveAdminPassword(event)" class="space-y-3 bg-slate-50 p-4 rounded-2xl border">
-                    <h4 class="text-xs font-bold uppercase text-slate-700">Ganti Password Admin</h4>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Pilih Admin</label>
-                        <select id="admin-user-select" class="w-full bg-white border rounded-xl px-3 py-2 text-xs font-bold"></select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Password Baru</label>
-                        <input type="text" id="new-admin-password" required placeholder="Kata sandi baru..." class="w-full bg-white border rounded-xl px-3 py-2 text-xs">
-                    </div>
-                    <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs uppercase">Simpan Password Baru</button>
-                </form>
-
-                <form id="form-add-admin-user" onsubmit="addNewAdminUser(event)" class="space-y-3 bg-brand-50/50 p-4 rounded-2xl border border-brand-100">
-                    <h4 class="text-xs font-bold uppercase text-brand-900">+ Tambah Akun Admin Baru</h4>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nama Pengguna</label>
-                        <input type="text" id="add-admin-name" required placeholder="Contoh: Admin Kurikulum" class="w-full bg-white border rounded-xl px-3 py-2 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Username Login</label>
-                        <input type="text" id="add-admin-username" required placeholder="admin2" class="w-full bg-white border rounded-xl px-3 py-2 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Password</label>
-                        <input type="text" id="add-admin-password" required placeholder="Kata sandi..." class="w-full bg-white border rounded-xl px-3 py-2 text-xs">
-                    </div>
-                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase">Daftarkan Admin Baru</button>
-                </form>
+    <!-- MODAL MEMBUKA & PRATINJAU SURAT BUKTI (ADMIN, WALI, MAPEL, BP/BK) -->
+    <div id="doc-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[140] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-extrabold text-slate-800">Bukti Surat: <span id="doc-modal-student" class="text-brand-600">Nama</span></h3>
+                <button onclick="closeDocModal()" class="text-slate-400 p-1"><i class="ph-bold ph-x"></i></button>
             </div>
+            <div id="doc-modal-body" class="mb-4"></div>
+            <button onclick="closeDocModal()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl text-xs uppercase transition-colors">Tutup Jendela</button>
         </div>
     </div>
 
@@ -778,8 +748,6 @@
                     badge.className = "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-black bg-emerald-500 text-white shadow-md shadow-emerald-500/30 uppercase tracking-wider cursor-pointer hover:scale-105 active:scale-95 transition-transform animate-pulse-slow";
                     badgeText.innerHTML = '<span class="w-2 h-2 rounded-full bg-white animate-ping inline-block mr-1"></span>🔥 FIREBASE INSTANT';
                 }
-                
-                // Refilter dashboard persentase setelah sinkronisasi selesai
                 if (document.getElementById('stat-total-kelas')) initDashboardAdmin();
             }
         }
@@ -796,22 +764,143 @@
             };
         }
 
-        function markAllPresent() {
-            const classId = document.getElementById('input-absen-kelas').value;
-            const students = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
-            students.forEach(student => {
-                const radioH = document.querySelector(`input[name="status-${student.nis}"][value="H"]`);
-                if (radioH && !radioH.disabled) { radioH.checked = true; handleStatusChange(student.nis, 'H'); }
-            });
+        // UPLOAD FILE & KAMERA HANDLER
+        function handleFileUpload(event, nis) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) {
+                showMessage('File Terlalu Besar', 'Maksimal ukuran file bukti surat adalah 2 MB.');
+                event.target.value = ''; return;
+            }
+            const indicator = document.getElementById(`upload-indicator-${nis}`);
+            const nameSpan = document.getElementById(`file-name-${nis}`);
+            
+            if (indicator && nameSpan) {
+                nameSpan.textContent = file.name;
+                indicator.classList.remove('hidden-app');
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    window[`attached_file_${nis}`] = {
+                        name: file.name,
+                        size: (file.size / 1024).toFixed(1) + ' KB',
+                        type: file.type,
+                        data: e.target.result
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
-        function markAllHoliday() {
-            const classId = document.getElementById('input-absen-kelas').value;
-            const students = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
-            students.forEach(student => {
-                const radioL = document.querySelector(`input[name="status-${student.nis}"][value="L"]`);
-                if (radioL && !radioL.disabled) { radioL.checked = true; handleStatusChange(student.nis, 'L'); }
-            });
+        function removeAttachedFile(nis) {
+            const camInput = document.getElementById(`file-cam-${nis}`);
+            const docInput = document.getElementById(`file-doc-${nis}`);
+            if (camInput) camInput.value = '';
+            if (docInput) docInput.value = '';
+            
+            const indicator = document.getElementById(`upload-indicator-${nis}`);
+            if (indicator) indicator.classList.add('hidden-app');
+            delete window[`attached_file_${nis}`];
+        }
+
+        // PENILIKAN SURAT BUKTI BISA DIAKSES OLEH ADMIN, WALI, MAPEL, BP/BK
+        function viewAttachmentFromDailyForm(nis) {
+            const tempFile = window[`attached_file_${nis}`];
+            const student = MOCK_DB.students.find(s => s.nis.toString() === nis.toString());
+            const studentName = student ? student.name : nis;
+
+            if (tempFile) {
+                viewRealOrMockLetter(studentName, tempFile.name, tempFile.size, tempFile.data, tempFile.type);
+                return;
+            }
+            const dateVal = normalizeDateStr(document.getElementById('input-absen-date').value);
+            viewAttachmentFromRecap(nis, dateVal);
+        }
+
+        function viewAttachmentFromRecap(nis, dateVal) {
+            const student = MOCK_DB.students.find(s => s.nis.toString() === nis.toString());
+            const studentName = student ? student.name : nis;
+            const att = MOCK_DB.attendance.find(a => a.nis.toString() === nis.toString() && normalizeDateStr(a.date) === dateVal);
+            
+            if (att && (att.attachment || att.attachmentUrl)) {
+                const attObj = att.attachment || {};
+                viewRealOrMockLetter(
+                    studentName,
+                    attObj.name || att.attachmentName || 'Dokumen Surat Bukti',
+                    attObj.size || att.attachmentSize || 'Selesai',
+                    attObj.url || att.attachmentUrl || '',
+                    attObj.type || att.attachmentType || ''
+                );
+            } else {
+                showMessage('Info', 'Berkas surat bukti belum diunggah untuk siswa ini.');
+            }
+        }
+
+        function viewRealOrMockLetter(studentName, fileName, fileSize, fileUrl, fileType = '') {
+            window.currentActiveAttachment = {
+                studentName: studentName,
+                name: fileName || "Surat_Bukti",
+                size: fileSize || "Selesai",
+                url: fileUrl,
+                type: fileType
+            };
+
+            const isImage = (fileType && fileType.startsWith('image/')) || (fileUrl && (fileUrl.startsWith('data:image/') || fileUrl.match(/\.(jpeg|jpg|gif|png)$/i)));
+            
+            let previewHtml = '';
+            if (isImage) {
+                previewHtml = `
+                    <div class="w-full bg-slate-50 border rounded-2xl p-2 text-center mb-4 min-h-[160px] flex items-center justify-center overflow-hidden">
+                        <img src="${fileUrl}" class="max-h-60 mx-auto rounded-xl shadow-md object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<p class=\'text-xs text-slate-400 font-bold\'>Pratinjau gambar tidak tersedia. Klik tombol unduh di bawah.</p>'"/>
+                    </div>
+                `;
+            } else {
+                previewHtml = `
+                    <div class="w-full bg-slate-50 border rounded-2xl p-6 text-center mb-4">
+                        <i class="ph-fill ph-file-text text-5xl text-brand-600 mb-2"></i>
+                        <h4 class="font-bold text-xs text-slate-800 break-all">${fileName}</h4>
+                        <p class="text-[10px] text-slate-400 mt-0.5">${fileSize}</p>
+                    </div>
+                `;
+            }
+
+            const actionButtons = `
+                <div class="flex gap-2 mt-4">
+                    <button type="button" onclick="triggerActiveAttachmentDownload()" class="flex-1 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs uppercase shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                        <i class="ph-bold ph-download-simple text-base"></i> Unduh Berkas Langsung
+                    </button>
+                </div>
+            `;
+
+            showDocumentModal(studentName, previewHtml + actionButtons);
+        }
+
+        function triggerActiveAttachmentDownload() {
+            const attachment = window.currentActiveAttachment;
+            if (!attachment || !attachment.url) {
+                showMessage('Gagal', 'Tidak ada berkas aktif untuk diunduh.');
+                return;
+            }
+
+            const a = document.createElement('a');
+            a.href = attachment.url;
+            a.download = attachment.name || "Surat_Bukti";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function showDocumentModal(studentName, contentHtml) {
+            const modal = document.getElementById('doc-modal');
+            document.getElementById('doc-modal-student').textContent = studentName;
+            document.getElementById('doc-modal-body').innerHTML = contentHtml;
+            modal.classList.remove('hidden-app');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeDocModal() {
+            const modal = document.getElementById('doc-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden-app'), 300);
         }
 
         // LOGIN ENGINE
@@ -951,7 +1040,6 @@
             }
         }
 
-        // DASHBOARD DENGAN HITUNGAN PERSENTASE KELAS DAN JURUSAN
         function initDashboardAdmin() {
             if (currentUser && currentUser.role === 'admin') {
                 const btnWrap = document.getElementById('admin-user-mgmt-btn-wrapper');
@@ -972,7 +1060,6 @@
             document.getElementById('stat-total-siswa').textContent = classStudents.length;
             document.getElementById('stat-total-wali').textContent = MOCK_DB.teachers.length;
 
-            // Hitung Rasio Kehadiran Kelas / Sekolah
             const studentNises = classStudents.map(s => s.nis.toString());
             let h = 0, i = 0, s = 0, a = 0, dVal = 0, l = 0;
             MOCK_DB.attendance.forEach(rec => {
@@ -994,7 +1081,6 @@
             if (statPctLabel) statPctLabel.textContent = isIndividualClass ? `Kehadiran Kelas ${currentUser.classId}` : "Rasio Kehadiran Sekolah";
             if (statPctVal) statPctVal.textContent = overallPct + "%";
 
-            // Render Chart Kumulatif
             const ctx = document.getElementById('weeklyCombinedChart');
             if (ctx) {
                 new Chart(ctx, {
@@ -1011,7 +1097,6 @@
                 });
             }
 
-            // Hitung Persentase & Jumlah Siswa per Jurusan (Program Keahlian)
             const jList = document.getElementById('dashboard-jurusan-list');
             if (jList) {
                 jList.innerHTML = MOCK_DB.departments.map(dept => {
@@ -1174,7 +1259,7 @@
             }
         }
 
-        // PEMUATAN FORM ABSENSI (KUNCI OTOMATIS TANGGAL BESOK & SATERUSNYA)
+        // FORM ABSEN DENGAN KAMERA, UPLOAD FILE HP & KOLOM NAMA-KELAS DIPISAH LALU DIDEKATKAN
         function loadStudentAttendanceForm() {
             const classId = document.getElementById('input-absen-kelas').value;
             const selectedDateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
@@ -1189,16 +1274,15 @@
 
             const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
             if (classStudents.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 font-semibold">Tidak ada siswa terdaftar</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-semibold">Tidak ada siswa terdaftar</td></tr>`;
                 submitBar.classList.add('hidden-app'); return;
             }
 
-            // KONTROL PENGUNCIAN: HARI BESOK & MENDATANG SELALU DITUTUP
             const isFutureDate = selectedDateStr > todayStr;
             const isPastDate = selectedDateStr < todayStr;
             const isClosedByAdmin = MOCK_DB.dailyLocks && MOCK_DB.dailyLocks[selectedDateStr] === true;
             
-            let isLocked = isFutureDate; // Hari besok & seterusnya wajib terkunci
+            let isLocked = isFutureDate;
             if (currentUser.role !== 'admin') {
                 isLocked = isFutureDate || isPastDate || isClosedByAdmin || currentUser.role === 'guru_bp';
             }
@@ -1220,7 +1304,6 @@
                 }
             }
 
-            // BAR KONTROL ADMIN
             const resetBar = document.getElementById('admin-reset-bar');
             if (resetBar) resetBar.classList.toggle('hidden-app', currentUser.role !== 'admin');
 
@@ -1257,11 +1340,17 @@
                 { val: 'L', label: 'L', desc: 'Libur', active: 'bg-sky-500 text-white border-sky-500 shadow-md scale-105', base: 'hover:bg-sky-50 text-sky-600 border-sky-200' }
             ];
 
-            // TAMPILAN KELAS DAN NAMA SISWA DIDEKATKAN SECARA RAPI
             const rowsHtml = classStudents.map((student, idx) => {
                 const existing = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === selectedDateStr);
                 const status = existing ? existing.status : '';
                 const remark = existing ? (existing.remark || '') : '';
+                const tempFile = window[`attached_file_${student.nis}`];
+                
+                let attachName = '';
+                if (tempFile) attachName = tempFile.name;
+                else if (existing && (existing.attachment || existing.attachmentUrl)) {
+                    attachName = (existing.attachment ? existing.attachment.name : existing.attachmentName) || 'Surat Bukti';
+                }
 
                 let radioHtml = `<div class="flex items-center gap-1 justify-center">`;
                 statuses.forEach(st => {
@@ -1282,13 +1371,34 @@
                     <tr class="hover:bg-slate-50 transition-colors">
                         <td class="px-2 py-3 font-bold text-slate-400 text-center">${idx + 1}</td>
                         <td class="px-2 py-3 font-mono font-bold text-slate-700">${student.nis}</td>
-                        <td class="px-2 py-3 min-w-[160px]">
-                            <div class="font-extrabold text-slate-800 text-xs sm:text-sm leading-snug">${student.name}</div>
-                            <div class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded inline-block mt-0.5">${student.classId}</div>
-                        </td>
+                        <td class="px-2 py-3 font-extrabold text-slate-800 text-xs sm:text-sm truncate max-w-[180px]">${student.name}</td>
+                        <td class="px-1 py-3 text-center"><span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded inline-block">${student.classId}</span></td>
                         <td class="px-3 py-3 text-center">${radioHtml}</td>
-                        <td class="px-3 py-3 min-w-[200px]">
-                            <input type="text" id="ket-input-${student.nis}" value="${remark}" ${!isLocked ? '' : 'disabled'} placeholder="Catatan Hadir / Alasan S, I, A, D..." class="w-full bg-slate-50 border rounded-xl px-3 py-1.5 text-xs font-semibold">
+                        <td class="px-3 py-3 min-w-[220px]">
+                            <div id="ket-container-${student.nis}" class="flex flex-col gap-1.5">
+                                <input type="text" id="ket-input-${student.nis}" value="${remark}" ${!isLocked ? '' : 'disabled'} placeholder="Catatan / Alasan S, I, A, D..." class="w-full bg-slate-50 border rounded-xl px-2.5 py-1 text-xs font-semibold">
+                                
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <!-- AMBIL DARI KAMERA HP -->
+                                    <label class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-bold px-2 py-0.5 rounded-lg text-[10px] flex items-center gap-1 active:scale-95 transition-transform" title="Ambil Foto Kamera HP">
+                                        <i class="ph-bold ph-camera"></i> Kamera
+                                        <input type="file" id="file-cam-${student.nis}" accept="image/*" capture="environment" onchange="handleFileUpload(event, '${student.nis}')" class="hidden" ${isLocked ? 'disabled' : ''}>
+                                    </label>
+                                    
+                                    <!-- PILIH DARI FILE HP -->
+                                    <label class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-slate-100 hover:bg-slate-200 border text-slate-600 font-bold px-2 py-0.5 rounded-lg text-[10px] flex items-center gap-1 active:scale-95 transition-transform" title="Pilih File HP">
+                                        <i class="ph-bold ph-folder"></i> File/PDF
+                                        <input type="file" id="file-doc-${student.nis}" accept="image/*,application/pdf" onchange="handleFileUpload(event, '${student.nis}')" class="hidden" ${isLocked ? 'disabled' : ''}>
+                                    </label>
+
+                                    <!-- INDIKATOR SURAT BERHASIL DIUNGGAH / ADA DI DATABASE -->
+                                    <div id="upload-indicator-${student.nis}" class="${attachName ? '' : 'hidden-app'} flex items-center gap-1 bg-brand-50 text-brand-800 border px-1.5 py-0.5 rounded text-[10px]">
+                                        <span id="file-name-${student.nis}" class="truncate max-w-[80px]">${attachName}</span>
+                                        <button type="button" onclick="viewAttachmentFromDailyForm('${student.nis}')" class="text-brand-600 font-bold hover:underline ml-0.5" title="Lihat/Unduh Surat"><i class="ph-bold ph-eye"></i> Lihat</button>
+                                        ${!isLocked ? `<button type="button" onclick="removeAttachedFile('${student.nis}')" class="text-rose-500 font-bold hover:text-rose-700 ml-0.5" title="Hapus Berkas"><i class="ph-bold ph-x"></i></button>` : ''}
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -1385,10 +1495,13 @@
                 const status = radioChecked.value;
                 const remarkInput = document.getElementById(`ket-input-${student.nis}`);
                 const remark = remarkInput ? remarkInput.value.trim() : '';
+                const tempFile = window[`attached_file_${student.nis}`];
+
+                const existing = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === dateStr);
 
                 recordsToSave.push({
                     nis: student.nis, date: dateStr, month: dateStr.slice(0, 7),
-                    status, remark, attachment: null
+                    status, remark, attachment: tempFile || (existing ? existing.attachment : null)
                 });
             });
 
@@ -1446,7 +1559,7 @@
             document.getElementById(`filter-wrapper-${rekapType}`).classList.remove('hidden-app');
         }
 
-        // RENDER REKAPITULASI (HARIAN, MINGGUAN & BULANAN)
+        // RENDER REKAPITULASI DENGAN INDIKATOR SURAT BUKTI BISA DILIHAT/DIUNDUH
         function renderAttendanceRecap() {
             const classId = document.getElementById('rekap-absen-kelas').value;
             const type = document.getElementById('rekap-type').value;
@@ -1480,7 +1593,7 @@
                 const month = parseInt(monthVal.split('-')[1]);
                 const daysInMonth = new Date(year, month, 0).getDate();
 
-                let headerHtml = `<tr><th class="px-2.5 py-2 text-center">No</th><th class="px-2.5 py-2 text-left">NIS</th><th class="px-3 py-2 text-left">Nama Siswa & Kelas</th>`;
+                let headerHtml = `<tr><th class="px-2.5 py-2 text-center">No</th><th class="px-2.5 py-2 text-left">NIS</th><th class="px-2 py-2 text-left">Nama Siswa</th><th class="px-1 py-2 text-center w-16">Kelas</th>`;
                 for (let d = 1; d <= daysInMonth; d++) headerHtml += `<th class="px-1 py-2 text-center text-[9px]">${d}</th>`;
                 headerHtml += `<th class="bg-emerald-50 text-emerald-700">H</th><th class="bg-amber-50 text-amber-700">I</th><th class="bg-blue-50 text-blue-700">S</th><th class="bg-rose-50 text-rose-700">A</th><th class="bg-purple-50 text-purple-700">D</th><th class="bg-sky-50 text-sky-700">L</th><th>%</th></tr>`;
                 headerEl.innerHTML = headerHtml;
@@ -1510,10 +1623,8 @@
                         <tr>
                             <td class="px-2 py-1 text-center">${idx + 1}</td>
                             <td class="px-2 py-1 font-mono font-bold">${student.nis}</td>
-                            <td class="px-2 py-1">
-                                <div class="font-extrabold text-slate-800 text-xs">${student.name}</div>
-                                <div class="text-[9px] font-bold text-emerald-700">${student.classId}</div>
-                            </td>
+                            <td class="px-2 py-1 font-extrabold text-slate-800 text-xs">${student.name}</td>
+                            <td class="px-1 py-1 text-center"><span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded">${student.classId}</span></td>
                             ${daysHtml}
                             <td class="font-bold text-emerald-700 text-center">${rH}</td>
                             <td class="font-bold text-amber-700 text-center">${rI}</td>
@@ -1531,7 +1642,7 @@
                 const startDate = new Date(startWeekVal);
                 document.getElementById('print-month-label').textContent = `Minggu ${startWeekVal}`;
 
-                let headerHtml = `<tr><th class="px-2.5 py-2 text-center">No</th><th class="px-2.5 py-2 text-left">NIS</th><th class="px-3 py-2 text-left">Nama Siswa & Kelas</th>`;
+                let headerHtml = `<tr><th class="px-2.5 py-2 text-center">No</th><th class="px-2.5 py-2 text-left">NIS</th><th class="px-2 py-2 text-left">Nama Siswa</th><th class="px-1 py-2 text-center w-16">Kelas</th>`;
                 const dateCols = [];
                 for (let d = 0; d < 7; d++) {
                     const currentDay = new Date(startDate);
@@ -1568,10 +1679,8 @@
                         <tr>
                             <td class="px-2 py-1 text-center">${idx + 1}</td>
                             <td class="px-2 py-1 font-mono font-bold">${student.nis}</td>
-                            <td class="px-2 py-1">
-                                <div class="font-extrabold text-slate-800 text-xs">${student.name}</div>
-                                <div class="text-[9px] font-bold text-emerald-700">${student.classId}</div>
-                            </td>
+                            <td class="px-2 py-1 font-extrabold text-slate-800 text-xs">${student.name}</td>
+                            <td class="px-1 py-1 text-center"><span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded">${student.classId}</span></td>
                             ${daysHtml}
                             <td class="font-bold text-emerald-700 text-center">${rH}</td>
                             <td class="font-bold text-amber-700 text-center">${rI}</td>
@@ -1587,30 +1696,33 @@
             } else if (type === 'daily') {
                 const dateVal = document.getElementById('rekap-absen-date').value || normalizeDateStr(new Date());
                 document.getElementById('print-month-label').textContent = dateVal;
-                headerEl.innerHTML = `<tr><th class="px-3 py-2 w-10 text-center">No</th><th class="px-3 py-2 w-24">NIS</th><th class="px-3 py-2 text-left">Nama Siswa & Kelas</th><th class="px-3 py-2 text-center">Status</th><th class="px-3 py-2">Catatan Keterangan</th></tr>`;
+                headerEl.innerHTML = `<tr><th class="px-3 py-2 w-10 text-center">No</th><th class="px-3 py-2 w-24">NIS</th><th class="px-3 py-2 text-left">Nama Siswa</th><th class="px-2 py-2 text-center w-20">Kelas</th><th class="px-3 py-2 text-center">Status</th><th class="px-3 py-2">Catatan Keterangan</th><th class="px-3 py-2 text-center no-print">Surat Bukti</th></tr>`;
                 
                 tbody.innerHTML = classStudents.map((student, idx) => {
                     const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === dateVal);
                     const statusText = att ? getStatusBadge(att.status) : '-';
                     const remarkText = att ? (att.remark || '-') : '-';
+                    const hasAttach = att && (att.attachment || att.attachmentUrl || att.attachmentName);
+                    const attachBtn = hasAttach 
+                        ? `<button type="button" onclick="viewAttachmentFromRecap('${student.nis}', '${dateVal}')" class="text-brand-600 font-bold bg-brand-50 border border-brand-200 px-2 py-0.5 rounded-lg text-xs active:scale-95 transition-transform"><i class="ph-bold ph-file-text"></i> Lihat / Unduh</button>` 
+                        : '-';
 
                     return `
                         <tr>
                             <td class="px-3 py-2 text-center">${idx + 1}</td>
                             <td class="px-3 py-2 font-mono font-bold">${student.nis}</td>
-                            <td class="px-3 py-2">
-                                <div class="font-extrabold text-slate-800 text-xs">${student.name}</div>
-                                <div class="text-[9px] font-bold text-emerald-700">${student.classId}</div>
-                            </td>
+                            <td class="px-3 py-2 font-extrabold text-slate-800 text-xs">${student.name}</td>
+                            <td class="px-2 py-2 text-center"><span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">${student.classId}</span></td>
                             <td class="px-3 py-2 text-center font-extrabold">${statusText}</td>
                             <td class="px-3 py-2 text-xs">${remarkText}</td>
+                            <td class="px-3 py-2 text-center no-print">${attachBtn}</td>
                         </tr>
                     `;
                 }).join('');
             }
         }
 
-        // EKSPOR EXCEL MATRIKS KELAS, NAMA & NIS
+        // EKSPOR EXCEL
         function exportToExcel() {
             const classId = document.getElementById('rekap-absen-kelas').value;
             const type = document.getElementById('rekap-type').value;
