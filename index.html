@@ -2,23 +2,15 @@
 <html lang="id" class="w-full max-w-full overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
-    <!-- DUKUNGAN ZOOM FLEXIBLE & TAMPILAN PROPOSIONAL DI ANDROID APK & IPHONE -->
+    <!-- DUKUNGAN ZOOM FLEXIBLE & PINCH ZOOM DI ANDROID APK & IPHONE IOS -->
     <meta name="viewport" content="width=device-width, initial-scale=0.85, minimum-scale=0.3, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <title>Sistem Absensi Modern - SMKN 5 Pangalengan</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- SheetJS (XLSX) -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: { 
@@ -62,6 +54,15 @@
         }
     </script>
 
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS (XLSX) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
     <style>
         html, body { 
             background-color: #f8fafc; color: #334155; 
@@ -70,9 +71,39 @@
             -webkit-tap-highlight-color: transparent;
             -webkit-overflow-scrolling: touch;
         }
+
+        .dark body, .dark #app-view, .dark main {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+        }
+
+        .dark .bg-white {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+            border-color: #334155 !important;
+        }
+
+        .dark .bg-slate-50, .dark .bg-slate-50\/50 {
+            background-color: #0f172a !important;
+            color: #cbd5e1 !important;
+        }
+
+        .dark .text-slate-800, .dark .text-slate-900, .dark .text-slate-700 {
+            color: #f1f5f9 !important;
+        }
+
+        .dark .border {
+            border-color: #334155 !important;
+        }
+
+        .dark input, .dark select {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+            border-color: #475569 !important;
+        }
         
         .hidden-app { display: none !important; }
-        .touch-pill { min-height: 38px; min-width: 38px; }
+        .touch-pill { min-height: 36px; min-width: 36px; }
 
         .glass {
             background: rgba(255, 255, 255, 0.88);
@@ -287,7 +318,17 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+                    <!-- SAKELAR THEME DARK / LIGHT MODE -->
+                    <button type="button" onclick="toggleDarkMode()" id="theme-toggle-btn" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border text-xs font-bold active:scale-95 transition-all" title="Ganti Mode Terang/Gelap">
+                        <i class="ph-bold ph-moon-stars text-sm"></i>
+                    </button>
+
+                    <!-- TOMBOL REFRESH DATA -->
+                    <button type="button" onclick="synchronizeDatabase(true)" class="flex items-center gap-1 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-xl shadow-xs transition-all" title="Refresh Data Firebase">
+                        <i class="ph-bold ph-arrows-counter-clockwise text-xs"></i> <span class="hidden sm:inline">Refresh</span>
+                    </button>
+
                     <div id="api-loading-spinner" class="hidden text-brand-600 animate-spin mr-0.5"><i class="ph-bold ph-spinner-gap text-lg"></i></div>
                     
                     <div id="db-status-badge" onclick="openDiagnosticModal()" class="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-black bg-emerald-500 text-white shadow-md shadow-emerald-500/30 uppercase tracking-wider cursor-pointer hover:scale-105 active:scale-95 transition-transform animate-pulse-slow">
@@ -345,6 +386,7 @@
                 </div>
             </div>
 
+            <!-- REKAPITULASI DUA KOLOM DENGAN PERSENTASE PER-KELAS & JURUSAN -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
                 <div class="lg:col-span-2 bg-white rounded-2xl shadow-card border border-slate-100 p-4 sm:p-6 flex flex-col min-w-0">
                     <h3 class="text-xs sm:text-base font-extrabold text-slate-800 mb-3 sm:mb-4" id="dashboard-chart-title">Kehadiran Kumulatif Sekolah</h3>
@@ -352,10 +394,17 @@
                         <canvas id="weeklyCombinedChart"></canvas>
                     </div>
                 </div>
+
                 <div class="bg-white rounded-2xl shadow-card border border-slate-100 p-4 sm:p-6 flex flex-col min-w-0">
                     <h3 class="text-xs sm:text-base font-extrabold text-slate-800 mb-3 sm:mb-4">Program Keahlian & Persentase Jurusan</h3>
-                    <div class="space-y-2.5 sm:space-y-3 flex-1 overflow-y-auto custom-scroll max-h-[300px]" id="dashboard-jurusan-list"></div>
+                    <div class="space-y-2.5 sm:space-y-3 flex-1 overflow-y-auto custom-scroll max-h-[250px]" id="dashboard-jurusan-list"></div>
                 </div>
+            </div>
+
+            <!-- REKAPITULASI KARTU PERSENTASE KEHADIRAN PER-KELAS -->
+            <div class="bg-white rounded-2xl shadow-card border border-slate-100 p-4 sm:p-6">
+                <h3 class="text-xs sm:text-base font-extrabold text-slate-800 mb-3 sm:mb-4"><i class="ph-bold ph-chalkboard text-brand-600"></i> Rekapitulasi Persentase Kehadiran Per-Kelas</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3" id="dashboard-class-recap-grid"></div>
             </div>
         </div>
     </template>
@@ -505,7 +554,7 @@
                             </div>
                         </div>
 
-                        <!-- TABEL ABSENSI: DIBUAT DENGAN SKALA PRESISI DEKAT & RAPI -->
+                        <!-- TABEL ABSENSI: NAMA & KELAS DIPISAH TAPI BERJARAK DEKAT -->
                         <div class="overflow-x-auto w-full max-w-full p-1 sm:p-2 custom-scroll">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[580px]">
                                 <thead class="bg-slate-50 border-b">
@@ -515,7 +564,7 @@
                                         <th class="px-2 py-2.5">NAMA SISWA</th>
                                         <th class="px-1 py-2.5 text-center w-16">KELAS</th>
                                         <th class="px-2 py-2.5 text-center">STATUS KEHADIRAN</th>
-                                        <th class="px-2 py-2.5">CATATAN & SURAT BUKTI</th>
+                                        <th class="px-2 py-2.5">CATATAN KETERANGAN & BUKTI SURAT</th>
                                     </tr>
                                 </thead>
                                 <tbody id="bulk-absen-table-body" class="text-xs divide-y divide-slate-100"></tbody>
@@ -640,6 +689,23 @@
         </div>
     </div>
 
+    <!-- MODAL GANTI PASSWORD DIRI SENDIRI (SEMUA HAK AKSES) -->
+    <div id="change-self-password-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[116] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base font-extrabold text-slate-800">🔑 Ganti Password Saya</h3>
+                <button type="button" onclick="closeChangePasswordModal()" class="text-slate-400 p-1"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <form id="form-self-pass" onsubmit="saveSelfPassword(event)" class="space-y-3">
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Password Baru</label>
+                    <input type="text" id="self-new-password" required placeholder="Masukkan kata sandi baru..." class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase transition-all">Simpan Kata Sandi</button>
+            </form>
+        </div>
+    </div>
+
     <div id="msg-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[130] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center">
             <h3 id="msg-title" class="text-lg font-extrabold text-slate-800 mb-1">Pemberitahuan</h3>
@@ -653,6 +719,26 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbyeeWNsAMKaPxVPYbKh7YRkVT-ADxTcrx1dRb85MjlfNKSrb4W5ZXeIdfYV4IvduQip/exec";
         let currentUser = null;
         let activeAbsenTab = 'isi';
+
+        // DARK MODE TOGGLE
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const btn = document.getElementById('theme-toggle-btn');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme_mode', 'light');
+                if (btn) btn.innerHTML = `<i class="ph-bold ph-moon-stars text-sm"></i>`;
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme_mode', 'dark');
+                if (btn) btn.innerHTML = `<i class="ph-bold ph-sun text-sm text-gold-400"></i>`;
+            }
+        }
+
+        // AMBIL STATUS THEME TERSIMPAN
+        if (localStorage.getItem('theme_mode') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
 
         function toggleLoginPassword() {
             const passInput = document.getElementById('login-password');
@@ -740,7 +826,7 @@
             }
         }
 
-        async function synchronizeDatabase() {
+        async function synchronizeDatabase(manualNotify = false) {
             const badge = document.getElementById('db-status-badge');
             const badgeText = document.getElementById('db-status-text');
             const spinner = document.getElementById('api-loading-spinner');
@@ -764,6 +850,7 @@
                     badgeText.innerHTML = '<span class="w-2 h-2 rounded-full bg-white animate-ping inline-block mr-1"></span>🔥 FIREBASE INSTANT';
                 }
                 if (document.getElementById('stat-total-kelas')) initDashboardAdmin();
+                if (manualNotify) showMessage('Sukses', 'Data berhasil disinkronkan dari cloud.');
             }
         }
 
@@ -777,6 +864,21 @@
                 modal.classList.add('opacity-0');
                 setTimeout(() => modal.classList.add('hidden-app'), 300);
             };
+        }
+
+        // TOMBOL PINTAR KESIANGAN & BOLOS (BOLOS OTOMATIS MERUBAH STATUS KE ALPA)
+        function setQuickRemark(nis, remarkText, isBolos = false) {
+            const input = document.getElementById(`ket-input-${nis}`);
+            if (input) {
+                input.value = remarkText;
+            }
+            if (isBolos) {
+                const radioA = document.querySelector(`input[name="status-${nis}"][value="A"]`);
+                if (radioA && !radioA.disabled) {
+                    radioA.checked = true;
+                    handleStatusChange(nis, 'A');
+                }
+            }
         }
 
         // AUTO-COMPRESS GAMBAR FOTO KAMERA HP DENGAN UKURAN TANPA BATAS
@@ -860,7 +962,6 @@
             delete window[`attached_file_${nis}`];
         }
 
-        // LIHAT BUKTI SURAT (LANGSUNG TAMPIL TANPA PERLU LOG IN EMAIL)
         function viewAttachmentFromDailyForm(nis) {
             const tempFile = window[`attached_file_${nis}`];
             const student = MOCK_DB.students.find(s => s.nis.toString() === nis.toString());
@@ -932,7 +1033,6 @@
             showDocumentModal(studentName, previewHtml + actionButtons);
         }
 
-        // UNDUH BERKAS SECARA LANGSUNG TANPA MINTA PERMISSION
         function downloadAttachmentDirect(nis) {
             const tempFile = window[`attached_file_${nis}`];
             const dateVal = normalizeDateStr(document.getElementById('input-absen-date').value);
@@ -1006,6 +1106,31 @@
             const modal = document.getElementById('doc-modal');
             modal.classList.add('opacity-0');
             setTimeout(() => modal.classList.add('hidden-app'), 300);
+        }
+
+        function openChangePasswordModal() {
+            const modal = document.getElementById('change-self-password-modal');
+            modal.classList.remove('hidden-app');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeChangePasswordModal() {
+            const modal = document.getElementById('change-self-password-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden-app'), 300);
+        }
+
+        async function saveSelfPassword(e) {
+            e.preventDefault();
+            const newPass = document.getElementById('self-new-password').value.trim();
+            if (!newPass) return;
+
+            const id = currentUser.id || currentUser.nip || currentUser.nis || currentUser.username;
+            currentUser.pass = newPass;
+            localStorage.setItem('smkn5_user_session', JSON.stringify(currentUser));
+            showMessage('Sukses', 'Kata sandi Anda berhasil diperbarui.');
+            closeChangePasswordModal();
+            callCloudAPI("updateSelfPassword", { role: currentUser.role, id, pass: newPass });
         }
 
         // LOGIN ENGINE
@@ -1145,6 +1270,7 @@
             }
         }
 
+        // DASHBOARD DENGAN REKAPITULASI PERSENTASE KEHADIRAN PER-KELAS
         function initDashboardAdmin() {
             if (currentUser && currentUser.role === 'admin') {
                 const btnWrap = document.getElementById('admin-user-mgmt-btn-wrapper');
@@ -1232,6 +1358,35 @@
                                 <span>Total: <b>${deptStudents.length} Siswa</b></span>
                                 <span>${deptClasses.length} Kelas</span>
                             </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // HITUNG DAN RENDER PERSENTASE KEHADIRAN PER-KELAS
+            const classGrid = document.getElementById('dashboard-class-recap-grid');
+            if (classGrid) {
+                classGrid.innerHTML = MOCK_DB.classes.map(cls => {
+                    const clsStudents = MOCK_DB.students.filter(s => s.classId === cls.id);
+                    const clsNises = clsStudents.map(s => s.nis.toString());
+                    let cH = 0, cI = 0, cS = 0, cA = 0, cD = 0;
+                    MOCK_DB.attendance.forEach(rec => {
+                        if (clsNises.includes(rec.nis.toString())) {
+                            if (rec.status === 'H') cH++;
+                            else if (rec.status === 'I') cI++;
+                            else if (rec.status === 'S') cS++;
+                            else if (rec.status === 'A') cA++;
+                            else if (rec.status === 'D') cD++;
+                        }
+                    });
+                    const cTotal = cH + cI + cS + cA + cD;
+                    const cPct = cTotal > 0 ? Math.round(((cH + cD) / cTotal) * 100) : 100;
+
+                    return `
+                        <div class="p-3 bg-slate-50 border rounded-2xl flex flex-col justify-between items-center text-center shadow-xs">
+                            <span class="text-xs font-extrabold text-slate-800 truncate w-full">${cls.name}</span>
+                            <span class="text-base font-black text-brand-600 my-1">${cPct}%</span>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase">${clsStudents.length} Siswa</span>
                         </div>
                     `;
                 }).join('');
@@ -1364,7 +1519,7 @@
             }
         }
 
-        // FORM ABSEN DENGAN TOMBOL UPLOAD RAPI, PREVIEW DIRECT & UNDUH INSTAN
+        // FORM ABSEN DENGAN TOMBOL PINTAR KESIANGAN & BOLOS
         function loadStudentAttendanceForm() {
             const classId = document.getElementById('input-absen-kelas').value;
             const selectedDateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
@@ -1484,6 +1639,12 @@
                                 <input type="text" id="ket-input-${student.nis}" value="${remark}" ${!isLocked ? '' : 'disabled'} placeholder="Catatan / Alasan S, I, A, D..." class="w-full bg-slate-50 border rounded-xl px-2.5 py-1 text-[11px] font-semibold">
                                 
                                 <div class="flex items-center gap-1.5 flex-wrap">
+                                    <!-- TOMBOL PINTAR KESIANGAN & BOLOS -->
+                                    ${!isLocked ? `
+                                        <button type="button" onclick="setQuickRemark('${student.nis}', 'Kesiangan')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-1.5 py-0.5 rounded text-[9px] active:scale-95 transition-transform">+ Kesiangan</button>
+                                        <button type="button" onclick="setQuickRemark('${student.nis}', 'Bolos', true)" class="bg-rose-100 hover:bg-rose-200 text-rose-900 font-bold px-1.5 py-0.5 rounded text-[9px] active:scale-95 transition-transform">+ Bolos (Alpa)</button>
+                                    ` : ''}
+
                                     <!-- KAMERA HP -->
                                     <label class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all" title="Ambil Foto Kamera HP">
                                         <i class="ph-bold ph-camera text-xs"></i> Kamera
@@ -1673,7 +1834,6 @@
             document.getElementById(`filter-wrapper-${rekapType}`).classList.remove('hidden-app');
         }
 
-        // RENDER REKAPITULASI DENGAN INDIKATOR SURAT
         function renderAttendanceRecap() {
             const classId = document.getElementById('rekap-absen-kelas').value;
             const type = document.getElementById('rekap-type').value;
