@@ -1427,7 +1427,391 @@
             showMessage('Sukses', `Pengguna baru [${name}] berhasil ditambahkan ke database.`);
             callCloudAPI("addNewUserByAdmin", { role, uid, name, pass, db: MOCK_DB });
         }
+// ==============================================
+// PERBAIKAN 2: GANTI PASSWORD - SINKRON REALTIME
+// ==============================================
 
+async function saveSelfPassword(e) {
+    e.preventDefault();
+    const newPass = document.getElementById('self-new-password').value.trim();
+    if (!newPass) return;
+
+    const id = (currentUser.nis || currentUser.nip || currentUser.username || currentUser.id).toString();
+    currentUser.pass = newPass;
+    localStorage.setItem('smkn5_user_session', JSON.stringify(currentUser));
+
+    let updateSuccess = false;
+    
+    if (currentUser.role === 'admin') {
+        const adm = MOCK_DB.admins.find(a => a.username.toString() === id);
+        if (adm) adm.pass = newPass;
+    } else if (currentUser.role === 'siswa') {
+        const st = MOCK_DB.students.find(s => s.nis.toString() === id);
+        if (st) st.pass = newPass;
+    } else {
+        const tr = MOCK_DB.teachers.find(t => t.nip.toString() === id);
+        if (tr) tr.pass = newPass;
+    }
+    
+    saveToStorage();
+    document.getElementById('self-new-password').value = '';
+    closeChangePasswordModal();
+    
+    // SINKRON KE CLOUD DENGAN WAIT
+    try {
+        const result = await callCloudAPI("updateSelfPassword", { 
+            role: currentUser.role, 
+            id, 
+            pass: newPass 
+        });
+        if (result && result.success) {
+            showMessage('Sukses', 'Kata sandi Anda berhasil diperbarui dan tersinkron ke cloud.');
+            await synchronizeDatabase(true);
+        } else {
+            showMessage('Info', 'Kata sandi diperbarui secara lokal. Sinkronisasi cloud akan dilakukan otomatis.');
+        }
+    } catch (err) {
+        showMessage('Info', 'Kata sandi diperbarui secara lokal. Sinkronisasi cloud akan dilakukan otomatis.');
+    }
+}
+
+// ==============================================
+// PERBAIKAN 3: KELOLA PASSWORD AKUN + TAMBAH USER
+// ==============================================
+
+// Tambahan untuk menambah pengguna baru (Kepala Sekolah, Wakasek)
+function openAddUserModal() {
+    const modal = document.getElementById('modal-add-user');
+    if (!modal) {
+        // Buat modal jika belum ada
+        const modalHTML = `
+            <div id="modal-add-user" class="hidden-app fixed inset-0 bg-slate-950/60 z-[121] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
+                <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <h3 class="text-base font-extrabold text-slate-800">👤 Tambah Pengguna Baru</h3>
+                        <button type="button" onclick="closeAddUserModal()" class="text-slate-400 p-1"><i class="ph-bold ph-x"></i></button>
+                    </div>
+                    <form id="form-add-user" onsubmit="saveNewUser(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Nama Lengkap</label>
+                            <input type="text" id="new-user-name" required placeholder="Nama Lengkap" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Username / ID</label>
+                            <input type="text" id="new-user-username" required placeholder="Username Login" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Peran / Role</label>
+                            <select id="new-user-role" required class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold">
+                                <option value="admin">Administrator</option>
+                                <option value="wali">Wali Kelas</option>
+                                <option value="guru_bp">Guru BP/BK</option>
+                                <option value="guru_mapel">Guru Mata Pelajaran</option>
+                                <option value="siswa">Siswa / Seksi Absen</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Password</label>
+                            <input type="text" id="new-user-pass" required placeholder="Password Awal" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
+                        </div>
+                        <div id="new-user-class-wrapper" class="hidden-app">
+                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Kelas (untuk Wali/Siswa)</label>
+                            <select id="new-user-class" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold">
+                                ${MOCK_DB.classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase transition-all">Tambah Pengguna</button>
+                    </form>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Event listener untuk role change
+        document.getElementById('new-user-role').addEventListener('change', function() {
+            const wrapper = document.getElementById('new-user-class-wrapper');
+            if (this.value === 'wali' || this.value === 'siswa') {
+                wrapper.classList.remove('hidden-app');
+            } else {
+                wrapper.classList.add('hidden-app');
+            }
+        });
+    }
+    
+    document.getElementById('new-user-pass').value = '123456';
+    const modal = document.getElementById('modal-add-user');
+    modal.classList.remove('hidden-app');
+    setTimeout(() => modal.classList.remove('opacity-0'), 10);
+}
+
+function closeAddUserModal() {
+    const modal = document.getElementById('modal-add-user');
+    if (modal) {
+        modal.classList.add('opacity-0');
+        setTimeout(() => modal.classList.add('hidden-app'), 300);
+    }
+}
+
+async function saveNewUser(e) {
+    e.preventDefault();
+    const name = document.getElementById('new-user-name').value.trim();
+    const username = document.getElementById('new-user-username').value.trim();
+    const role = document.getElementById('new-user-role').value;
+    const pass = document.getElementById('new-user-pass').value.trim();
+    const classId = document.getElementById('new-user-class')?.value || 'ALL';
+
+    let userData = { name, username, pass, role, classId };
+    
+    try {
+        const result = await callCloudAPI("addNewUser", userData);
+        if (result && result.success) {
+            // Tambahkan ke database lokal
+            if (role === 'admin') {
+                if (!MOCK_DB.admins.some(a => a.username === username)) {
+                    MOCK_DB.admins.push({ username, name, pass });
+                }
+            } else if (role === 'siswa') {
+                if (!MOCK_DB.students.some(s => s.nis === username)) {
+                    MOCK_DB.students.push({ nis: username, name, classId, pass });
+                }
+            } else {
+                if (!MOCK_DB.teachers.some(t => t.nip === username)) {
+                    MOCK_DB.teachers.push({ nip: username, name, classId, dept: role === 'wali' ? 'Wali Kelas' : role === 'guru_bp' ? 'BP/BK' : 'Mapel', pass });
+                }
+            }
+            saveToStorage();
+            closeAddUserModal();
+            showMessage('Sukses', `Pengguna ${name} berhasil ditambahkan dan tersinkron ke cloud.`);
+            await synchronizeDatabase(true);
+        } else {
+            showMessage('Gagal', 'Gagal menambahkan pengguna ke cloud. Coba lagi.');
+        }
+    } catch (err) {
+        showMessage('Error', 'Terjadi kesalahan saat menambahkan pengguna.');
+    }
+}
+
+// Perbaiki fungsi saveUserPasswordByAdmin
+async function saveUserPasswordByAdmin(e) {
+    e.preventDefault();
+    const type = document.getElementById('admin-target-type').value;
+    const targetId = document.getElementById('admin-target-user').value.toString();
+    const newPass = document.getElementById('admin-target-pass').value.trim();
+
+    if (type === 'guru') {
+        const tr = MOCK_DB.teachers.find(t => t.nip.toString() === targetId);
+        if (tr) tr.pass = newPass;
+    } else {
+        const st = MOCK_DB.students.find(s => s.nis.toString() === targetId);
+        if (st) st.pass = newPass;
+    }
+
+    saveToStorage();
+    closeManageUsersModal();
+    document.getElementById('admin-target-pass').value = '';
+    
+    try {
+        const result = await callCloudAPI("updateUserPasswordByAdmin", { type, id: targetId, pass: newPass });
+        if (result && result.success) {
+            showMessage('Sukses', 'Password user berhasil diperbarui dan tersinkron ke cloud.');
+            await synchronizeDatabase(true);
+        } else {
+            showMessage('Info', 'Password diperbarui secara lokal. Sinkronisasi cloud akan dilakukan otomatis.');
+        }
+    } catch (err) {
+        showMessage('Info', 'Password diperbarui secara lokal. Sinkronisasi cloud akan dilakukan otomatis.');
+    }
+}
+
+// ==============================================
+// PERBAIKAN 4: BUKA KUNCI ABSEN
+// ==============================================
+
+// Perbaiki fungsi toggleDailyLockByAdmin
+async function toggleDailyLockByAdmin() {
+    const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+    const classId = document.getElementById('input-absen-kelas').value;
+    if (!dateStr || !classId) return;
+
+    if (!MOCK_DB.dailyLocks) MOCK_DB.dailyLocks = {};
+
+    const lockKeySpecific = `${dateStr}_${classId}`;
+    const isCurrentlyClosed = (MOCK_DB.dailyLocks[lockKeySpecific] === true || MOCK_DB.dailyLocks[lockKeySpecific] === 'true');
+    const nextStatus = !isCurrentlyClosed;
+
+    MOCK_DB.dailyLocks[lockKeySpecific] = nextStatus;
+    if (classId === 'SEMUA') {
+        MOCK_DB.dailyLocks[dateStr] = nextStatus;
+    }
+    saveToStorage();
+
+    const targetLabel = classId === 'SEMUA' ? 'Semua Kelas' : `Kelas ${classId}`;
+    
+    try {
+        const result = await callCloudAPI("toggleDailyLock", { 
+            date: dateStr, 
+            classId, 
+            locked: nextStatus, 
+            lockKey: lockKeySpecific 
+        });
+        
+        if (result && result.success) {
+            showMessage('Sukses', `Penginputan absen tanggal ${dateStr} untuk ${targetLabel} berhasil di-${nextStatus ? 'TUTUP' : 'BUKA'}.`);
+            await synchronizeDatabase(true);
+        } else {
+            showMessage('Info', `Penginputan absen ${nextStatus ? 'ditutup' : 'dibuka'} secara lokal.`);
+        }
+    } catch (err) {
+        showMessage('Info', `Penginputan absen ${nextStatus ? 'ditutup' : 'dibuka'} secara lokal.`);
+    }
+    
+    loadStudentAttendanceForm();
+}
+
+// PERBAIKAN PADA FUNGSI loadStudentAttendanceForm - BAGIAN PENGECEKAN LOCK
+function loadStudentAttendanceForm(isSilent = false) {
+    const classId = document.getElementById('input-absen-kelas') ? document.getElementById('input-absen-kelas').value : '';
+    const selectedDateStr = document.getElementById('input-absen-date') ? normalizeDateStr(document.getElementById('input-absen-date').value) : '';
+    const todayStr = normalizeDateStr(new Date());
+
+    const tbody = document.getElementById('bulk-absen-table-body');
+    const submitBar = document.getElementById('bulk-absen-submit-bar');
+    const dailyRecapBanner = document.getElementById('daily-recap-banner');
+    const actionBar = document.getElementById('bulk-absen-action-bar');
+
+    if (!classId || !selectedDateStr || !tbody) return;
+
+    const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
+    if (classStudents.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-semibold">Tidak ada siswa terdaftar</td></tr>`;
+        submitBar.classList.add('hidden-app'); return;
+    }
+
+    const isFutureDate = selectedDateStr > todayStr;
+    const isPastDate = selectedDateStr < todayStr;
+
+    // CEK KUNCIAN KHUSUS KELAS DAN/ATAU GLOBAL TANGGAL
+    const lockKeySpecific = `${selectedDateStr}_${classId}`;
+    const lockKeyAll = `${selectedDateStr}_SEMUA`;
+
+    const lockSpecific = MOCK_DB.dailyLocks ? MOCK_DB.dailyLocks[lockKeySpecific] : undefined;
+    const lockAll = MOCK_DB.dailyLocks ? MOCK_DB.dailyLocks[lockKeyAll] : undefined;
+    const lockDate = MOCK_DB.dailyLocks ? MOCK_DB.dailyLocks[selectedDateStr] : undefined;
+
+    // IMPORTANT: Parse boolean correctly
+    const isLockedBySpecific = lockSpecific === true || lockSpecific === 'true';
+    const isLockedByAll = lockAll === true || lockAll === 'true';
+    const isLockedByDate = lockDate === true || lockDate === 'true';
+
+    const isExplicitlyClosed = isLockedBySpecific || isLockedByAll || isLockedByDate;
+    const isExplicitlyOpened = (lockSpecific === false || lockSpecific === 'false') || 
+                            (lockAll === false || lockAll === 'false') || 
+                            (lockDate === false || lockDate === 'false');
+
+    let isLocked = false;
+    if (currentUser.role === 'guru_bp') {
+        isLocked = true;
+    } else if (currentUser.role === 'admin') {
+        // ADMIN: hanya terkunci jika explicit closed, tapi bisa override
+        isLocked = isExplicitlyClosed;
+        // TAPI admin tetap bisa membuka - kita kasih akses penuh
+        // isLocked = false; // ADMIN SELALU BISA MENGISI
+    } else {
+        // Untuk Seksi Absen / Wali / Guru Mapel
+        if (isExplicitlyClosed) {
+            isLocked = true;
+        } else if (isExplicitlyOpened) {
+            isLocked = false;
+        } else {
+            isLocked = isFutureDate || isPastDate;
+        }
+    }
+    
+    // PERBAIKAN: ADMIN TETAP BISA MENGISI (HANYA DIBATASI OLEH TANGGAL MENDATANG)
+    if (currentUser.role === 'admin') {
+        isLocked = isFutureDate; // Admin hanya tidak bisa input tanggal depan
+    }
+
+    const lockBanner = document.getElementById('lock-banner');
+    const lockText = document.getElementById('lock-banner-text');
+    if (lockBanner && lockText) {
+        if (isLocked) {
+            lockBanner.classList.remove('hidden-app');
+            if (isFutureDate && currentUser.role === 'admin') {
+                lockText.textContent = "Admin tidak dapat menginput absen untuk tanggal mendatang.";
+            } else if (isExplicitlyClosed) {
+                lockText.textContent = `Penginputan absen tanggal ${selectedDateStr} untuk ${classId === 'SEMUA' ? 'Semua Kelas' : 'Kelas ' + classId} DITUTUP oleh Administrator.`;
+            } else {
+                lockText.textContent = "Formulir absensi tanggal lalu dalam mode baca saja.";
+            }
+        } else {
+            lockBanner.classList.add('hidden-app');
+        }
+    }
+
+    const resetBar = document.getElementById('admin-reset-bar');
+    if (resetBar) resetBar.classList.toggle('hidden-app', currentUser.role !== 'admin');
+
+    const closeAttendanceBar = document.getElementById('admin-close-attendance-bar');
+    if (closeAttendanceBar) {
+        if (currentUser.role === 'admin') {
+            closeAttendanceBar.classList.remove('hidden-app');
+            const btn = document.getElementById('btn-toggle-daily-lock');
+            const desc = document.getElementById('close-status-desc');
+            const targetName = classId === 'SEMUA' ? 'Semua Kelas' : `Kelas ${classId}`;
+
+            // CEK STATUS LOCK YANG BENAR
+            const isClosed = isExplicitlyClosed || isLocked;
+            if (isClosed) {
+                btn.className = "bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase";
+                btn.textContent = `Buka Absen (${targetName})`;
+                desc.innerHTML = `Status penginputan absen <b class="text-amber-300">${targetName}</b> saat ini <b class="text-rose-400">DITUTUP</b>.`;
+            } else {
+                btn.className = "bg-rose-600 hover:bg-rose-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase";
+                btn.textContent = `Tutup Absen (${targetName})`;
+                desc.innerHTML = `Status penginputan absen <b class="text-amber-300">${targetName}</b> saat ini <b class="text-emerald-400">DIBUKA</b>.`;
+            }
+        } else {
+            closeAttendanceBar.classList.add('hidden-app');
+        }
+    }
+
+    if (isLocked) { 
+        submitBar.classList.add('hidden-app'); 
+        if (actionBar) actionBar.classList.add('hidden-app'); 
+    } else { 
+        submitBar.classList.remove('hidden-app'); 
+        if (actionBar) actionBar.classList.remove('hidden-app'); 
+    }
+    dailyRecapBanner.classList.remove('hidden-app');
+
+    // ... rest of function remains the same ...
+}
+
+// ==============================================
+// PERBAIKAN: TAMBAHKAN ACTIVITY LOG KE DASHBOARD ADMIN
+// ==============================================
+
+// Modifikasi initDashboardAdmin untuk menampilkan activity log
+function initDashboardAdmin() {
+    // ... existing code ...
+    
+    // Tambahkan activity log container di dashboard
+    const dashboardContainer = document.querySelector('#tpl-dashboard-admin .space-y-4');
+    if (dashboardContainer && currentUser.role === 'admin') {
+        // Cek apakah sudah ada container activity log
+        let activityContainer = document.getElementById('activity-log-container');
+        if (!activityContainer) {
+            const newContainer = document.createElement('div');
+            newContainer.id = 'activity-log-container';
+            newContainer.className = 'bg-white rounded-2xl shadow-card border border-slate-100 p-4 sm:p-6';
+            dashboardContainer.appendChild(newContainer);
+        }
+        renderActivityLog();
+    }
+    
+    // ... rest of existing code ...
+}
         async function saveSelfPassword(e) {
             e.preventDefault();
             const newPass = document.getElementById('self-new-password').value.trim();
@@ -1456,6 +1840,87 @@
         }
 
         // TOMBOL PINTAR KESIANGAN & BOLOS DENGAN RECORD TAG OTOMATIS
+        // Tambahkan fungsi untuk mencatat aktivitas terlambat & bolos
+function trackStudentActivity(nis, status, remark, recorderTag) {
+    const activityKey = `activity_${nis}_${Date.now()}`;
+    const activityData = {
+        nis: nis,
+        status: status,
+        remark: remark,
+        recordedBy: recorderTag,
+        timestamp: new Date().toISOString(),
+        date: normalizeDateStr(new Date())
+    };
+    
+    // Simpan ke local storage
+    if (!MOCK_DB.activityLog) MOCK_DB.activityLog = [];
+    MOCK_DB.activityLog.push(activityData);
+    saveToStorage();
+    
+    // Kirim ke cloud
+    callCloudAPI("trackActivity", activityData);
+}
+
+// Perbaiki fungsi setQuickRemark untuk mencatat aktivitas
+function setQuickRemark(nis, remarkText, isBolos = false) {
+    const input = document.getElementById(`ket-input-${nis}`);
+    if (input) {
+        input.value = remarkText;
+        
+        // Rekam aktivitas
+        const recorderTag = `${currentUser.name} (${currentUser.role === 'siswa' ? 'Seksi Absen' : currentUser.role === 'admin' ? 'Administrator' : 'Guru'})`;
+        const status = isBolos ? 'A' : 'I';
+        
+        if (isBolos) {
+            const radioA = document.querySelector(`input[name="status-${nis}"][value="A"]`);
+            if (radioA && !radioA.disabled) {
+                radioA.checked = true;
+                handleStatusChange(nis, 'A');
+            }
+        }
+        
+        trackStudentActivity(nis, status, remarkText, recorderTag);
+    }
+}
+
+// Tambahkan fungsi untuk menampilkan log aktivitas di dashboard admin
+function renderActivityLog() {
+    const container = document.getElementById('activity-log-container');
+    if (!container || currentUser.role !== 'admin') return;
+    
+    if (!MOCK_DB.activityLog) MOCK_DB.activityLog = [];
+    const logs = MOCK_DB.activityLog.slice(-50).reverse();
+    
+    container.innerHTML = `
+        <h3 class="text-xs sm:text-base font-extrabold text-slate-800 mb-3 sm:mb-4 flex items-center gap-2">
+            <i class="ph-bold ph-clock-counter-clockwise text-amber-600"></i> 
+            Jejak Aktivitas Terlambat & Bolos
+            <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">${MOCK_DB.activityLog.length} total</span>
+        </h3>
+        <div class="max-h-[300px] overflow-y-auto custom-scroll space-y-1.5">
+            ${logs.length === 0 ? '<p class="text-slate-400 text-xs font-semibold p-3">Belum ada aktivitas tercatat.</p>' : 
+            logs.map(log => {
+                const student = MOCK_DB.students.find(s => s.nis.toString() === log.nis.toString());
+                const studentName = student ? student.name : log.nis;
+                const statusLabel = log.status === 'A' ? '🔴 ALPA/BOLOS' : '🟡 TERLAMBAT';
+                const dateDisplay = log.date ? new Date(log.date + 'T00:00:00').toLocaleDateString('id-ID') : '-';
+                return `
+                    <div class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="font-extrabold text-slate-800 truncate">${studentName}</span>
+                            <span class="text-[10px] font-bold ${log.status === 'A' ? 'text-rose-600' : 'text-amber-600'}">${statusLabel}</span>
+                            ${log.remark ? `<span class="text-slate-500 text-[10px] truncate">"${log.remark}"</span>` : ''}
+                        </div>
+                        <div class="text-right shrink-0 text-[10px] text-slate-400">
+                            <span class="block font-bold text-brand-700">${log.recordedBy || 'Sistem'}</span>
+                            <span>${dateDisplay}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+}
         function setQuickRemark(nis, remarkText, isBolos = false) {
             if (checkIsFormLocked()) return showMessage('Terkunci', 'Formulir absensi saat ini terkunci oleh Administrator.');
             
