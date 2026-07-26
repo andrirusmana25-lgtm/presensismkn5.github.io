@@ -514,19 +514,19 @@
                         </div>
                     </div>
 
-                    <!-- KONTROL RESET ABSEN KHUSUS ADMIN -->
+                    <!-- KONTROL RESET ABSEN KHUSUS ADMIN MURNI -->
                     <div id="admin-reset-bar" class="hidden-app mx-3 sm:mx-4 mt-3 p-3 sm:p-4 bg-amber-50 border border-amber-200 rounded-2xl flex justify-between items-center gap-3 no-print">
                         <div class="flex gap-2.5 items-center">
                             <i class="ph-fill ph-arrow-counter-clockwise text-xl sm:text-2xl text-amber-700"></i>
                             <div>
-                                <h4 class="font-extrabold text-xs sm:text-sm text-amber-900">Reset Absensi Kelas Ini (Admin)</h4>
+                                <h4 class="font-extrabold text-xs sm:text-sm text-amber-900">Reset Absensi Kelas Ini (Admin Murni)</h4>
                                 <p class="text-[11px] sm:text-xs text-amber-600">Kosongkan data absensi kelas terpilih untuk tanggal ini.</p>
                             </div>
                         </div>
                         <button type="button" onclick="resetDailyAttendance()" class="bg-amber-600 hover:bg-amber-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase shrink-0">Reset Absen</button>
                     </div>
 
-                    <!-- KONTROL KUNCI ABSEN KHUSUS ADMIN PER KELAS -->
+                    <!-- KONTROL KUNCI ABSEN KHUSUS ADMIN MURNI -->
                     <div id="admin-close-attendance-bar" class="hidden-app mx-3 sm:mx-4 mt-3 p-3 sm:p-4 bg-slate-900 text-white rounded-2xl flex justify-between items-center gap-3 no-print">
                         <div class="flex gap-2.5 items-center">
                             <i class="ph-fill ph-shield-check text-xl sm:text-2xl text-brand-400"></i>
@@ -877,9 +877,18 @@
         </div>
     </div>
 
-    <!-- HIGH PERFORMANCE ENGINE JS -->
+    <!-- HIGH PERFORMANCE ENGINE JS (BAGIAN KELANJUTAN SKRIP BERIKUTNYA) -->
+```
+
+---
+
+### 📄 FILE 2 (LANJUTAN): `index.html` (Bagian Script JavaScript Lengkap)
+
+Salin kelanjutan skrip JavaScript di bawah ini persis di bawah baris `<!-- HIGH PERFORMANCE ENGINE JS ... -->`:
+
+```javascript
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxxm1YMUwzdRimt---DhzwzzkJQw4Kt4vBGu6We8Dkl8ysT5solNxNftNo0_zl3POOh/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzhrvjjoY-aTs-YpNwmLKNLnrVcyz0IQGgFXpS8OO67LKkdrn1ZdYARbT2m81OmcacH/exec";
         let currentUser = null;
         let activeAbsenTab = 'isi';
         let currentTargetMenu = 'dashboard_admin';
@@ -1077,7 +1086,6 @@
             }
         }
 
-        // POLLING REALTIME UNTUK APK ANDROID, IOS & WEBSITES
         setInterval(() => {
             if (currentUser) synchronizeDatabase(false);
         }, 2500);
@@ -1534,7 +1542,6 @@
             });
         }
 
-        // TOMBOL PINTAR KESIANGAN & BOLOS DENGAN PEREKAMAN AKUN PENGISI
         function setQuickRemark(nis, remarkText, isBolos = false) {
             if (!currentUser) return;
 
@@ -1563,7 +1570,7 @@
             const recorderTag = `${currentUser.name} (${getRoleLabelFormatted(currentUser)})`;
             window[`recorder_tag_${nis}`] = recorderTag;
 
-            if (currentUser.role === 'admin') {
+            if (currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah') {
                 const badgeContainer = document.getElementById(`updater-badge-${nis}`);
                 if (badgeContainer) {
                     badgeContainer.innerHTML = `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${recorderTag}</span>`;
@@ -1571,7 +1578,6 @@
             }
         }
 
-        // UPLOAD DOKUMEN / KAMERA DENGAN KOMPRESI MULTI-DEVICE
         function handleFileUpload(event, nis) {
             const classId = document.getElementById('input-absen-kelas').value;
             const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
@@ -1692,7 +1698,6 @@
             }
         }
 
-        // PENAMBAHAN HELPER DUKUNGAN BUKA FILE DRIVE DI HP / LAPTOP
         function convertDriveUrlToDirect(url) {
             if (!url) return '';
             if (url.includes('drive.google.com/file/d/')) {
@@ -1809,7 +1814,7 @@
             setTimeout(() => modal.classList.add('hidden-app'), 300);
         }
 
-        // LOGIN ENGINE BERSAMA PENYESUAIAN WAKASEK & KEPALA SEKOLAH
+        // LOGIN ENGINE
         async function handleLogin(e) {
             e.preventDefault();
             const role = document.getElementById('login-role').value;
@@ -1870,7 +1875,6 @@
             document.getElementById('login-view').classList.remove('hidden-app');
         }
 
-        // KONTROL TAMPILAN NAVIGASI KHUSUS AKUN WAKASEK & KEPALA SEKOLAH
         function setupAppUI() {
             if (!currentUser) return;
             document.getElementById('user-name').textContent = currentUser.name;
@@ -2254,7 +2258,7 @@
             return false;
         }
 
-        // OPTIMASI RENDRING KELAS SUPER FAST DENGAN DICTIONARY MAP
+        // AKSELERASI SUPER CEPAT & URUTAN NAMA SISWA PERKELAS ABJAD A-Z
         function loadStudentAttendanceForm(isSilent = false) {
             if (!currentUser) return;
             if (isSilent && isFormDirty) return;
@@ -2271,8 +2275,11 @@
 
             if (!tbody) return;
 
+            // KONTROL KHUSUS: HANYA ADMIN MURNI YANG BISA MEAT KONTROL KUNCI/RESET
+            const isTrueAdmin = currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah' && currentUser.username !== 'kepsek';
+
             if (colHeaderKet) {
-                colHeaderKet.textContent = currentUser.role === 'admin' ? "CATATAN, KESIANGAN/BOLOS & AKUN PENGISI DATA" : "CATATAN & OPSI KESIANGAN/BOLOS";
+                colHeaderKet.textContent = isTrueAdmin ? "CATATAN, KESIANGAN/BOLOS & AKUN PENGISI DATA" : "CATATAN & OPSI KESIANGAN/BOLOS";
             }
 
             if (!classId) {
@@ -2283,12 +2290,20 @@
                 return;
             }
 
-            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
+            let classStudents = classId === 'SEMUA' ? [...MOCK_DB.students] : MOCK_DB.students.filter(s => s.classId === classId);
             if (classStudents.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-semibold">Tidak ada siswa terdaftar</td></tr>`;
                 if (submitBar) submitBar.classList.add('hidden-app'); 
                 return;
             }
+
+            // PENGURUTAN PERSISI PER-KELAS LALU ABJAD NAMA A-Z
+            classStudents.sort((a, b) => {
+                if (classId === 'SEMUA' && a.classId !== b.classId) {
+                    return a.classId.localeCompare(b.classId, 'id', { numeric: true });
+                }
+                return a.name.localeCompare(b.name, 'id');
+            });
 
             const isLocked = checkDailyIsLocked(selectedDateStr, classId);
             const isPastDate = selectedDateStr < todayStr;
@@ -2316,12 +2331,13 @@
                 }
             }
 
+            // SEMBUNYIKAN KONTROL KUNCI & RESET UNTUK WAKASEK & KEPSEK
             const resetBar = document.getElementById('admin-reset-bar');
-            if (resetBar) resetBar.classList.toggle('hidden-app', currentUser.role !== 'admin');
+            if (resetBar) resetBar.classList.toggle('hidden-app', !isTrueAdmin);
 
             const closeAttendanceBar = document.getElementById('admin-close-attendance-bar');
             if (closeAttendanceBar) {
-                if (currentUser.role === 'admin') {
+                if (isTrueAdmin) {
                     closeAttendanceBar.classList.remove('hidden-app');
                     const btn = document.getElementById('btn-toggle-daily-lock');
                     const desc = document.getElementById('close-status-desc');
@@ -2351,12 +2367,24 @@
 
             dailyRecapBanner.classList.remove('hidden-app');
 
-            // HASH MAP UNTUK PERFORMANCE O(1) SANGAT CEPAT UNTUK 2000+ SISWA
+            // HASH MAP UNTUK PERFORMANCE O(1) BISA LOAD 2000 SISWA INSTAN
             const attMap = new Map();
+            const studentStatsMap = new Map();
+
             (MOCK_DB.attendance || []).forEach(a => {
+                const nisStr = a.nis.toString();
                 if (normalizeDateStr(a.date) === selectedDateStr) {
-                    attMap.set(a.nis.toString(), a);
+                    attMap.set(nisStr, a);
                 }
+
+                if (!studentStatsMap.has(nisStr)) {
+                    studentStatsMap.set(nisStr, { alpa: 0, sakit: 0, terlambat: 0 });
+                }
+                const st = studentStatsMap.get(nisStr);
+                if (a.status === 'A') st.alpa++;
+                if (a.status === 'S') st.sakit++;
+                const rmk = (a.remark || '').toLowerCase();
+                if (rmk.includes('kesiangan') || rmk.includes('terlambat')) st.terlambat++;
             });
 
             const statuses = [
@@ -2368,7 +2396,7 @@
                 { val: 'L', label: 'L', desc: 'Libur', active: 'bg-sky-500 text-white border-sky-500 shadow-md scale-105', base: 'hover:bg-sky-50 text-sky-600 border-sky-200' }
             ];
 
-            const isUserAdmin = currentUser.role === 'admin';
+            const showWarningBadges = currentUser.role === 'wali' || currentUser.role === 'guru_bp' || isTrueAdmin;
 
             const rowsHtml = classStudents.map((student, idx) => {
                 const existing = attMap.get(student.nis.toString());
@@ -2398,13 +2426,28 @@
                 });
                 radioHtml += `</div>`;
 
-                const showUpdatedBadge = isUserAdmin && updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit mt-0.5"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${updatedBy}</span>` : '';
+                const showUpdatedBadge = isTrueAdmin && updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit mt-0.5"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${updatedBy}</span>` : '';
+
+                // NOTIFIKASI PERINGATAN PEMBINAAN / HOME VISIT
+                let warningHtml = '';
+                if (showWarningBadges) {
+                    const stStat = studentStatsMap.get(student.nis.toString()) || { alpa: 0, sakit: 0, terlambat: 0 };
+                    if (stStat.alpa >= 3 || stStat.terlambat >= 3) {
+                        warningHtml += `<div class="mt-1 p-1 bg-red-100 border border-red-300 text-red-800 rounded-lg text-[9px] font-bold flex items-center gap-1"><i class="ph-bold ph-warning"></i> ⚠️ Lakukan Pembinaan & Pemanggilan Orang Tua (Alpa: ${stStat.alpa}x, Lambat: ${stStat.terlambat}x)</div>`;
+                    }
+                    if (stStat.sakit >= 3) {
+                        warningHtml += `<div class="mt-1 p-1 bg-amber-100 border border-amber-300 text-amber-800 rounded-lg text-[9px] font-bold flex items-center gap-1"><i class="ph-bold ph-first-aid"></i> 🩺 Perlu Dijenguk / Home Visit (Sakit: ${stStat.sakit}x)</div>`;
+                    }
+                }
 
                 return `
                     <tr class="hover:bg-slate-50 transition-colors text-xs">
                         <td class="px-1.5 py-2 font-bold text-slate-400 text-center">${idx + 1}</td>
                         <td class="px-1.5 py-2 font-mono font-bold text-slate-700 text-[11px]">${student.nis}</td>
-                        <td class="px-2 py-2 font-extrabold text-slate-800 truncate max-w-[150px]">${student.name}</td>
+                        <td class="px-2 py-2 font-extrabold text-slate-800 truncate max-w-[150px]">
+                            ${student.name}
+                            ${warningHtml}
+                        </td>
                         <td class="px-1 py-2 text-center"><span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1 py-0.5 rounded inline-block">${student.classId}</span></td>
                         <td class="px-2 py-2 text-center">${radioHtml}</td>
                         <td class="px-2 py-2 min-w-[220px]">
@@ -2492,7 +2535,7 @@
                 const recorderTag = `${currentUser.name} (${getRoleLabelFormatted(currentUser)})`;
                 window[`recorder_tag_${nis}`] = recorderTag;
 
-                if (currentUser.role === 'admin') {
+                if (currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah') {
                     const badgeContainer = document.getElementById(`updater-badge-${nis}`);
                     if (badgeContainer) {
                         badgeContainer.innerHTML = `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${recorderTag}</span>`;
@@ -2615,9 +2658,8 @@
             await callCloudAPI("resetDailyAttendance", { classId, date: dateStr });
         }
 
-        // SAKELAR KUNCI ADMIN INSTAN TERINTEGRASI PADA SEMUA DEVICE & PERANGKAT
         async function toggleDailyLockByAdmin() {
-            if (!currentUser || currentUser.role !== 'admin') return;
+            if (!currentUser || currentUser.role !== 'admin' || currentUser.dept === 'Wakasek' || currentUser.dept === 'Kepala Sekolah') return;
             const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
             const classId = document.getElementById('input-absen-kelas').value;
             if (!dateStr || !classId) return showMessage('Peringatan', 'Pilih kelas terlebih dahulu.');
@@ -2652,7 +2694,7 @@
             document.getElementById(`filter-wrapper-${rekapType}`).classList.remove('hidden-app');
         }
 
-        // REKAPITULASI DENGAN HASHMAP ACCELERATION FOR O(N) HIGH PERFORMANCE
+        // REKAPITULASI ACCELERATED FOR HIGH SPEED PRINTING & VIEWING
         function renderAttendanceRecap() {
             const classId = document.getElementById('rekap-absen-kelas').value;
             const type = document.getElementById('rekap-type').value;
@@ -2664,7 +2706,15 @@
                 return;
             }
 
-            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
+            let classStudents = classId === 'SEMUA' ? [...MOCK_DB.students] : MOCK_DB.students.filter(s => s.classId === classId);
+
+            // URUTKAN ABJAD NAMA SISWA PERKELAS PADA SEMUA KELAS
+            classStudents.sort((a, b) => {
+                if (classId === 'SEMUA' && a.classId !== b.classId) {
+                    return a.classId.localeCompare(b.classId, 'id', { numeric: true });
+                }
+                return a.name.localeCompare(b.name, 'id');
+            });
 
             const waliObj = getWaliForClass(classId);
             const todayFormated = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -2691,9 +2741,8 @@
                 return st;
             };
 
-            const isUserAdmin = currentUser && currentUser.role === 'admin';
+            const isUserAdmin = currentUser && currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah';
 
-            // QUICK HASH MAP INDEXING
             const attMap = new Map();
             (MOCK_DB.attendance || []).forEach(a => {
                 const key = `${a.nis.toString()}_${normalizeDateStr(a.date)}`;
@@ -2850,7 +2899,14 @@
             const type = document.getElementById('rekap-type').value;
             if (!classId) return showMessage('Peringatan', 'Silakan pilih kelas terlebih dahulu.');
 
-            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
+            let classStudents = classId === 'SEMUA' ? [...MOCK_DB.students] : MOCK_DB.students.filter(s => s.classId === classId);
+            classStudents.sort((a, b) => {
+                if (classId === 'SEMUA' && a.classId !== b.classId) {
+                    return a.classId.localeCompare(b.classId, 'id', { numeric: true });
+                }
+                return a.name.localeCompare(b.name, 'id');
+            });
+
             const waliObj = getWaliForClass(classId);
 
             let rows = [
@@ -2952,7 +3008,8 @@
                         <h3 style="margin:0; text-transform: uppercase;">PEMERINTAH PROVINSI JAWA BARAT</h3>
                         <h2 style="margin:0; text-transform: uppercase;">DINAS PENDIDIKAN CABANG DINAS WILAYAH VIII</h2>
                         <h1 style="margin:0; font-size: 16pt; text-transform: uppercase;">SMK NEGERI 5 PANGALENGAN</h1>
-                        <p style="margin:0; font-size: 8pt; font-weight: normal; font-style: italic;">JL. Cinchona No 08 Tlp. 082316075702, Pangalengan, Kab. Bandung, Jawa Barat 40378</p>
+                        <p style="margin:0; font-size: 8pt; font-weight: normal;
+font-style: italic;">JL. Cinchona No 08 Tlp. 082316075702, Pangalengan, Kab. Bandung, Jawa Barat 40378</p>
                     </div>
                     <h3 style="text-align: center; text-decoration: underline; margin-bottom: 4px;">REKAPITULASI PRESENSI KEHADIRAN SISWA</h3>
                     <p style="text-align: center; margin-top:0;">Kelas: <b>${classId}</b> | Periode: <b>${type.toUpperCase()}</b> | Wali Kelas: <b>${waliObj.name} (NIP: ${waliObj.nip})</b></p>
