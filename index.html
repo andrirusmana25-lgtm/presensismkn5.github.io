@@ -212,7 +212,7 @@
                 <div class="glass rounded-3xl shadow-2xl p-5 sm:p-8 border border-white/40 relative overflow-hidden animate-fade-in-up">
                     <div class="flex justify-center mb-3 sm:mb-4">
                         <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl flex items-center justify-center shadow-gold-glow p-2 border border-slate-100 overflow-hidden">
-                            <img src="https://i.ibb.co.com/HDHzkCT8/LVUke-CNhdr-Gdd-Ut6-Bnl-Bj-Mr9-XCSJb-Uy-Vxdv-CAzd-T.png" alt="Logo SMKN 5" class="w-full h-full object-contain" onerror="handleLogoError(this)">
+                            <img src="https://smkn5pangalengan.sch.id/wp-content/uploads/2023/11/logo.png" alt="Logo SMKN 5" class="w-full h-full object-contain" onerror="handleLogoError(this)">
                         </div>
                     </div>
                     
@@ -271,7 +271,7 @@
             <div class="p-5 sm:p-6 flex justify-between items-center border-b border-white/10">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center p-1 overflow-hidden shrink-0">
-                        <img src="https://i.ibb.co.com/HDHzkCT8/LVUke-CNhdr-Gdd-Ut6-Bnl-Bj-Mr9-XCSJb-Uy-Vxdv-CAzd-T.png" class="w-full h-full object-contain" onerror="handleLogoError(this)">
+                        <img src="https://smkn5pangalengan.sch.id/wp-content/uploads/2023/11/logo.png" class="w-full h-full object-contain" onerror="handleLogoError(this)">
                     </div>
                     <div>
                         <h2 class="font-extrabold text-sm text-white">SMKN 5</h2>
@@ -618,7 +618,7 @@
                     <!-- KOP SURAT RESMI LOGO SEKOLAH -->
                     <div class="hidden print:flex items-center justify-between pb-4 mb-4 kop-border-double" style="page-break-inside: avoid;">
                         <div class="w-20 h-20 flex items-center justify-center border border-black rounded-full bg-slate-50 shrink-0 overflow-hidden p-1">
-                            <img src="https://i.ibb.co.com/HDHzkCT8/LVUke-CNhdr-Gdd-Ut6-Bnl-Bj-Mr9-XCSJb-Uy-Vxdv-CAzd-T.png" alt="Logo SMKN 5 Pangalengan" class="w-full h-full object-contain" onerror="handleLogoError(this)">
+                            <img src="https://smkn5pangalengan.sch.id/wp-content/uploads/2023/11/logo.png" alt="Logo SMKN 5 Pangalengan" class="w-full h-full object-contain" onerror="handleLogoError(this)">
                         </div>
                         <div class="flex-1 text-center px-4">
                             <h4 class="text-xs font-bold uppercase tracking-wide leading-none">Pemerintah Provinsi Jawa Barat</h4>
@@ -631,6 +631,18 @@
                             </p>
                         </div>
                         <div class="w-20 h-20 invisible shrink-0"></div>
+                    </div>
+
+                    <!-- HEADER INFORMASI REKAPITULASI DENGAN WALI KELAS & TEMPAT TANGGAL -->
+                    <div class="p-4 bg-slate-50 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-2 text-xs font-bold text-slate-700">
+                        <div>
+                            <p>Kelas: <span id="recap-header-class" class="text-emerald-700 font-extrabold">-</span> &nbsp;|&nbsp; Periode: <span id="recap-header-period" class="text-brand-600 font-extrabold">-</span></p>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Wali Kelas: <span id="recap-header-wali" class="text-slate-800">-</span> (NIP: <span id="recap-header-nip">-</span>)</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[11px] text-slate-500">Tempat & Tanggal Laporan:</p>
+                            <p class="text-xs text-brand-700 font-extrabold">Pangalengan, Bandung, <span id="recap-header-today">-</span></p>
+                        </div>
                     </div>
 
                     <div class="hidden print:block text-center mb-4">
@@ -828,7 +840,7 @@
         </div>
     </div>
 
-    <!-- MODAL PRATINJAU DOKUMEN -->
+    <!-- MODAL PRATINJAU DOKUMEN LAPTOP & PERANGKAT LAIN -->
     <div id="doc-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[140] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-5 border">
             <div class="flex justify-between items-center mb-3">
@@ -867,7 +879,7 @@
 
     <!-- HIGH PERFORMANCE ENGINE JS -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwS-utrbVMLWTH1NFgL6q-mUBoF05la36GSzxhIAWIfQ65UnQNk6ECdeLVbI5g-xDy1/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxOnB9Qes3xrBiZF8uF5zdoIRwlK60fMkHZ79dIABLXZRj8TtiS3Huj2ItoDpuz-YEo/exec";
         let currentUser = null;
         let activeAbsenTab = 'isi';
         let currentTargetMenu = 'dashboard_admin';
@@ -1055,10 +1067,10 @@
             }
         }
 
-        // POLLING OTOMATIS REAL-TIME SINKRONISASI SETIAP 3 DETIK UNTUK APK ANDROID & IPHONE IOS
+        // AUTO SYNC INTERINTEGRASI UNTUK SEMUA GADGET SETIAP 2.5 DETIK
         setInterval(() => {
             if (currentUser) synchronizeDatabase(false);
-        }, 3000);
+        }, 2500);
 
         function showMessage(title, text) {
             const modal = document.getElementById('msg-modal');
@@ -1073,6 +1085,10 @@
         }
 
         function markAllPresent() {
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (checkDailyIsLocked(dateStr, classId)) return;
+
             const radios = document.querySelectorAll('#bulk-absen-table-body input[type="radio"][value="H"]');
             if (radios.length === 0) return;
             isFormDirty = true;
@@ -1086,6 +1102,10 @@
         }
 
         function markAllHoliday() {
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (checkDailyIsLocked(dateStr, classId)) return;
+
             const radios = document.querySelectorAll('#bulk-absen-table-body input[type="radio"][value="L"]');
             if (radios.length === 0) return;
             isFormDirty = true;
@@ -1507,6 +1527,11 @@
         // TOMBOL PINTAR KESIANGAN & BOLOS DENGAN PEREKAMAN AKUN PENGISI
         function setQuickRemark(nis, remarkText, isBolos = false) {
             if (!currentUser) return;
+
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (checkDailyIsLocked(dateStr, classId)) return;
+
             isFormDirty = true;
             const input = document.getElementById(`ket-input-${nis}`);
             if (input) input.value = remarkText;
@@ -1536,8 +1561,12 @@
             }
         }
 
-        // UPLOAD DOKUMEN/KAMERA
+        // UPLOAD DOKUMEN / KAMERA DENGAN KOMPRESI MULTI-DEVICE
         function handleFileUpload(event, nis) {
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (checkDailyIsLocked(dateStr, classId)) return;
+
             const file = event.target.files[0];
             if (!file) return;
 
@@ -1558,7 +1587,7 @@
                         const canvas = document.createElement('canvas');
                         let width = img.width;
                         let height = img.height;
-                        const maxDim = 1600;
+                        const maxDim = 1200;
 
                         if (width > maxDim || height > maxDim) {
                             if (width > height) {
@@ -1575,15 +1604,15 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
                         window[`attached_file_${nis}`] = {
-                            name: file.name,
+                            name: file.name || "Foto_Kamera.jpg",
                             size: Math.round(compressedDataUrl.length * 0.75 / 1024) + ' KB',
                             type: 'image/jpeg',
                             data: compressedDataUrl
                         };
 
-                        if (indicator && nameSpan) nameSpan.textContent = file.name;
+                        if (indicator && nameSpan) nameSpan.textContent = file.name || "Foto_Kamera.jpg";
                     };
                     img.src = e.target.result;
                 };
@@ -1603,16 +1632,22 @@
             }
         }
 
-        function removeAttachedFile(nis) {
-            isFormDirty = true;
-            const camInput = document.getElementById(`file-cam-${nis}`);
-            const docInput = document.getElementById(`file-doc-${nis}`);
-            if (camInput) camInput.value = '';
-            if (docInput) docInput.value = '';
-            
-            const indicator = document.getElementById(`upload-indicator-${nis}`);
-            if (indicator) indicator.classList.add('hidden-app');
-            delete window[`attached_file_${nis}`];
+        function triggerCameraCapture(nis) {
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (checkDailyIsLocked(dateStr, classId)) return;
+
+            const input = document.getElementById(`file-cam-${nis}`);
+            if (input) input.click();
+        }
+
+        function triggerFileSelect(nis) {
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (checkDailyIsLocked(dateStr, classId)) return;
+
+            const input = document.getElementById(`file-doc-${nis}`);
+            if (input) input.click();
         }
 
         function viewAttachmentFromDailyForm(nis) {
@@ -1651,20 +1686,33 @@
             window.currentActiveAttachment = { studentName, name: fileName || "Surat_Bukti", size: fileSize || "Selesai", url: fileUrl, type: fileType };
             const isImage = (fileType && fileType.startsWith('image/')) || (fileUrl && (fileUrl.startsWith('data:image/') || fileUrl.match(/\.(jpeg|jpg|gif|png)$/i)));
             
-            let previewHtml = isImage ? `
-                <div class="w-full bg-slate-50 border rounded-2xl p-2 text-center mb-3 min-h-[160px] flex items-center justify-center overflow-hidden">
-                    <img src="${fileUrl}" class="max-h-60 mx-auto rounded-xl shadow-md object-contain"/>
-                </div>` : `
-                <div class="w-full bg-slate-50 border rounded-2xl p-6 text-center mb-3">
-                    <i class="ph-fill ph-file-text text-5xl text-brand-600 mb-2"></i>
-                    <h4 class="font-bold text-xs text-slate-800 break-all">${fileName}</h4>
-                    <p class="text-[10px] text-slate-400 mt-0.5">${fileSize}</p>
-                </div>`;
+            let previewHtml = '';
+            if (isImage) {
+                previewHtml = `
+                    <div class="w-full bg-slate-50 border rounded-2xl p-2 text-center mb-3 min-h-[160px] flex items-center justify-center overflow-hidden">
+                        <img src="${fileUrl}" class="max-h-60 mx-auto rounded-xl shadow-md object-contain"/>
+                    </div>`;
+            } else if (fileUrl && fileUrl.includes("drive.google.com")) {
+                previewHtml = `
+                    <div class="w-full bg-slate-50 border rounded-2xl p-4 text-center mb-3">
+                        <i class="ph-fill ph-file-text text-5xl text-brand-600 mb-2"></i>
+                        <h4 class="font-bold text-xs text-slate-800 break-all">${fileName}</h4>
+                        <p class="text-[10px] text-slate-400 mt-0.5">${fileSize}</p>
+                        <a href="${fileUrl}" target="_blank" class="inline-block mt-3 text-xs font-bold text-blue-600 underline">Buka di Google Drive</a>
+                    </div>`;
+            } else {
+                previewHtml = `
+                    <div class="w-full bg-slate-50 border rounded-2xl p-6 text-center mb-3">
+                        <i class="ph-fill ph-file-text text-5xl text-brand-600 mb-2"></i>
+                        <h4 class="font-bold text-xs text-slate-800 break-all">${fileName}</h4>
+                        <p class="text-[10px] text-slate-400 mt-0.5">${fileSize}</p>
+                    </div>`;
+            }
 
             const actionButtons = `
                 <div class="flex gap-2 mt-3">
                     <button type="button" onclick="triggerActiveAttachmentDownload()" class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs uppercase shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                        <i class="ph-bold ph-download-simple text-sm"></i> Unduh Berkas
+                        <i class="ph-bold ph-download-simple text-sm"></i> Unduh / Buka Berkas
                     </button>
                 </div>`;
 
@@ -2146,7 +2194,7 @@
             }
         }
 
-        // KUNCI ABSEN HIERARKI MULTI-GADGET
+        // KUNCI ABSEN HIERARKI MULTI-GADGET (HARD LOCK UNTUK APK ANDROID, IOS & LAPTOP)
         function checkDailyIsLocked(selectedDateStr, classId) {
             if (!currentUser) return true;
 
@@ -2317,7 +2365,7 @@
                 });
                 radioHtml += `</div>`;
 
-                // NAMA AKUN PENGISI HANYA DITAMPILKAN DI AKUN ADMIN
+                // NAMA AKUN PENGISI HANYA DITAMPILKAN KHUSUS DI MENU ADMIN
                 const isUserAdmin = currentUser.role === 'admin';
                 const showUpdatedBadge = isUserAdmin && updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit mt-0.5"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${updatedBy}</span>` : '';
 
@@ -2342,15 +2390,16 @@
                                         <button type="button" onclick="setQuickRemark('${student.nis}', 'Bolos', true)" class="bg-rose-100 hover:bg-rose-200 text-rose-900 font-bold px-1.5 py-0.5 rounded text-[9px] active:scale-95 transition-transform">+ Bolos (Alpa)</button>
                                     ` : ''}
 
-                                    <label class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all" title="Ambil Foto Kamera HP">
+                                    <!-- BUKAN HANYA WEB, KAMERA DI OPTIMALKAN UTK APK ANDROID & IOS -->
+                                    <button type="button" onclick="triggerCameraCapture('${student.nis}')" class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all">
                                         <i class="ph-bold ph-camera text-xs"></i> Kamera
-                                        <input type="file" id="file-cam-${student.nis}" accept="image/*" capture="environment" onchange="handleFileUpload(event, '${student.nis}')" class="hidden" ${isLocked ? 'disabled' : ''}>
-                                    </label>
+                                    </button>
+                                    <input type="file" id="file-cam-${student.nis}" accept="image/*" capture="camera" onchange="handleFileUpload(event, '${student.nis}')" class="hidden" ${isLocked ? 'disabled' : ''}>
                                     
-                                    <label class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-slate-800 hover:bg-slate-900 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all" title="Pilih File dari HP">
+                                    <button type="button" onclick="triggerFileSelect('${student.nis}')" class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-slate-800 hover:bg-slate-900 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all">
                                         <i class="ph-bold ph-folder text-xs"></i> File/PDF
-                                        <input type="file" id="file-doc-${student.nis}" accept="image/*,application/pdf" onchange="handleFileUpload(event, '${student.nis}')" class="hidden" ${isLocked ? 'disabled' : ''}>
-                                    </label>
+                                    </button>
+                                    <input type="file" id="file-doc-${student.nis}" accept="image/*,application/pdf" onchange="handleFileUpload(event, '${student.nis}')" class="hidden" ${isLocked ? 'disabled' : ''}>
 
                                     <div id="upload-indicator-${student.nis}" class="${attachName ? '' : 'hidden-app'} flex items-center gap-1 bg-brand-50 border border-brand-200 text-brand-900 px-2 py-1 rounded-lg text-[10px] shadow-2xs">
                                         <i class="ph-bold ph-paperclip text-brand-600"></i>
@@ -2363,8 +2412,6 @@
                                         <button type="button" onclick="downloadAttachmentDirect('${student.nis}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-1.5 py-0.5 rounded text-[9px] flex items-center gap-0.5 active:scale-95 transition-transform" title="Unduh Berkas Langsung">
                                             <i class="ph-bold ph-download-simple"></i> Unduh
                                         </button>
-
-                                        ${!isLocked ? `<button type="button" onclick="removeAttachedFile('${student.nis}')" class="text-rose-500 hover:text-rose-700 p-0.5 font-bold" title="Hapus Berkas"><i class="ph-bold ph-x text-xs"></i></button>` : ''}
                                     </div>
                                 </div>
                             </div>
@@ -2589,10 +2636,18 @@
             const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
 
             const waliObj = getWaliForClass(classId);
+            const todayFormated = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            if (document.getElementById('recap-header-class')) document.getElementById('recap-header-class').textContent = classId;
+            if (document.getElementById('recap-header-period')) document.getElementById('recap-header-period').textContent = type.toUpperCase();
+            if (document.getElementById('recap-header-wali')) document.getElementById('recap-header-wali').textContent = waliObj.name;
+            if (document.getElementById('recap-header-nip')) document.getElementById('recap-header-nip').textContent = waliObj.nip;
+            if (document.getElementById('recap-header-today')) document.getElementById('recap-header-today').textContent = todayFormated;
+
             document.getElementById('print-signature-name').textContent = waliObj.name;
             document.getElementById('print-signature-nip').textContent = "NIP. " + waliObj.nip;
             document.getElementById('print-class-label').textContent = classId;
-            document.getElementById('print-today-date').textContent = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('print-today-date').textContent = todayFormated;
 
             const getStatusBadge = (st) => {
                 if (!st || st === '-') return '-';
@@ -2616,7 +2671,7 @@
 
                 let headerHtml = `<tr><th class="px-2.5 py-2 text-center">No</th><th class="px-2.5 py-2 text-left">NIS</th><th class="px-2 py-2 text-left">Nama Siswa</th><th class="px-1 py-2 text-center w-16">Kelas</th>`;
                 for (let d = 1; d <= daysInMonth; d++) headerHtml += `<th class="px-1 py-2 text-center text-[9px]">${d}</th>`;
-                headerHtml += `<th class="bg-emerald-50 text-emerald-700">H</th><th class="bg-amber-50 text-amber-700">I</th><th class="bg-blue-50 text-blue-700">S</th><th class="bg-rose-50 text-rose-700">A</th><th class="bg-purple-50 text-purple-700">D</th><th class="bg-sky-50 text-sky-700">L</th><th>%</th></tr>`;
+                headerHtml += `<th class="bg-emerald-50 text-emerald-700">H</th><th class="bg-amber-50 text-amber-700">I</th><th class="bg-blue-50 text-blue-700">S</th><th class="bg-rose-50 text-rose-700">A</th><th class="bg-purple-50 text-purple-700">D</th><th class="bg-sky-50 text-sky-700">L</th><th class="bg-emerald-100 text-emerald-900">Hadir (%)</th></tr>`;
                 headerEl.innerHTML = headerHtml;
 
                 tbody.innerHTML = classStudents.map((student, idx) => {
@@ -2653,7 +2708,7 @@
                             <td class="font-bold text-rose-700 text-center">${rA}</td>
                             <td class="font-bold text-purple-700 text-center">${rD}</td>
                             <td class="font-bold text-sky-700 text-center">${rL}</td>
-                            <td class="font-bold bg-slate-50 text-center">${pct}%</td>
+                            <td class="font-black bg-emerald-100 text-emerald-900 text-center">${pct}%</td>
                         </tr>
                     `;
                 }).join('');
@@ -2673,7 +2728,7 @@
                     const dayLabel = currentDay.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' });
                     headerHtml += `<th class="px-2 py-2 text-center text-[10px]">${dayLabel}</th>`;
                 }
-                headerHtml += `<th class="bg-emerald-50 text-emerald-700">H</th><th class="bg-amber-50 text-amber-700">I</th><th class="bg-blue-50 text-blue-700">S</th><th class="bg-rose-50 text-rose-700">A</th><th class="bg-purple-50 text-purple-700">D</th><th class="bg-sky-50 text-sky-700">L</th><th>%</th></tr>`;
+                headerHtml += `<th class="bg-emerald-50 text-emerald-700">H</th><th class="bg-amber-50 text-amber-700">I</th><th class="bg-blue-50 text-blue-700">S</th><th class="bg-rose-50 text-rose-700">A</th><th class="bg-purple-50 text-purple-700">D</th><th class="bg-sky-50 text-sky-700">L</th><th class="bg-emerald-100 text-emerald-900">Hadir (%)</th></tr>`;
                 headerEl.innerHTML = headerHtml;
 
                 tbody.innerHTML = classStudents.map((student, idx) => {
