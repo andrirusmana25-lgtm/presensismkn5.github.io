@@ -870,6 +870,7 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbyeeWNsAMKaPxVPYbKh7YRkVT-ADxTcrx1dRb85MjlfNKSrb4W5ZXeIdfYV4IvduQip/exec";
         let currentUser = null;
         let activeAbsenTab = 'isi';
+        let currentTargetMenu = 'dashboard_admin';
         let isSyncing = false;
         let isFormDirty = false;
 
@@ -1019,13 +1020,8 @@
             isSyncing = false;
 
             if (result && result.success) {
-                if (result.dailyLocks && typeof result.dailyLocks === 'object') {
-                    MOCK_DB.dailyLocks = { ...MOCK_DB.dailyLocks, ...result.dailyLocks };
-                }
-                if (result.attendance && Array.isArray(result.attendance)) {
-                    MOCK_DB.attendance = result.attendance;
-                }
-
+                MOCK_DB.dailyLocks = result.dailyLocks || {};
+                if (result.attendance && Array.isArray(result.attendance)) MOCK_DB.attendance = result.attendance;
                 if (result.departments && result.departments.length) MOCK_DB.departments = result.departments;
                 if (result.classes && result.classes.length) MOCK_DB.classes = result.classes;
                 if (result.teachers && result.teachers.length) MOCK_DB.teachers = result.teachers;
@@ -1039,11 +1035,22 @@
                     badgeText.innerHTML = '<span class="w-2 h-2 rounded-full bg-white animate-ping inline-block mr-1"></span>🔥 REALTIME SYNC';
                 }
 
-                if (currentUser && activeAbsenTab === 'isi' && document.getElementById('input-absen-kelas') && !isFormDirty) {
-                    loadStudentAttendanceForm(true);
-                }
+                refreshActiveView();
+                if (manualNotify) showMessage('Sukses', 'Data berhasil disinkronkan ke seluruh gadget.');
+            }
+        }
 
-                if (manualNotify) showMessage('Sukses', 'Data berhasil disinkronkan dari cloud.');
+        function refreshActiveView() {
+            if (!currentUser || isFormDirty) return;
+            if (currentTargetMenu === 'menu_absen') {
+                if (activeAbsenTab === 'isi') loadStudentAttendanceForm(true);
+                else renderAttendanceRecap();
+            } else if (currentTargetMenu === 'menu_kelas') {
+                initMenuKelas();
+            } else if (currentTargetMenu === 'menu_siswa') {
+                initMenuSiswa();
+            } else if (currentTargetMenu === 'menu_wali') {
+                initMenuWali();
             }
         }
 
@@ -1515,7 +1522,7 @@
             const recorderTag = `${currentUser.name} (${getRoleLabelFormatted(currentUser)})`;
             window[`recorder_tag_${nis}`] = recorderTag;
 
-            // TAMPILKAN REKAP PENGISI KHUSUS DI MENU ADMIN SANA
+            // TAMPILKAN REKAP PENGISI KHUSUS DI MENU ADMIN
             if (currentUser.role === 'admin') {
                 const badgeContainer = document.getElementById(`updater-badge-${nis}`);
                 if (badgeContainer) {
@@ -1843,6 +1850,7 @@
         }
 
         function navigateTo(target) {
+            currentTargetMenu = target;
             isFormDirty = false;
             const mainContent = document.getElementById('main-content');
             mainContent.innerHTML = '';
@@ -2092,7 +2100,7 @@
             const rekapKelas = document.getElementById('rekap-absen-kelas');
             const todayStr = normalizeDateStr(new Date());
 
-            if (inputDate) inputDate.value = todayStr;
+            if (inputDate && !inputDate.value) inputDate.value = todayStr;
             if (inputKelas) inputKelas.innerHTML = '';
             if (rekapKelas) rekapKelas.innerHTML = '';
 
@@ -2133,7 +2141,7 @@
             }
         }
 
-        // HIERARKI KUNCI ABSENSI HARIAN INTEGRASI REAL-TIME
+        // HIERARKI KUNCI ABSENSI HARIAN REALTIME UNTUK SELURUH AKUN & GADGET
         function checkDailyIsLocked(selectedDateStr, classId) {
             if (!currentUser) return true;
 
@@ -2162,14 +2170,14 @@
             if (isExplicitlyOpened) return false;
 
             if (currentUser.role === 'guru_bp') return true;
-            if (isPastDate || isFutureDate) return true; // HARI SELANJUTNYA & LAMPAU OTOMATIS TERKUNCI
+            if (isPastDate || isFutureDate) return true; // TANGGAL LAMPAU & FUTURE OTOMATIS TERKUNCI BY DEFAULT
             return false;
         }
 
         function loadStudentAttendanceForm(isSilent = false) {
             if (!currentUser) return;
             if (isSilent && isFormDirty) return;
-            
+
             const classId = document.getElementById('input-absen-kelas') ? document.getElementById('input-absen-kelas').value : '';
             const selectedDateStr = document.getElementById('input-absen-date') ? normalizeDateStr(document.getElementById('input-absen-date').value) : '';
             const todayStr = normalizeDateStr(new Date());
@@ -2305,7 +2313,7 @@
                 });
                 radioHtml += `</div>`;
 
-                // NAMA AKUN PENGISI DATA DITAMPILKAN KHUSUS DI MENU ABSEN ADMIN
+                // NAMA AKUN PENGISI DATA HANYA DITAMPILKAN KHUSUS DI MENU ABSEN ADMIN
                 const isUserAdmin = currentUser.role === 'admin';
                 const showUpdatedBadge = isUserAdmin && updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit mt-0.5"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${updatedBy}</span>` : '';
 
@@ -2668,7 +2676,7 @@
                     let rH = 0, rI = 0, rS = 0, rA = 0, rD = 0, rL = 0;
                     let daysHtml = '';
                     dateCols.forEach(targetDate => {
-const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === targetDate);
+                        const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === targetDate);
                         let cellContent = '-';
                         if (att) {
                             cellContent = getStatusBadge(att.status);
@@ -2706,7 +2714,7 @@ const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toStri
                 const dateVal = document.getElementById('rekap-absen-date').value || normalizeDateStr(new Date());
                 document.getElementById('print-month-label').textContent = dateVal;
 
-                // KOLOM PENGISI DATA HANYA DITAMPILKAN JIKA ROLE = ADMIN
+                // KOLOM PENGISI DATA HANYA DITAMPILKAN UNTUK AKUN ADMIN
                 const colAkunHeader = isUserAdmin ? `<th class="px-3 py-2">Akun Pengisi Data</th>` : '';
                 headerEl.innerHTML = `<tr><th class="px-3 py-2 w-10 text-center">No</th><th class="px-3 py-2 w-24">NIS</th><th class="px-3 py-2 text-left">Nama Siswa</th><th class="px-2 py-2 text-center w-20">Kelas</th><th class="px-3 py-2 text-center">Status</th><th class="px-3 py-2">Catatan / Keterangan</th>${colAkunHeader}<th class="px-3 py-2 text-center no-print">Surat Bukti</th></tr>`;
                 
