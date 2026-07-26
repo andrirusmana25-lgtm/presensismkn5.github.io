@@ -2,7 +2,6 @@
 <html lang="id" class="w-full max-w-full overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
-    <!-- DUKUNGAN ZOOM FLEXIBLE & PINCH ZOOM DI ANDROID APK & IPHONE IOS -->
     <meta name="viewport" content="width=device-width, initial-scale=0.85, minimum-scale=0.3, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <title>Sistem Absensi Modern - SMKN 5 Pangalengan</title>
     
@@ -56,11 +55,8 @@
 
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- SheetJS (XLSX) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
@@ -796,7 +792,6 @@
                     <select id="admin-target-user" onchange="toggleNewUserFields()" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold"></select>
                 </div>
 
-                <!-- FORM EDIT DETAIL AKUN TERMASUK USERNAME LAMA/BARU -->
                 <div id="new-user-extra-fields" class="space-y-3 p-3.5 bg-brand-50/50 border border-brand-200 rounded-2xl">
                     <div>
                         <label class="block text-[10px] font-bold uppercase text-slate-600 mb-1" id="lbl-user-id">Username / NIP / NIS</label>
@@ -827,7 +822,7 @@
                     <input type="text" id="admin-target-pass" required placeholder="Masukkan kata sandi baru..." class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
                 </div>
                 <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs uppercase transition-all flex items-center justify-center gap-1.5 shadow-md">
-                    <i class="ph-bold ph-floppy-disk text-base"></i> Simpan & Sync Real-Time Ke Spreadsheet
+                    <i class="ph-bold ph-floppy-disk text-base"></i> Simpan & Sync Real-Time Ke Spreadsheet & Firebase
                 </button>
             </form>
         </div>
@@ -872,7 +867,7 @@
 
     <!-- HIGH PERFORMANCE ENGINE JS -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyeeWNsAMKaPxVPYbKh7YRkVT-ADxTcrx1dRb85MjlfNKSrb4W5ZXeIdfYV4IvduQip/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzD4-sWWyAZshTYxVc-Cf9rRtFQlryMcyBSGz_3Tv5vAtzjedXQM7t8Pch-pESMURIa/exec";
         let currentUser = null;
         let activeAbsenTab = 'isi';
         let isSyncing = false;
@@ -1119,8 +1114,8 @@
             saveToStorage();
             document.getElementById('form-add-kelas').reset();
             initMenuKelas();
-            showMessage('Sukses', 'Data kelas berhasil disimpan.');
-            callCloudAPI("saveKelas", { id, name, department: dept, classes: MOCK_DB.classes });
+            showMessage('Sukses', 'Data kelas berhasil disimpan & disinkronkan ke Spreadsheet & Firebase.');
+            callCloudAPI("saveKelas", { id, name, department: dept, oldId: editId });
         }
 
         function openEditKelasModal(id) {
@@ -1138,7 +1133,7 @@
             saveToStorage();
             initMenuKelas();
             showMessage('Sukses', `Kelas ${id} berhasil dihapus.`);
-            callCloudAPI("deleteKelas", { id, classes: MOCK_DB.classes });
+            callCloudAPI("deleteClass", { id });
         }
 
         // KELOLA SISWA
@@ -1203,9 +1198,8 @@
             saveToStorage();
             closeSiswaModal();
             initMenuSiswa();
-            showMessage('Sukses', 'Data siswa berhasil disimpan & disinkronkan.');
-            callCloudAPI("saveSiswa", { nis, name, classId, pass, students: MOCK_DB.students });
-            callCloudAPI("syncAllUsers", { teachers: MOCK_DB.teachers, students: MOCK_DB.students, admins: MOCK_DB.admins });
+            showMessage('Sukses', 'Data siswa berhasil disimpan & disinkronkan ke Spreadsheet & Firebase.');
+            callCloudAPI("saveSiswa", { nis, name, classId, pass });
         }
 
         function deleteSiswa(nis) {
@@ -1214,8 +1208,7 @@
             saveToStorage();
             initMenuSiswa();
             showMessage('Sukses', `Siswa NIS ${nis} berhasil dihapus.`);
-            callCloudAPI("deleteSiswa", { nis, students: MOCK_DB.students });
-            callCloudAPI("syncAllUsers", { teachers: MOCK_DB.teachers, students: MOCK_DB.students, admins: MOCK_DB.admins });
+            callCloudAPI("deleteSiswa", { nis, id: nis });
         }
 
         // KELOLA GURU / WALI / WAKASEK / PIMPINAN
@@ -1282,9 +1275,8 @@
             saveToStorage();
             closeWaliModal();
             if (document.getElementById('wali-table-body')) initMenuWali();
-            showMessage('Sukses', 'Data akun berhasil disimpan & disinkronkan.');
-            callCloudAPI("saveTeacher", { nip, name, dept, classId, pass, teachers: MOCK_DB.teachers });
-            callCloudAPI("syncAllUsers", { teachers: MOCK_DB.teachers, students: MOCK_DB.students, admins: MOCK_DB.admins });
+            showMessage('Sukses', 'Data akun berhasil disimpan & disinkronkan ke Spreadsheet & Firebase.');
+            callCloudAPI("saveTeacher", { nip, name, dept, classId, pass });
         }
 
         function deleteWali(nip) {
@@ -1293,8 +1285,7 @@
             saveToStorage();
             initMenuWali();
             showMessage('Sukses', `Data guru ${nip} berhasil dihapus.`);
-            callCloudAPI("deleteTeacher", { nip, teachers: MOCK_DB.teachers });
-            callCloudAPI("syncAllUsers", { teachers: MOCK_DB.teachers, students: MOCK_DB.students, admins: MOCK_DB.admins });
+            callCloudAPI("deleteTeacher", { nip, id: nip });
         }
 
         function openDiagnosticModal() {
@@ -1419,36 +1410,49 @@
                 if (type === 'admin') {
                     if (newDept === 'Wakasek' || newDept === 'Kepala Sekolah') {
                         MOCK_DB.teachers.push({ nip: newId, name: newName, dept: newDept, classId: newClass, pass: newPass });
+                        callCloudAPI("saveTeacher", { nip: newId, name: newName, dept: newDept, classId: newClass, pass: newPass });
                     } else {
                         MOCK_DB.admins.push({ username: newId, name: newName, pass: newPass });
+                        callCloudAPI("addAdminUser", { data: { username: newId, name: newName, pass: newPass } });
                     }
                 } else if (type === 'guru') {
                     MOCK_DB.teachers.push({ nip: newId, name: newName, dept: newDept, classId: newClass, pass: newPass });
+                    callCloudAPI("saveTeacher", { nip: newId, name: newName, dept: newDept, classId: newClass, pass: newPass });
                 } else {
                     MOCK_DB.students.push({ nis: newId, name: newName, classId: newClass, pass: newPass });
+                    callCloudAPI("saveSiswa", { nis: newId, name: newName, classId: newClass, pass: newPass });
                 }
             } else {
-                // EDIT AKUN DENGAN UPDATE USERNAME & PASS
                 if (type === 'admin') {
                     let adm = MOCK_DB.admins.find(a => a.username.toString() === targetId);
                     if (adm) {
                         adm.username = newId; adm.name = newName; adm.pass = newPass;
+                        callCloudAPI("updateAdminPassword", { username: newId, pass: newPass });
                     } else {
                         let tr = MOCK_DB.teachers.find(t => t.nip.toString() === targetId);
-                        if (tr) { tr.nip = newId; tr.name = newName; tr.pass = newPass; tr.dept = newDept; tr.classId = newClass; }
+                        if (tr) { 
+                            tr.nip = newId; tr.name = newName; tr.pass = newPass; tr.dept = newDept; tr.classId = newClass; 
+                            callCloudAPI("saveTeacher", { nip: newId, name: newName, dept: newDept, classId: newClass, pass: newPass });
+                        }
                     }
                 } else if (type === 'guru') {
                     let tr = MOCK_DB.teachers.find(t => t.nip.toString() === targetId);
-                    if (tr) { tr.nip = newId; tr.name = newName; tr.pass = newPass; tr.dept = newDept; tr.classId = newClass; }
+                    if (tr) { 
+                        tr.nip = newId; tr.name = newName; tr.pass = newPass; tr.dept = newDept; tr.classId = newClass; 
+                        callCloudAPI("saveTeacher", { nip: newId, name: newName, dept: newDept, classId: newClass, pass: newPass });
+                    }
                 } else {
                     let st = MOCK_DB.students.find(s => s.nis.toString() === targetId);
-                    if (st) { st.nis = newId; st.name = newName; st.pass = newPass; st.classId = newClass; }
+                    if (st) { 
+                        st.nis = newId; st.name = newName; st.pass = newPass; st.classId = newClass; 
+                        callCloudAPI("saveSiswa", { nis: newId, name: newName, classId: newClass, pass: newPass });
+                    }
                 }
             }
 
             saveToStorage();
             closeManageUsersModal();
-            showMessage('Sukses', `Data akun (${newName}) berhasil diperbarui & disinkronkan ke Cloud.`);
+            showMessage('Sukses', `Data akun (${newName}) berhasil diperbarui & disinkronkan ke Spreadsheet & Firebase.`);
 
             callCloudAPI("syncAllUsers", {
                 teachers: MOCK_DB.teachers,
@@ -1480,14 +1484,14 @@
             closeChangePasswordModal();
             showMessage('Sukses', 'Kata sandi Anda berhasil diperbarui & disinkronkan.');
 
-            callCloudAPI("syncAllUsers", {
-                teachers: MOCK_DB.teachers,
-                students: MOCK_DB.students,
-                admins: MOCK_DB.admins
+            callCloudAPI("updateSelfPassword", {
+                role: currentUser.role,
+                id: id,
+                pass: newPass
             });
         }
 
-        // TOMBOL PINTAR KESIANGAN & BOLOS DENGAN PEREKAMAN AKUN PENGISI INSTAN
+        // TOMBOL PINTAR KESIANGAN & BOLOS DENGAN PEREKAMAN AKUN PENGISI
         function setQuickRemark(nis, remarkText, isBolos = false) {
             if (!currentUser) return;
             isFormDirty = true;
@@ -1511,7 +1515,7 @@
             const recorderTag = `${currentUser.name} (${getRoleLabelFormatted(currentUser)})`;
             window[`recorder_tag_${nis}`] = recorderTag;
 
-            // TAMPILKAN REKAP PENGISI HANYA JIKA LOGGED IN SEBAGAI ADMIN
+            // TAMPILKAN REKAP PENGISI KHUSUS DI MENU ADMIN SANA
             if (currentUser.role === 'admin') {
                 const badgeContainer = document.getElementById(`updater-badge-${nis}`);
                 if (badgeContainer) {
@@ -2129,7 +2133,7 @@
             }
         }
 
-        // HIERARKI KUNCI ABSENSI HARIAN UNTUK SEMUA GADGET & AKUN
+        // HIERARKI KUNCI ABSENSI HARIAN INTEGRASI REAL-TIME
         function checkDailyIsLocked(selectedDateStr, classId) {
             if (!currentUser) return true;
 
@@ -2152,19 +2156,14 @@
                                     (lockAll === false || lockAll === 'false') ||
                                     (lockDate === false || lockDate === 'false');
 
-            // HAK AKSES PERAN: ADMIN SELALU BEBAS EDIT KECUALI DITUTUP
             if (currentUser.role === 'admin') return isExplicitlyClosed;
 
-            // PRIORITAS 1: INSTRUKSI TUTUP KHUSUS DARI ADMIN (BERLAKU DI SEMUA GADGET)
             if (isExplicitlyClosed) return true;
-
-            // PRIORITAS 2: INSTRUKSI BUKA KHUSUS DARI ADMIN
             if (isExplicitlyOpened) return false;
 
-            // PRIORITAS 3: BATASAN BAWAAN UNTUK USER NON-ADMIN (WALI, SISWA, MAPEL, BP)
             if (currentUser.role === 'guru_bp') return true;
-            if (isPastDate || isFutureDate) return true; // Tanggal lampau & mendatang otomatis terkunci
-            return false; // Hari ini terbuka secara bawaan
+            if (isPastDate || isFutureDate) return true; // HARI SELANJUTNYA & LAMPAU OTOMATIS TERKUNCI
+            return false;
         }
 
         function loadStudentAttendanceForm(isSilent = false) {
@@ -2504,9 +2503,9 @@
                 submitBtn.innerHTML = `<span>Simpan Data Absensi</span>`;
             }
 
-            showMessage('Berhasil', 'Data absensi harian berhasil disimpan & disinkronkan ke seluruh gadget.');
+            showMessage('Berhasil', 'Data absensi harian berhasil disimpan & disinkronkan ke Spreadsheet & Firebase.');
             loadStudentAttendanceForm();
-            callCloudAPI("saveBulkAttendance", { records: recordsToSave, attendance: MOCK_DB.attendance });
+            callCloudAPI("saveBulkAttendance", { records: recordsToSave });
         }
 
         async function resetDailyAttendance() {
@@ -2524,7 +2523,7 @@
 
             showMessage('Sukses', `Data absensi kelas ${classId} tanggal ${dateStr} berhasil di-reset.`);
             loadStudentAttendanceForm();
-            callCloudAPI("resetDailyAttendance", { classId, date: dateStr, attendance: MOCK_DB.attendance });
+            callCloudAPI("resetDailyAttendance", { classId, date: dateStr });
         }
 
         // SAKELAR KUNCI ADMIN INSTAN UNTUK SELURUH AKUN & GADGET
@@ -2538,7 +2537,7 @@
 
             const lockKeySpecific = `${dateStr}_${classId}`;
             const isCurrentlyLocked = checkDailyIsLocked(dateStr, classId);
-            const nextStatus = !isCurrentlyLocked; // true = KUNCI, false = BUKA
+            const nextStatus = !isCurrentlyLocked;
 
             MOCK_DB.dailyLocks[lockKeySpecific] = nextStatus;
             if (classId === 'SEMUA') {
@@ -2553,7 +2552,7 @@
             showMessage('Sukses', `Penginputan absen tanggal ${dateStr} untuk ${targetLabel} berhasil di-${nextStatus ? 'TUTUP / KUNCI' : 'BUKA'}.`);
 
             loadStudentAttendanceForm();
-            callCloudAPI("saveDailyLocks", { date: dateStr, classId, locked: nextStatus, lockKey: lockKeySpecific, dailyLocks: MOCK_DB.dailyLocks });
+            callCloudAPI("toggleDailyLock", { date: dateStr, classId, locked: nextStatus, lockKey: lockKeySpecific });
         }
 
         function toggleFilterInputs() {
@@ -2669,7 +2668,7 @@
                     let rH = 0, rI = 0, rS = 0, rA = 0, rD = 0, rL = 0;
                     let daysHtml = '';
                     dateCols.forEach(targetDate => {
-                        const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === targetDate);
+const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === targetDate);
                         let cellContent = '-';
                         if (att) {
                             cellContent = getStatusBadge(att.status);
@@ -2707,6 +2706,7 @@
                 const dateVal = document.getElementById('rekap-absen-date').value || normalizeDateStr(new Date());
                 document.getElementById('print-month-label').textContent = dateVal;
 
+                // KOLOM PENGISI DATA HANYA DITAMPILKAN JIKA ROLE = ADMIN
                 const colAkunHeader = isUserAdmin ? `<th class="px-3 py-2">Akun Pengisi Data</th>` : '';
                 headerEl.innerHTML = `<tr><th class="px-3 py-2 w-10 text-center">No</th><th class="px-3 py-2 w-24">NIS</th><th class="px-3 py-2 text-left">Nama Siswa</th><th class="px-2 py-2 text-center w-20">Kelas</th><th class="px-3 py-2 text-center">Status</th><th class="px-3 py-2">Catatan / Keterangan</th>${colAkunHeader}<th class="px-3 py-2 text-center no-print">Surat Bukti</th></tr>`;
                 
