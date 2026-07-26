@@ -196,7 +196,7 @@
                         </div>
                         <div class="min-w-0">
                             <h4 class="text-xs font-bold text-white truncate">Performa Cepat</h4>
-                            <p class="text-[9px] sm:text-[10px] text-slate-400 truncate">Firebase Engine</p>
+                            <p class="text-[9px] sm:text-[10px] text-slate-400 truncate">Cloud Sync Engine</p>
                         </div>
                     </div>
                     <div class="bg-white/5 backdrop-blur-md p-2.5 sm:p-3.5 rounded-2xl border border-white/10 flex items-center gap-2 sm:gap-3">
@@ -331,7 +331,7 @@
                     
                     <div id="db-status-badge" onclick="openDiagnosticModal()" class="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-black bg-emerald-500 text-white shadow-md shadow-emerald-500/30 uppercase tracking-wider cursor-pointer hover:scale-105 active:scale-95 transition-transform animate-pulse-slow">
                         <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-                        <span id="db-status-text">🔥 FIREBASE INSTANT</span>
+                        <span id="db-status-text">🔥 REALTIME SYNC</span>
                     </div>
 
                     <div class="hidden sm:flex flex-col text-right">
@@ -560,7 +560,7 @@
                                         <th class="px-2 py-2.5">NAMA SISWA</th>
                                         <th class="px-1 py-2.5 text-center w-16">KELAS</th>
                                         <th class="px-2 py-2.5 text-center">STATUS KEHADIRAN</th>
-                                        <th class="px-2 py-2.5">CATATAN & AKUN PENGISI DATA</th>
+                                        <th class="px-2 py-2.5" id="col-header-ket">CATATAN & OPSI</th>
                                     </tr>
                                 </thead>
                                 <tbody id="bulk-absen-table-body" class="text-xs divide-y divide-slate-100"></tbody>
@@ -747,7 +747,7 @@
     <div id="modal-diagnostic" class="hidden-app fixed inset-0 bg-slate-950/60 z-[150] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-sm font-extrabold text-slate-800">🔥 Status Cloud Engine Firebase</h3>
+                <h3 class="text-sm font-extrabold text-slate-800">🔥 Status Cloud Engine Presensi</h3>
                 <button type="button" onclick="closeDiagnosticModal()" class="text-slate-400 p-1"><i class="ph-bold ph-x"></i></button>
             </div>
             <div class="space-y-3 text-xs">
@@ -1024,10 +1024,10 @@
             isSyncing = false;
 
             if (result && result.success) {
-                if (result.dailyLocks && JSON.stringify(MOCK_DB.dailyLocks) !== JSON.stringify(result.dailyLocks)) {
-                    MOCK_DB.dailyLocks = result.dailyLocks;
+                if (result.dailyLocks && typeof result.dailyLocks === 'object') {
+                    MOCK_DB.dailyLocks = { ...MOCK_DB.dailyLocks, ...result.dailyLocks };
                 }
-                if (result.attendance && JSON.stringify(MOCK_DB.attendance) !== JSON.stringify(result.attendance)) {
+                if (result.attendance && Array.isArray(result.attendance)) {
                     MOCK_DB.attendance = result.attendance;
                 }
 
@@ -1041,10 +1041,9 @@
 
                 if (badge && badgeText) {
                     badge.className = "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-black bg-emerald-500 text-white shadow-md shadow-emerald-500/30 uppercase tracking-wider cursor-pointer hover:scale-105 active:scale-95 transition-transform animate-pulse-slow";
-                    badgeText.innerHTML = '<span class="w-2 h-2 rounded-full bg-white animate-ping inline-block mr-1"></span>🔥 FIREBASE INSTANT';
+                    badgeText.innerHTML = '<span class="w-2 h-2 rounded-full bg-white animate-ping inline-block mr-1"></span>🔥 REALTIME SYNC';
                 }
 
-                // PERBAIKAN: SINKRONISASI HANYA JIKA USER TERDEDIKASI DENGAN AMAN
                 if (currentUser && activeAbsenTab === 'isi' && document.getElementById('input-absen-kelas') && !isFormDirty) {
                     loadStudentAttendanceForm(true);
                 }
@@ -1206,6 +1205,7 @@
             initMenuSiswa();
             showMessage('Sukses', 'Data siswa berhasil disimpan & disinkronkan.');
             callCloudAPI("saveSiswa", { nis, name, classId, pass, students: MOCK_DB.students });
+            callCloudAPI("syncAllUsers", { teachers: MOCK_DB.teachers, students: MOCK_DB.students, admins: MOCK_DB.admins });
         }
 
         function deleteSiswa(nis) {
@@ -1215,6 +1215,7 @@
             initMenuSiswa();
             showMessage('Sukses', `Siswa NIS ${nis} berhasil dihapus.`);
             callCloudAPI("deleteSiswa", { nis, students: MOCK_DB.students });
+            callCloudAPI("syncAllUsers", { teachers: MOCK_DB.teachers, students: MOCK_DB.students, admins: MOCK_DB.admins });
         }
 
         // KELOLA GURU / WALI / WAKASEK / PIMPINAN
@@ -1283,6 +1284,7 @@
             if (document.getElementById('wali-table-body')) initMenuWali();
             showMessage('Sukses', 'Data akun berhasil disimpan & disinkronkan.');
             callCloudAPI("saveTeacher", { nip, name, dept, classId, pass, teachers: MOCK_DB.teachers });
+            callCloudAPI("syncAllUsers", { teachers: MOCK_DB.teachers, students: MOCK_DB.students, admins: MOCK_DB.admins });
         }
 
         function deleteWali(nip) {
@@ -1292,6 +1294,7 @@
             initMenuWali();
             showMessage('Sukses', `Data guru ${nip} berhasil dihapus.`);
             callCloudAPI("deleteTeacher", { nip, teachers: MOCK_DB.teachers });
+            callCloudAPI("syncAllUsers", { teachers: MOCK_DB.teachers, students: MOCK_DB.students, admins: MOCK_DB.admins });
         }
 
         function openDiagnosticModal() {
@@ -1310,7 +1313,7 @@
             setTimeout(() => modal.classList.add('hidden-app'), 300);
         }
 
-        // PERBAIKAN: KELOLA PASSWORD & AKUN (LENGKAP BISA EDIT USERNAME, PERAN, BIKIN AKUN BARU)
+        // KELOLA PASSWORD & AKUN (LENGKAP EDIT USERNAME, PERAN, BIKIN AKUN BARU)
         function openManageUsersModal() {
             populateAdminTargetUsers();
             const selectClass = document.getElementById('admin-new-user-class');
@@ -1447,7 +1450,6 @@
             closeManageUsersModal();
             showMessage('Sukses', `Data akun (${newName}) berhasil diperbarui & disinkronkan ke Cloud.`);
 
-            // INTEGRASI KE backend Google Apps Script / Spreadsheet
             callCloudAPI("syncAllUsers", {
                 teachers: MOCK_DB.teachers,
                 students: MOCK_DB.students,
@@ -1507,9 +1509,14 @@
             }
 
             const recorderTag = `${currentUser.name} (${getRoleLabelFormatted(currentUser)})`;
-            const badgeContainer = document.getElementById(`updater-badge-${nis}`);
-            if (badgeContainer) {
-                badgeContainer.innerHTML = `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${recorderTag}</span>`;
+            window[`recorder_tag_${nis}`] = recorderTag;
+
+            // TAMPILKAN REKAP PENGISI HANYA JIKA LOGGED IN SEBAGAI ADMIN
+            if (currentUser.role === 'admin') {
+                const badgeContainer = document.getElementById(`updater-badge-${nis}`);
+                if (badgeContainer) {
+                    badgeContainer.innerHTML = `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${recorderTag}</span>`;
+                }
             }
         }
 
@@ -2122,9 +2129,9 @@
             }
         }
 
-        // PERBAIKAN TOTAL HIERARKI KUNCI ABSENSI HARIAN
+        // HIERARKI KUNCI ABSENSI HARIAN UNTUK SEMUA GADGET & AKUN
         function checkDailyIsLocked(selectedDateStr, classId) {
-            if (!currentUser) return true; // SAFEGUARD: Jika belum login, kuncikan secara otomatis
+            if (!currentUser) return true;
 
             const todayStr = normalizeDateStr(new Date());
             const isPastDate = selectedDateStr < todayStr;
@@ -2145,19 +2152,19 @@
                                     (lockAll === false || lockAll === 'false') ||
                                     (lockDate === false || lockDate === 'false');
 
-            // PRIORITAS 1: JIKA TERDAPAT INSTRUKSI KUNCI KHUSUS DARI ADMIN
+            // HAK AKSES PERAN: ADMIN SELALU BEBAS EDIT KECUALI DITUTUP
+            if (currentUser.role === 'admin') return isExplicitlyClosed;
+
+            // PRIORITAS 1: INSTRUKSI TUTUP KHUSUS DARI ADMIN (BERLAKU DI SEMUA GADGET)
             if (isExplicitlyClosed) return true;
 
-            // PRIORITAS 2: JIKA TERDAPAT INSTRUKSI BUKA KHUSUS DARI ADMIN (MEMBUKA TANGGAL LAMPAU/MASA DEPAN)
+            // PRIORITAS 2: INSTRUKSI BUKA KHUSUS DARI ADMIN
             if (isExplicitlyOpened) return false;
 
-            // PRIORITAS 3: BATASAN BERDASARKAN HAK AKSES PERAN
+            // PRIORITAS 3: BATASAN BAWAAN UNTUK USER NON-ADMIN (WALI, SISWA, MAPEL, BP)
             if (currentUser.role === 'guru_bp') return true;
-            if (currentUser.role === 'admin') return false; // Admin bebas mengabsen tanggal berapapun secara bawaan
-
-            // PERAN WALI KELAS, SEKSI ABSEN SISWA & GURU MAPEL (DEFAULT)
-            if (isPastDate || isFutureDate) return true; // Kunci tanggal lampau & mendatang secara bawaan
-            return false; // Hari ini terbuka
+            if (isPastDate || isFutureDate) return true; // Tanggal lampau & mendatang otomatis terkunci
+            return false; // Hari ini terbuka secara bawaan
         }
 
         function loadStudentAttendanceForm(isSilent = false) {
@@ -2172,10 +2179,14 @@
             const submitBar = document.getElementById('bulk-absen-submit-bar');
             const dailyRecapBanner = document.getElementById('daily-recap-banner');
             const actionBar = document.getElementById('bulk-absen-action-bar');
+            const colHeaderKet = document.getElementById('col-header-ket');
 
             if (!tbody) return;
 
-            // SEMBUNYIKAN DAFTAR SISWA JIKA BELUM MEMILIH KELAS
+            if (colHeaderKet) {
+                colHeaderKet.textContent = currentUser.role === 'admin' ? "CATATAN, KESIANGAN/BOLOS & AKUN PENGISI DATA" : "CATATAN & OPSI KESIANGAN/BOLOS";
+            }
+
             if (!classId) {
                 tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-bold"><i class="ph-bold ph-hand-pointing text-3xl block mb-2 text-brand-600 animate-bounce"></i>Silakan pilih kelas terlebih dahulu untuk menampilkan daftar siswa.</td></tr>`;
                 if (submitBar) submitBar.classList.add('hidden-app'); 
@@ -2204,9 +2215,9 @@
                 if (isLocked) {
                     lockBanner.classList.remove('hidden-app');
                     if (isPastDate && !isExplicitlyClosed) {
-                        lockText.textContent = "Penginputan absen tanggal sebelumnya (lampau) TERKUNCI. Minta Admin untuk membuka kunci.";
+                        lockText.textContent = "Penginputan absen tanggal sebelumnya TERKUNCI. Hubungi Administrator untuk membuka kunci.";
                     } else if (isFutureDate && !isExplicitlyClosed) {
-                        lockText.textContent = "Penginputan absen untuk tanggal mendatang (besok & seterusnya) ditutup.";
+                        lockText.textContent = "Penginputan absen untuk tanggal mendatang ditutup.";
                     } else if (isExplicitlyClosed) {
                         lockText.textContent = `Penginputan absen tanggal ${selectedDateStr} untuk ${classId === 'SEMUA' ? 'Semua Kelas' : 'Kelas ' + classId} DITUTUP / DIKUNCI oleh Administrator.`;
                     } else {
@@ -2295,6 +2306,10 @@
                 });
                 radioHtml += `</div>`;
 
+                // NAMA AKUN PENGISI DATA DITAMPILKAN KHUSUS DI MENU ABSEN ADMIN
+                const isUserAdmin = currentUser.role === 'admin';
+                const showUpdatedBadge = isUserAdmin && updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit mt-0.5"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${updatedBy}</span>` : '';
+
                 return `
                     <tr class="hover:bg-slate-50 transition-colors text-xs">
                         <td class="px-1.5 py-2 font-bold text-slate-400 text-center">${idx + 1}</td>
@@ -2307,7 +2322,7 @@
                                 <input type="text" id="ket-input-${student.nis}" value="${remark}" ${!isLocked ? '' : 'disabled'} onchange="isFormDirty=true" placeholder="Catatan / Alasan S, I, A, D..." class="w-full bg-slate-50 border rounded-xl px-2.5 py-1 text-[11px] font-semibold">
                                 
                                 <div id="updater-badge-${student.nis}">
-                                    ${updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${updatedBy}</span>` : ''}
+                                    ${showUpdatedBadge}
                                 </div>
 
                                 <div class="flex items-center gap-1.5 flex-wrap mt-0.5">
@@ -2387,9 +2402,13 @@
 
             if (currentUser) {
                 const recorderTag = `${currentUser.name} (${getRoleLabelFormatted(currentUser)})`;
-                const badgeContainer = document.getElementById(`updater-badge-${nis}`);
-                if (badgeContainer) {
-                    badgeContainer.innerHTML = `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${recorderTag}</span>`;
+                window[`recorder_tag_${nis}`] = recorderTag;
+
+                if (currentUser.role === 'admin') {
+                    const badgeContainer = document.getElementById(`updater-badge-${nis}`);
+                    if (badgeContainer) {
+                        badgeContainer.innerHTML = `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${recorderTag}</span>`;
+                    }
                 }
             }
 
@@ -2446,7 +2465,7 @@
             const recordsToSave = [];
             const submitBtn = document.getElementById('btn-submit-bulk-absen');
 
-            const recorderTag = currentUser ? `${currentUser.name} (${getRoleLabelFormatted(currentUser)})` : 'Pengguna';
+            const defaultRecorderTag = currentUser ? `${currentUser.name} (${getRoleLabelFormatted(currentUser)})` : 'Pengguna';
 
             if (submitBtn) {
                 submitBtn.disabled = true;
@@ -2462,6 +2481,7 @@
                 const tempFile = window[`attached_file_${student.nis}`];
 
                 const existing = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === dateStr);
+                const recorderTag = window[`recorder_tag_${student.nis}`] || (existing ? existing.updatedBy : defaultRecorderTag);
 
                 recordsToSave.push({
                     nis: student.nis, date: dateStr, month: dateStr.slice(0, 7),
@@ -2507,7 +2527,7 @@
             callCloudAPI("resetDailyAttendance", { classId, date: dateStr, attendance: MOCK_DB.attendance });
         }
 
-        // SAKELAR KUNCI ADMIN INSTAN DENGAN PRIO TERTINGGI
+        // SAKELAR KUNCI ADMIN INSTAN UNTUK SELURUH AKUN & GADGET
         async function toggleDailyLockByAdmin() {
             if (!currentUser || currentUser.role !== 'admin') return;
             const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
@@ -2573,6 +2593,8 @@
                 if (st === 'L') return `<span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-sky-100 text-sky-800">L</span>`;
                 return st;
             };
+
+            const isUserAdmin = currentUser && currentUser.role === 'admin';
 
             if (type === 'monthly') {
                 const monthVal = document.getElementById('rekap-absen-month').value || new Date().toISOString().slice(0,7);
@@ -2684,13 +2706,19 @@
             } else if (type === 'daily') {
                 const dateVal = document.getElementById('rekap-absen-date').value || normalizeDateStr(new Date());
                 document.getElementById('print-month-label').textContent = dateVal;
-                headerEl.innerHTML = `<tr><th class="px-3 py-2 w-10 text-center">No</th><th class="px-3 py-2 w-24">NIS</th><th class="px-3 py-2 text-left">Nama Siswa</th><th class="px-2 py-2 text-center w-20">Kelas</th><th class="px-3 py-2 text-center">Status</th><th class="px-3 py-2">Catatan & Akun Pengisi Data</th><th class="px-3 py-2 text-center no-print">Surat Bukti</th></tr>`;
+
+                const colAkunHeader = isUserAdmin ? `<th class="px-3 py-2">Akun Pengisi Data</th>` : '';
+                headerEl.innerHTML = `<tr><th class="px-3 py-2 w-10 text-center">No</th><th class="px-3 py-2 w-24">NIS</th><th class="px-3 py-2 text-left">Nama Siswa</th><th class="px-2 py-2 text-center w-20">Kelas</th><th class="px-3 py-2 text-center">Status</th><th class="px-3 py-2">Catatan / Keterangan</th>${colAkunHeader}<th class="px-3 py-2 text-center no-print">Surat Bukti</th></tr>`;
                 
                 tbody.innerHTML = classStudents.map((student, idx) => {
                     const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === dateVal);
                     const statusText = att ? getStatusBadge(att.status) : '-';
                     const remarkText = att ? (att.remark || '-') : '-';
-                    const updaterTag = att && att.updatedBy ? `<span class="text-[9px] text-brand-700 font-bold block mt-0.5 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded w-fit"><i class="ph-bold ph-user-check"></i> Pengisi: ${att.updatedBy}</span>` : '';
+                    
+                    const updaterTd = isUserAdmin 
+                        ? `<td class="px-3 py-2 text-xs font-bold text-brand-700 bg-brand-50/50">${att && att.updatedBy ? `<i class="ph-bold ph-user-check"></i> ${att.updatedBy}` : '-'}</td>` 
+                        : '';
+
                     const hasAttach = att && (att.attachment || att.attachmentUrl || att.attachmentName);
                     const attachBtn = hasAttach 
                         ? `<button type="button" onclick="viewAttachmentFromRecap('${student.nis}', '${dateVal}')" class="text-brand-600 font-bold bg-brand-50 border border-brand-200 px-2 py-0.5 rounded-lg text-xs active:scale-95 transition-transform"><i class="ph-bold ph-file-text"></i> Lihat / Unduh</button>` 
@@ -2703,7 +2731,8 @@
                             <td class="px-3 py-2 font-extrabold text-slate-800 text-xs">${student.name}</td>
                             <td class="px-2 py-2 text-center"><span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">${student.classId}</span></td>
                             <td class="px-3 py-2 text-center font-extrabold">${statusText}</td>
-                            <td class="px-3 py-2 text-xs"><div>${remarkText}</div>${updaterTag}</td>
+                            <td class="px-3 py-2 text-xs">${remarkText}</td>
+                            ${updaterTd}
                             <td class="px-3 py-2 text-center no-print">${attachBtn}</td>
                         </tr>
                     `;
@@ -2744,7 +2773,7 @@
                     let r = [idx + 1, student.nis, student.name, student.classId];
                     let rH = 0, rI = 0, rS = 0, rA = 0, rD = 0, rL = 0;
                     for (let d = 1; d <= daysInMonth; d++) {
-const targetDate = `${monthVal}-${String(d).padStart(2, '0')}`;
+                        const targetDate = `${monthVal}-${String(d).padStart(2, '0')}`;
                         const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === targetDate);
                         if (att) {
                             r.push(att.status);
