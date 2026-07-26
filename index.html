@@ -492,11 +492,11 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 w-full">
                             <div>
                                 <label class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Tanggal</label>
-                                <input type="date" id="input-absen-date" onchange="loadStudentAttendanceForm()" class="w-full bg-white border rounded-xl px-3 py-1.5 text-xs font-bold">
+                                <input type="date" id="input-absen-date" onchange="clearTemporaryInputs(); loadStudentAttendanceForm();" class="w-full bg-white border rounded-xl px-3 py-1.5 text-xs font-bold">
                             </div>
                             <div>
                                 <label class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Pilih Kelas</label>
-                                <select id="input-absen-kelas" onchange="loadStudentAttendanceForm()" class="w-full bg-white border rounded-xl px-3 py-1.5 text-xs font-bold"></select>
+                                <select id="input-absen-kelas" onchange="clearTemporaryInputs(); loadStudentAttendanceForm();" class="w-full bg-white border rounded-xl px-3 py-1.5 text-xs font-bold"></select>
                             </div>
                             <div>
                                 <label class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Pencarian</label>
@@ -879,7 +879,7 @@
 
     <!-- HIGH PERFORMANCE ENGINE JS -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxOnB9Qes3xrBiZF8uF5zdoIRwlK60fMkHZ79dIABLXZRj8TtiS3Huj2ItoDpuz-YEo/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxxm1YMUwzdRimt---DhzwzzkJQw4Kt4vBGu6We8Dkl8ysT5solNxNftNo0_zl3POOh/exec";
         let currentUser = null;
         let activeAbsenTab = 'isi';
         let currentTargetMenu = 'dashboard_admin';
@@ -942,6 +942,16 @@
                 }
                 return new Blob([uInt8Array], { type: contentType });
             } catch (e) { return null; }
+        }
+
+        function clearTemporaryInputs() {
+            if (MOCK_DB && MOCK_DB.students) {
+                MOCK_DB.students.forEach(s => {
+                    delete window[`attached_file_${s.nis}`];
+                    delete window[`recorder_tag_${s.nis}`];
+                });
+            }
+            isFormDirty = false;
         }
 
         const DEFAULT_DATABASE = {
@@ -1067,7 +1077,7 @@
             }
         }
 
-        // AUTO SYNC INTERINTEGRASI UNTUK SEMUA GADGET SETIAP 2.5 DETIK
+        // POLLING REALTIME UNTUK APK ANDROID, IOS & WEBSITES
         setInterval(() => {
             if (currentUser) synchronizeDatabase(false);
         }, 2500);
@@ -1682,15 +1692,29 @@
             }
         }
 
+        // PENAMBAHAN HELPER DUKUNGAN BUKA FILE DRIVE DI HP / LAPTOP
+        function convertDriveUrlToDirect(url) {
+            if (!url) return '';
+            if (url.includes('drive.google.com/file/d/')) {
+                const match = url.match(/\/d\/([^\/]+)/);
+                if (match && match[1]) {
+                    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+                }
+            }
+            return url;
+        }
+
         function viewRealOrMockLetter(studentName, fileName, fileSize, fileUrl, fileType = '') {
-            window.currentActiveAttachment = { studentName, name: fileName || "Surat_Bukti", size: fileSize || "Selesai", url: fileUrl, type: fileType };
-            const isImage = (fileType && fileType.startsWith('image/')) || (fileUrl && (fileUrl.startsWith('data:image/') || fileUrl.match(/\.(jpeg|jpg|gif|png)$/i)));
+            let finalViewUrl = convertDriveUrlToDirect(fileUrl);
+            window.currentActiveAttachment = { studentName, name: fileName || "Surat_Bukti", size: fileSize || "Selesai", url: finalViewUrl, type: fileType };
+            
+            const isImage = (fileType && fileType.startsWith('image/')) || (finalViewUrl && (finalViewUrl.startsWith('data:image/') || finalViewUrl.match(/\.(jpeg|jpg|gif|png)$/i)));
             
             let previewHtml = '';
             if (isImage) {
                 previewHtml = `
                     <div class="w-full bg-slate-50 border rounded-2xl p-2 text-center mb-3 min-h-[160px] flex items-center justify-center overflow-hidden">
-                        <img src="${fileUrl}" class="max-h-60 mx-auto rounded-xl shadow-md object-contain"/>
+                        <img src="${finalViewUrl}" class="max-h-60 mx-auto rounded-xl shadow-md object-contain" onerror="this.src='https://smkn5pangalengan.sch.id/wp-content/uploads/2023/11/logo.png'"/>
                     </div>`;
             } else if (fileUrl && fileUrl.includes("drive.google.com")) {
                 previewHtml = `
@@ -1698,7 +1722,7 @@
                         <i class="ph-fill ph-file-text text-5xl text-brand-600 mb-2"></i>
                         <h4 class="font-bold text-xs text-slate-800 break-all">${fileName}</h4>
                         <p class="text-[10px] text-slate-400 mt-0.5">${fileSize}</p>
-                        <a href="${fileUrl}" target="_blank" class="inline-block mt-3 text-xs font-bold text-blue-600 underline">Buka di Google Drive</a>
+                        <a href="${fileUrl}" target="_blank" class="inline-block mt-3 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-xl text-xs font-bold underline">Buka di Google Drive / Browser</a>
                     </div>`;
             } else {
                 previewHtml = `
@@ -1785,7 +1809,7 @@
             setTimeout(() => modal.classList.add('hidden-app'), 300);
         }
 
-        // LOGIN ENGINE
+        // LOGIN ENGINE BERSAMA PENYESUAIAN WAKASEK & KEPALA SEKOLAH
         async function handleLogin(e) {
             e.preventDefault();
             const role = document.getElementById('login-role').value;
@@ -1846,6 +1870,7 @@
             document.getElementById('login-view').classList.remove('hidden-app');
         }
 
+        // KONTROL TAMPILAN NAVIGASI KHUSUS AKUN WAKASEK & KEPALA SEKOLAH
         function setupAppUI() {
             if (!currentUser) return;
             document.getElementById('user-name').textContent = currentUser.name;
@@ -1876,11 +1901,15 @@
                 return a;
             };
 
+            const isPimpinan = currentUser.dept === 'Wakasek' || currentUser.dept === 'Kepala Sekolah';
+
             if (currentUser.role === 'admin') {
                 navMenu.appendChild(createMenuBtn('dashboard_admin', 'ph-chart-pie', 'Dashboard', 'Dashboard Admin'));
-                navMenu.appendChild(createMenuBtn('menu_kelas', 'ph-chalkboard', 'Menu Kelas', 'Manajemen Kelas'));
-                navMenu.appendChild(createMenuBtn('menu_siswa', 'ph-users', 'Menu Siswa', 'Manajemen Siswa'));
-                navMenu.appendChild(createMenuBtn('menu_wali', 'ph-user-gear', 'Kelola Guru & Staff', 'Manajemen Akun Guru'));
+                if (!isPimpinan) {
+                    navMenu.appendChild(createMenuBtn('menu_kelas', 'ph-chalkboard', 'Menu Kelas', 'Manajemen Kelas'));
+                    navMenu.appendChild(createMenuBtn('menu_siswa', 'ph-users', 'Menu Siswa', 'Manajemen Siswa'));
+                    navMenu.appendChild(createMenuBtn('menu_wali', 'ph-user-gear', 'Kelola Guru & Staff', 'Manajemen Akun Guru'));
+                }
                 navMenu.appendChild(createMenuBtn('menu_absen', 'ph-calendar-blank', 'Menu Absen', 'Sistem Absensi Terpadu'));
                 navigateTo('dashboard_admin');
             } else if (currentUser.role === 'guru_bp') {
@@ -1933,7 +1962,7 @@
 
         // DASHBOARD
         function initDashboardAdmin() {
-            if (currentUser && currentUser.role === 'admin') {
+            if (currentUser && currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah') {
                 const btnWrap = document.getElementById('admin-user-mgmt-btn-wrapper');
                 if (btnWrap) btnWrap.classList.remove('hidden-app');
             }
@@ -2194,7 +2223,6 @@
             }
         }
 
-        // KUNCI ABSEN HIERARKI MULTI-GADGET (HARD LOCK UNTUK APK ANDROID, IOS & LAPTOP)
         function checkDailyIsLocked(selectedDateStr, classId) {
             if (!currentUser) return true;
 
@@ -2207,31 +2235,26 @@
 
             const locks = MOCK_DB.dailyLocks || {};
 
-            // 1. Prioritas kunci spesifik kelas
             if (locks[lockKeySpecific] !== undefined) {
                 const val = locks[lockKeySpecific];
                 if (val === true || val === 'true') return true;
                 if (val === false || val === 'false') return false;
             }
 
-            // 2. Prioritas kunci global tanggal
             if (locks[lockKeyAll] !== undefined || locks[selectedDateStr] !== undefined) {
                 const valAll = locks[lockKeyAll] !== undefined ? locks[lockKeyAll] : locks[selectedDateStr];
                 if (valAll === true || valAll === 'true') return true;
                 if (valAll === false || valAll === 'false') return false;
             }
 
-            // 3. Aturan default per Peran
             if (currentUser.role === 'admin') return false;
             if (currentUser.role === 'guru_bp') return true;
 
-            // Tanggal lampau & mendatang OTOMATIS TERKUNCI untuk non-admin
             if (isPastDate || isFutureDate) return true;
-
-            // Hari ini terbuka secara default
             return false;
         }
 
+        // OPTIMASI RENDRING KELAS SUPER FAST DENGAN DICTIONARY MAP
         function loadStudentAttendanceForm(isSilent = false) {
             if (!currentUser) return;
             if (isSilent && isFormDirty) return;
@@ -2328,6 +2351,14 @@
 
             dailyRecapBanner.classList.remove('hidden-app');
 
+            // HASH MAP UNTUK PERFORMANCE O(1) SANGAT CEPAT UNTUK 2000+ SISWA
+            const attMap = new Map();
+            (MOCK_DB.attendance || []).forEach(a => {
+                if (normalizeDateStr(a.date) === selectedDateStr) {
+                    attMap.set(a.nis.toString(), a);
+                }
+            });
+
             const statuses = [
                 { val: 'H', label: 'H', desc: 'Hadir', active: 'bg-emerald-500 text-white border-emerald-500 shadow-md scale-105', base: 'hover:bg-emerald-50 text-emerald-600 border-emerald-200' },
                 { val: 'I', label: 'I', desc: 'Izin', active: 'bg-amber-500 text-white border-amber-500 shadow-md scale-105', base: 'hover:bg-amber-50 text-amber-600 border-amber-200' },
@@ -2337,8 +2368,10 @@
                 { val: 'L', label: 'L', desc: 'Libur', active: 'bg-sky-500 text-white border-sky-500 shadow-md scale-105', base: 'hover:bg-sky-50 text-sky-600 border-sky-200' }
             ];
 
+            const isUserAdmin = currentUser.role === 'admin';
+
             const rowsHtml = classStudents.map((student, idx) => {
-                const existing = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === selectedDateStr);
+                const existing = attMap.get(student.nis.toString());
                 const status = existing ? existing.status : '';
                 const remark = existing ? (existing.remark || '') : '';
                 const updatedBy = existing ? (existing.updatedBy || '') : '';
@@ -2365,8 +2398,6 @@
                 });
                 radioHtml += `</div>`;
 
-                // NAMA AKUN PENGISI HANYA DITAMPILKAN KHUSUS DI MENU ADMIN
-                const isUserAdmin = currentUser.role === 'admin';
                 const showUpdatedBadge = isUserAdmin && updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit mt-0.5"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${updatedBy}</span>` : '';
 
                 return `
@@ -2390,7 +2421,6 @@
                                         <button type="button" onclick="setQuickRemark('${student.nis}', 'Bolos', true)" class="bg-rose-100 hover:bg-rose-200 text-rose-900 font-bold px-1.5 py-0.5 rounded text-[9px] active:scale-95 transition-transform">+ Bolos (Alpa)</button>
                                     ` : ''}
 
-                                    <!-- BUKAN HANYA WEB, KAMERA DI OPTIMALKAN UTK APK ANDROID & IOS -->
                                     <button type="button" onclick="triggerCameraCapture('${student.nis}')" class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all">
                                         <i class="ph-bold ph-camera text-xs"></i> Kamera
                                     </button>
@@ -2622,6 +2652,7 @@
             document.getElementById(`filter-wrapper-${rekapType}`).classList.remove('hidden-app');
         }
 
+        // REKAPITULASI DENGAN HASHMAP ACCELERATION FOR O(N) HIGH PERFORMANCE
         function renderAttendanceRecap() {
             const classId = document.getElementById('rekap-absen-kelas').value;
             const type = document.getElementById('rekap-type').value;
@@ -2662,6 +2693,13 @@
 
             const isUserAdmin = currentUser && currentUser.role === 'admin';
 
+            // QUICK HASH MAP INDEXING
+            const attMap = new Map();
+            (MOCK_DB.attendance || []).forEach(a => {
+                const key = `${a.nis.toString()}_${normalizeDateStr(a.date)}`;
+                attMap.set(key, a);
+            });
+
             if (type === 'monthly') {
                 const monthVal = document.getElementById('rekap-absen-month').value || new Date().toISOString().slice(0,7);
                 document.getElementById('print-month-label').textContent = monthVal;
@@ -2679,7 +2717,7 @@
                     let daysHtml = '';
                     for (let d = 1; d <= daysInMonth; d++) {
                         const targetDate = `${monthVal}-${String(d).padStart(2, '0')}`;
-                        const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === targetDate);
+                        const att = attMap.get(`${student.nis.toString()}_${targetDate}`);
                         let cellContent = '-';
                         if (att) {
                             cellContent = getStatusBadge(att.status);
@@ -2735,7 +2773,7 @@
                     let rH = 0, rI = 0, rS = 0, rA = 0, rD = 0, rL = 0;
                     let daysHtml = '';
                     dateCols.forEach(targetDate => {
-                        const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === targetDate);
+                        const att = attMap.get(`${student.nis.toString()}_${targetDate}`);
                         let cellContent = '-';
                         if (att) {
                             cellContent = getStatusBadge(att.status);
@@ -2773,12 +2811,11 @@
                 const dateVal = document.getElementById('rekap-absen-date').value || normalizeDateStr(new Date());
                 document.getElementById('print-month-label').textContent = dateVal;
 
-                // AKUN PENGISI HANYA TERLIHAT OLEH ADMIN
                 const colAkunHeader = isUserAdmin ? `<th class="px-3 py-2">Akun Pengisi Data</th>` : '';
                 headerEl.innerHTML = `<tr><th class="px-3 py-2 w-10 text-center">No</th><th class="px-3 py-2 w-24">NIS</th><th class="px-3 py-2 text-left">Nama Siswa</th><th class="px-2 py-2 text-center w-20">Kelas</th><th class="px-3 py-2 text-center">Status</th><th class="px-3 py-2">Catatan / Keterangan</th>${colAkunHeader}<th class="px-3 py-2 text-center no-print">Surat Bukti</th></tr>`;
                 
                 tbody.innerHTML = classStudents.map((student, idx) => {
-                    const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === dateVal);
+                    const att = attMap.get(`${student.nis.toString()}_${dateVal}`);
                     const statusText = att ? getStatusBadge(att.status) : '-';
                     const remarkText = att ? (att.remark || '-') : '-';
                     
@@ -2807,7 +2844,7 @@
             }
         }
 
-        // EXPORT EXCEL DENGAN SINKRONISASI AKUN PENGISI UNTUK ADMIN
+        // EXPORT EXCEL DENGAN REKAM AKUN PENGISI DATA
         function exportToExcel() {
             const classId = document.getElementById('rekap-absen-kelas').value;
             const type = document.getElementById('rekap-type').value;
@@ -2825,6 +2862,12 @@
                 []
             ];
 
+            const attMap = new Map();
+            (MOCK_DB.attendance || []).forEach(a => {
+                const key = `${a.nis.toString()}_${normalizeDateStr(a.date)}`;
+                attMap.set(key, a);
+            });
+
             if (type === 'monthly') {
                 const monthVal = document.getElementById('rekap-absen-month').value || new Date().toISOString().slice(0,7);
                 const year = parseInt(monthVal.split('-')[0]);
@@ -2841,7 +2884,7 @@
                     let rH = 0, rI = 0, rS = 0, rA = 0, rD = 0, rL = 0;
                     for (let d = 1; d <= daysInMonth; d++) {
                         const targetDate = `${monthVal}-${String(d).padStart(2, '0')}`;
-                        const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === targetDate);
+                        const att = attMap.get(`${student.nis.toString()}_${targetDate}`);
                         if (att) {
                             r.push(att.status);
                             if (att.status === 'H') rH++;
@@ -2862,7 +2905,7 @@
                 rows.push(header);
                 const dateVal = document.getElementById('rekap-absen-date').value || normalizeDateStr(new Date());
                 classStudents.forEach((student, idx) => {
-                    const att = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === dateVal);
+                    const att = attMap.get(`${student.nis.toString()}_${dateVal}`);
                     rows.push([idx + 1, student.nis, student.name, student.classId, att ? att.status : '-', att ? att.remark : '-', att ? (att.updatedBy || '-') : '-']);
                 });
             }
