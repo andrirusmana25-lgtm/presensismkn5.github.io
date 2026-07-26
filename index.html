@@ -212,7 +212,7 @@
                 <div class="glass rounded-3xl shadow-2xl p-5 sm:p-8 border border-white/40 relative overflow-hidden animate-fade-in-up">
                     <div class="flex justify-center mb-3 sm:mb-4">
                         <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl flex items-center justify-center shadow-gold-glow p-2 border border-slate-100 overflow-hidden">
-                            <img src="https://smkn5pangalengan.sch.id/wp-content/uploads/2023/11/logo.png" alt="Logo SMKN 5" class="w-full h-full object-contain" onerror="handleLogoError(this)">
+                            <img src="https://i.ibb.co.com/HDHzkCT8/LVUke-CNhdr-Gdd-Ut6-Bnl-Bj-Mr9-XCSJb-Uy-Vxdv-CAzd-T.png" alt="Logo SMKN 5" class="w-full h-full object-contain" onerror="handleLogoError(this)">
                         </div>
                     </div>
                     
@@ -271,7 +271,7 @@
             <div class="p-5 sm:p-6 flex justify-between items-center border-b border-white/10">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center p-1 overflow-hidden shrink-0">
-                        <img src="https://smkn5pangalengan.sch.id/wp-content/uploads/2023/11/logo.png" class="w-full h-full object-contain" onerror="handleLogoError(this)">
+                        <img src="https://i.ibb.co.com/HDHzkCT8/LVUke-CNhdr-Gdd-Ut6-Bnl-Bj-Mr9-XCSJb-Uy-Vxdv-CAzd-T.png" class="w-full h-full object-contain" onerror="handleLogoError(this)">
                     </div>
                     <div>
                         <h2 class="font-extrabold text-sm text-white">SMKN 5</h2>
@@ -618,7 +618,7 @@
                     <!-- KOP SURAT RESMI LOGO SEKOLAH -->
                     <div class="hidden print:flex items-center justify-between pb-4 mb-4 kop-border-double" style="page-break-inside: avoid;">
                         <div class="w-20 h-20 flex items-center justify-center border border-black rounded-full bg-slate-50 shrink-0 overflow-hidden p-1">
-                            <img src="https://smkn5pangalengan.sch.id/wp-content/uploads/2023/11/logo.png" alt="Logo SMKN 5 Pangalengan" class="w-full h-full object-contain" onerror="handleLogoError(this)">
+                            <img src="https://i.ibb.co.com/HDHzkCT8/LVUke-CNhdr-Gdd-Ut6-Bnl-Bj-Mr9-XCSJb-Uy-Vxdv-CAzd-T.png" alt="Logo SMKN 5 Pangalengan" class="w-full h-full object-contain" onerror="handleLogoError(this)">
                         </div>
                         <div class="flex-1 text-center px-4">
                             <h4 class="text-xs font-bold uppercase tracking-wide leading-none">Pemerintah Provinsi Jawa Barat</h4>
@@ -877,9 +877,9 @@
         </div>
     </div>
 
-    <!-- HIGH PERFORMANCE ENGINE JS -->
+    <!-- HIGH PERFORMANCE ENGINE JS (BAGIAN KELANJUTAN SKRIP BERIKUTNYA) -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbylAXSI__hpMymG-ptVmjO4Ot2mVVROLNV-blv2XCeHoNlfrvShx2ANgNVrmHUzFh4_/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxD-OYdmXqqqNEsEU2zN9kn2vVrSZcLZYbsVxtR2W-EhrLCtIsbY7JAThtqBR5Os-VW/exec";
         let currentUser = null;
         let activeAbsenTab = 'isi';
         let currentTargetMenu = 'dashboard_admin';
@@ -1569,7 +1569,6 @@
             }
         }
 
-        // UPLOAD DOKUMEN & KOMPRESI KAMERA OPTIMAL UTK ANDROID APK, IOS & LAPTOP
         function handleFileUpload(event, nis) {
             const classId = document.getElementById('input-absen-kelas').value;
             const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
@@ -1595,7 +1594,7 @@
                         const canvas = document.createElement('canvas');
                         let width = img.width;
                         let height = img.height;
-                        const maxDim = 800; // Optimal 800px agar responsif dan tidak menghabiskan RAM di HP
+                        const maxDim = 1200;
 
                         if (width > maxDim || height > maxDim) {
                             if (width > height) {
@@ -1612,13 +1611,12 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.65);
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
                         window[`attached_file_${nis}`] = {
                             name: file.name || "Foto_Kamera.jpg",
                             size: Math.round(compressedDataUrl.length * 0.75 / 1024) + ' KB',
                             type: 'image/jpeg',
-                            data: compressedDataUrl,
-                            url: compressedDataUrl
+                            data: compressedDataUrl
                         };
 
                         if (indicator && nameSpan) nameSpan.textContent = file.name || "Foto_Kamera.jpg";
@@ -1633,8 +1631,7 @@
                         name: file.name,
                         size: (file.size / 1024).toFixed(1) + ' KB',
                         type: file.type,
-                        data: e.target.result,
-                        url: e.target.result
+                        data: e.target.result
                     };
                     if (indicator && nameSpan) nameSpan.textContent = file.name;
                 };
@@ -1703,42 +1700,30 @@
             return url;
         }
 
-        // PRATINJAU DOKUMEN TANPA PERLU LOGIN EMAIL DENGAN DUKUNGAN PURE BASE64 DATA URL
         function viewRealOrMockLetter(studentName, fileName, fileSize, fileUrl, fileType = '') {
             let finalViewUrl = convertDriveUrlToDirect(fileUrl);
             window.currentActiveAttachment = { studentName, name: fileName || "Surat_Bukti", size: fileSize || "Selesai", url: finalViewUrl, type: fileType };
             
-            const isImage = (fileType && fileType.startsWith('image/')) || 
-                            (finalViewUrl && (finalViewUrl.startsWith('data:image/') || finalViewUrl.match(/\.(jpeg|jpg|gif|png)$/i)));
-            const isPdf = (fileType && fileType.includes('pdf')) || 
-                          (finalViewUrl && (finalViewUrl.startsWith('data:application/pdf') || finalViewUrl.match(/\.pdf$/i)));
+            const isImage = (fileType && fileType.startsWith('image/')) || (finalViewUrl && (finalViewUrl.startsWith('data:image/') || finalViewUrl.match(/\.(jpeg|jpg|gif|png)$/i)));
             
             let previewHtml = '';
             if (isImage) {
                 previewHtml = `
-                    <div class="w-full bg-slate-50 border rounded-2xl p-2 text-center mb-3 min-h-[180px] flex items-center justify-center overflow-hidden">
-                        <img src="${finalViewUrl}" class="max-h-72 w-auto mx-auto rounded-xl shadow-md object-contain" alt="Bukti Surat"/>
-                    </div>`;
-            } else if (isPdf) {
-                previewHtml = `
-                    <div class="w-full bg-slate-50 border rounded-2xl p-4 text-center mb-3">
-                        <i class="ph-fill ph-file-pdf text-6xl text-red-600 mb-2 block"></i>
-                        <h4 class="font-bold text-xs text-slate-800 break-all">${fileName}</h4>
-                        <p class="text-[10px] text-slate-400 mt-0.5">${fileSize}</p>
-                        <p class="text-[10px] text-emerald-600 font-bold mt-2">📄 Berkas PDF Siap Diunduh / Dibuka</p>
+                    <div class="w-full bg-slate-50 border rounded-2xl p-2 text-center mb-3 min-h-[160px] flex items-center justify-center overflow-hidden">
+                        <img src="${finalViewUrl}" class="max-h-60 mx-auto rounded-xl shadow-md object-contain" onerror="this.src='https://smkn5pangalengan.sch.id/wp-content/uploads/2023/11/logo.png'"/>
                     </div>`;
             } else if (fileUrl && fileUrl.includes("drive.google.com")) {
                 previewHtml = `
                     <div class="w-full bg-slate-50 border rounded-2xl p-4 text-center mb-3">
-                        <i class="ph-fill ph-file-text text-6xl text-brand-600 mb-2 block"></i>
+                        <i class="ph-fill ph-file-text text-5xl text-brand-600 mb-2"></i>
                         <h4 class="font-bold text-xs text-slate-800 break-all">${fileName}</h4>
                         <p class="text-[10px] text-slate-400 mt-0.5">${fileSize}</p>
-                        <a href="${fileUrl}" target="_blank" class="inline-block mt-3 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-xl text-xs font-bold underline">Buka Tautan Google Drive</a>
+                        <a href="${fileUrl}" target="_blank" class="inline-block mt-3 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-xl text-xs font-bold underline">Buka di Google Drive / Browser</a>
                     </div>`;
             } else {
                 previewHtml = `
                     <div class="w-full bg-slate-50 border rounded-2xl p-6 text-center mb-3">
-                        <i class="ph-fill ph-file-text text-6xl text-brand-600 mb-2 block"></i>
+                        <i class="ph-fill ph-file-text text-5xl text-brand-600 mb-2"></i>
                         <h4 class="font-bold text-xs text-slate-800 break-all">${fileName}</h4>
                         <p class="text-[10px] text-slate-400 mt-0.5">${fileSize}</p>
                     </div>`;
@@ -1819,6 +1804,1263 @@
             modal.classList.add('opacity-0');
             setTimeout(() => modal.classList.add('hidden-app'), 300);
         }
+
+        // LOGIN ENGINE
+        async function handleLogin(e) {
+            e.preventDefault();
+            const role = document.getElementById('login-role').value;
+            const uid = document.getElementById('login-username').value.trim();
+            const pass = document.getElementById('login-password').value.trim();
+            const errorEl = document.getElementById('login-error');
+
+            let authenticated = false;
+            let foundUser = null;
+
+            if (role === 'admin') {
+                const adminMatch = MOCK_DB.admins.find(a => a.username.toString() === uid && a.pass.toString() === pass);
+                const teacherPimpinanMatch = MOCK_DB.teachers.find(t => t.nip.toString() === uid && t.pass.toString() === pass && (t.dept === 'Wakasek' || t.dept === 'Kepala Sekolah'));
+                
+                if (adminMatch || teacherPimpinanMatch || (uid === 'admin' && pass === 'admin')) {
+                    const matchedName = adminMatch ? adminMatch.name : (teacherPimpinanMatch ? teacherPimpinanMatch.name : 'Sistem Administrator');
+                    const matchedDept = teacherPimpinanMatch ? teacherPimpinanMatch.dept : 'admin';
+                    foundUser = { id: uid, username: uid, nip: uid, name: matchedName, role: 'admin', dept: matchedDept };
+                    authenticated = true;
+                }
+            } else if (role === 'wali') {
+                const tr = MOCK_DB.teachers.find(t => t.nip.toString() === uid && t.pass.toString() === pass && t.dept !== 'BP/BK' && t.dept !== 'Mapel');
+                if (tr) { foundUser = { ...tr, role: 'wali' }; authenticated = true; }
+            } else if (role === 'guru_bp') {
+                const tr = MOCK_DB.teachers.find(t => t.nip.toString() === uid && t.pass.toString() === pass);
+                if (tr || (uid === 'guru_bp' && pass === 'guru_bp')) {
+                    foundUser = { nip: uid, name: tr ? tr.name : 'Guru BP / BK Sekolah', role: 'guru_bp', dept: 'BP/BK' };
+                    authenticated = true;
+                }
+            } else if (role === 'guru_mapel') {
+                const tr = MOCK_DB.teachers.find(t => t.nip.toString() === uid && t.pass.toString() === pass);
+                if (tr || (uid === 'guru_mapel' && pass === 'guru_mapel')) {
+                    foundUser = { nip: uid, name: tr ? tr.name : 'Guru Mata Pelajaran', role: 'guru_mapel', dept: 'Mapel' };
+                    authenticated = true;
+                }
+            } else if (role === 'siswa') {
+                const st = MOCK_DB.students.find(s => s.nis.toString() === uid && s.pass.toString() === pass);
+                if (st) { foundUser = { ...st, role: 'siswa' }; authenticated = true; }
+            }
+
+            if (authenticated) {
+                currentUser = foundUser;
+                localStorage.setItem('smkn5_user_session', JSON.stringify(currentUser));
+                errorEl.classList.add('hidden-app');
+                setupAppUI();
+                document.getElementById('login-view').classList.add('hidden-app');
+                document.getElementById('app-view').classList.remove('hidden-app');
+                synchronizeDatabase();
+            } else {
+                errorEl.classList.remove('hidden-app');
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('smkn5_user_session');
+            document.getElementById('app-view').classList.add('hidden-app');
+            document.getElementById('login-view').classList.remove('hidden-app');
+        }
+
+        function setupAppUI() {
+            if (!currentUser) return;
+            document.getElementById('user-name').textContent = currentUser.name;
+            document.getElementById('user-avatar').textContent = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U';
+            
+            let labelBadge = currentUser.role.toUpperCase();
+            if (currentUser.role === 'admin') {
+                labelBadge = currentUser.dept === 'Wakasek' ? 'Wakasek' : (currentUser.dept === 'Kepala Sekolah' ? 'Kepala Sekolah' : 'Administrator');
+            } else if (currentUser.role === 'wali') labelBadge = currentUser.dept === 'Wakasek' ? 'Wakasek' : `Wali Kelas: ${currentUser.classId}`;
+            else if (currentUser.role === 'guru_bp') labelBadge = `Guru BP / BK`;
+            else if (currentUser.role === 'guru_mapel') labelBadge = `Guru Mata Pelajaran`;
+            else if (currentUser.role === 'siswa') labelBadge = `Seksi Absen: ${currentUser.classId}`;
+
+            document.getElementById('user-role-badge').textContent = labelBadge;
+            document.getElementById('current-date-top').textContent = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            const navMenu = document.getElementById('nav-menu');
+            navMenu.innerHTML = '';
+
+            const createMenuBtn = (target, icon, label, title) => {
+                const a = document.createElement('a');
+                a.href = '#';
+                a.className = 'flex items-center gap-3 px-4 py-3 rounded-xl text-brand-100 hover:bg-white/5 active:scale-95 transition-all mb-1 border-l-4 border-transparent';
+                a.dataset.target = target;
+                a.dataset.title = title;
+                a.innerHTML = `<i class="ph-duotone ${icon} text-xl w-6"></i><span class="text-xs font-bold uppercase">${label}</span>`;
+                a.onclick = (e) => { e.preventDefault(); navigateTo(target); };
+                return a;
+            };
+
+            const isPimpinan = currentUser.dept === 'Wakasek' || currentUser.dept === 'Kepala Sekolah';
+
+            if (currentUser.role === 'admin') {
+                navMenu.appendChild(createMenuBtn('dashboard_admin', 'ph-chart-pie', 'Dashboard', 'Dashboard Admin'));
+                if (!isPimpinan) {
+                    navMenu.appendChild(createMenuBtn('menu_kelas', 'ph-chalkboard', 'Menu Kelas', 'Manajemen Kelas'));
+                    navMenu.appendChild(createMenuBtn('menu_siswa', 'ph-users', 'Menu Siswa', 'Manajemen Siswa'));
+                    navMenu.appendChild(createMenuBtn('menu_wali', 'ph-user-gear', 'Kelola Guru & Staff', 'Manajemen Akun Guru'));
+                }
+                navMenu.appendChild(createMenuBtn('menu_absen', 'ph-calendar-blank', 'Menu Absen', 'Sistem Absensi Terpadu'));
+                navigateTo('dashboard_admin');
+            } else if (currentUser.role === 'guru_bp') {
+                navMenu.appendChild(createMenuBtn('dashboard_admin', 'ph-chart-pie', 'Dashboard BP/BK', 'Dashboard BP/BK'));
+                navMenu.appendChild(createMenuBtn('menu_absen', 'ph-calendar-blank', 'Rekap Absensi', 'Monitoring Presensi Siswa'));
+                navigateTo('dashboard_admin');
+            } else if (currentUser.role === 'guru_mapel') {
+                navMenu.appendChild(createMenuBtn('dashboard_admin', 'ph-chart-pie', 'Dashboard Mapel', 'Dashboard Guru Mapel'));
+                navMenu.appendChild(createMenuBtn('menu_absen', 'ph-calendar-blank', 'Absensi Kelas', 'Input Presensi Siswa'));
+                navigateTo('menu_absen');
+            } else if (currentUser.role === 'wali') {
+                navMenu.appendChild(createMenuBtn('dashboard_admin', 'ph-chart-pie', 'Portal Kelas ' + currentUser.classId, 'Portal Statistik Kelas ' + currentUser.classId));
+                navMenu.appendChild(createMenuBtn('menu_absen', 'ph-calendar-blank', 'Menu Absen', 'Absensi Kelas ' + currentUser.classId));
+                navigateTo('dashboard_admin');
+            } else if (currentUser.role === 'siswa') {
+                navMenu.appendChild(createMenuBtn('dashboard_admin', 'ph-chart-pie', 'Portal Seksi Absen', 'Portal Seksi Absen ' + currentUser.classId));
+                navMenu.appendChild(createMenuBtn('menu_absen', 'ph-calendar-blank', 'Absen Kelas', 'Absensi Kelas ' + currentUser.classId));
+                navigateTo('dashboard_admin');
+            }
+        }
+
+        function navigateTo(target) {
+            currentTargetMenu = target;
+            isFormDirty = false;
+            const mainContent = document.getElementById('main-content');
+            mainContent.innerHTML = '';
+
+            document.querySelectorAll('#nav-menu a').forEach(el => {
+                if (el.dataset.target === target) el.classList.add('bg-white/10', 'text-white', 'border-brand-400');
+                else el.classList.remove('bg-white/10', 'text-white', 'border-brand-400');
+            });
+
+            if (target === 'dashboard_admin') {
+                mainContent.appendChild(document.getElementById('tpl-dashboard-admin').content.cloneNode(true));
+                initDashboardAdmin();
+            } else if (target === 'menu_kelas') {
+                mainContent.appendChild(document.getElementById('tpl-menu-kelas').content.cloneNode(true));
+                initMenuKelas();
+            } else if (target === 'menu_siswa') {
+                mainContent.appendChild(document.getElementById('tpl-menu-siswa').content.cloneNode(true));
+                initMenuSiswa();
+            } else if (target === 'menu_wali') {
+                mainContent.appendChild(document.getElementById('tpl-menu-wali').content.cloneNode(true));
+                initMenuWali();
+            } else if (target === 'menu_absen') {
+                mainContent.appendChild(document.getElementById('tpl-menu-absen').content.cloneNode(true));
+                initMenuAbsen();
+            }
+        }
+
+        // DASHBOARD
+        function initDashboardAdmin() {
+            if (currentUser && currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah') {
+                const btnWrap = document.getElementById('admin-user-mgmt-btn-wrapper');
+                if (btnWrap) btnWrap.classList.remove('hidden-app');
+            }
+
+            const classRecapContainer = document.getElementById('dashboard-class-recap-container');
+            if (classRecapContainer) {
+                if (currentUser && ['admin', 'guru_bp', 'guru_mapel'].includes(currentUser.role)) {
+                    classRecapContainer.classList.remove('hidden-app');
+                } else {
+                    classRecapContainer.classList.add('hidden-app');
+                }
+            }
+
+            let classStudents = MOCK_DB.students;
+            let isIndividualClass = false;
+
+            if (currentUser && (currentUser.role === 'wali' || currentUser.role === 'siswa')) {
+                classStudents = MOCK_DB.students.filter(s => s.classId === currentUser.classId);
+                isIndividualClass = true;
+                const chartTitle = document.getElementById('dashboard-chart-title');
+                if (chartTitle) chartTitle.textContent = `Kehadiran Kumulatif Kelas ${currentUser.classId}`;
+            }
+
+            document.getElementById('stat-total-kelas').textContent = isIndividualClass ? 1 : MOCK_DB.classes.length;
+            document.getElementById('stat-total-siswa').textContent = classStudents.length;
+            document.getElementById('stat-total-wali').textContent = MOCK_DB.teachers.length;
+
+            const studentNises = classStudents.map(s => s.nis.toString());
+            let h = 0, i = 0, s = 0, a = 0, dVal = 0, l = 0;
+            MOCK_DB.attendance.forEach(rec => {
+                if (studentNises.includes(rec.nis.toString())) {
+                    if (rec.status === 'H') h++;
+                    else if (rec.status === 'I') i++;
+                    else if (rec.status === 'S') s++;
+                    else if (rec.status === 'A') a++;
+                    else if (rec.status === 'D') dVal++;
+                    else if (rec.status === 'L') l++;
+                }
+            });
+
+            const totalActive = h + i + s + a + dVal;
+            const overallPct = totalActive > 0 ? Math.round(((h + dVal) / totalActive) * 100) : 100;
+
+            const statPctLabel = document.getElementById('stat-pct-label');
+            const statPctVal = document.getElementById('stat-pct-val');
+            if (statPctLabel) statPctLabel.textContent = isIndividualClass ? `Kehadiran Kelas ${currentUser.classId}` : "Rasio Kehadiran Sekolah";
+            if (statPctVal) statPctVal.textContent = overallPct + "%";
+
+            const ctx = document.getElementById('weeklyCombinedChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Hadir (H)', 'Izin (I)', 'Sakit (S)', 'Alpa (A)', 'Disp (D)', 'Libur (L)'],
+                        datasets: [{
+                            data: [h || 1, i || 0, s || 0, a || 0, dVal || 0, l || 0],
+                            backgroundColor: ['#22c55e', '#f59e0b', '#3b82f6', '#ef4444', '#a855f7', '#0ea5e9'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            const jList = document.getElementById('dashboard-jurusan-list');
+            if (jList) {
+                jList.innerHTML = MOCK_DB.departments.map(dept => {
+                    const deptClasses = MOCK_DB.classes.filter(c => c.department === dept.name || c.department === dept.id).map(c => c.id);
+                    const deptStudents = MOCK_DB.students.filter(s => deptClasses.includes(s.classId));
+                    const deptNises = deptStudents.map(s => s.nis.toString());
+
+                    let dH = 0, dI = 0, dS = 0, dA = 0, dD = 0;
+                    MOCK_DB.attendance.forEach(rec => {
+                        if (deptNises.includes(rec.nis.toString())) {
+                            if (rec.status === 'H') dH++;
+                            else if (rec.status === 'I') dI++;
+                            else if (rec.status === 'S') dS++;
+                            else if (rec.status === 'A') dA++;
+                            else if (rec.status === 'D') dD++;
+                        }
+                    });
+                    const dTotal = dH + dI + dS + dA + dD;
+                    const dPct = dTotal > 0 ? Math.round(((dH + dD) / dTotal) * 100) : 100;
+
+                    return `
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold text-slate-800">${dept.name}</span>
+                                <span class="text-[10px] font-black bg-brand-100 text-brand-800 px-2 py-0.5 rounded">${dPct}% Hadir</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] text-slate-500 font-semibold">
+                                <span>Total: <b>${deptStudents.length} Siswa</b></span>
+                                <span>${deptClasses.length} Kelas</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const classGrid = document.getElementById('dashboard-class-recap-grid');
+            if (classGrid) {
+                classGrid.innerHTML = MOCK_DB.classes.map(cls => {
+                    const clsStudents = MOCK_DB.students.filter(s => s.classId === cls.id);
+                    const clsNises = clsStudents.map(s => s.nis.toString());
+                    let cH = 0, cI = 0, cS = 0, cA = 0, cD = 0;
+                    MOCK_DB.attendance.forEach(rec => {
+                        if (clsNises.includes(rec.nis.toString())) {
+                            if (rec.status === 'H') cH++;
+                            else if (rec.status === 'I') cI++;
+                            else if (rec.status === 'S') cS++;
+                            else if (rec.status === 'A') cA++;
+                            else if (rec.status === 'D') cD++;
+                        }
+                    });
+                    const cTotal = cH + cI + cS + cA + cD;
+                    const cPct = cTotal > 0 ? Math.round(((cH + cD) / cTotal) * 100) : 100;
+
+                    return `
+                        <div class="p-3 bg-slate-50 border rounded-2xl flex flex-col justify-between items-center text-center shadow-xs">
+                            <span class="text-xs font-extrabold text-slate-800 truncate w-full">${cls.name}</span>
+                            <span class="text-base font-black text-brand-600 my-1">${cPct}%</span>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase">${clsStudents.length} Siswa</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function initMenuKelas() {
+            const tbody = document.getElementById('kelas-table-body');
+            if (!tbody) return;
+
+            tbody.innerHTML = MOCK_DB.classes.map((cls, idx) => `
+                <tr>
+                    <td class="px-4 py-3 font-bold text-center">${idx + 1}</td>
+                    <td class="px-4 py-3 font-extrabold">${cls.name}</td>
+                    <td class="px-4 py-3">${cls.department}</td>
+                    <td class="px-4 py-3 text-center">
+                        <div class="flex justify-center items-center gap-1">
+                            <button onclick="openEditKelasModal('${cls.id}')" class="p-1.5 text-brand-600 hover:bg-brand-50 rounded-lg active:scale-95"><i class="ph-bold ph-pencil-simple text-base"></i></button>
+                            <button onclick="deleteKelas('${cls.id}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg active:scale-95"><i class="ph-bold ph-trash text-base"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            const select = document.getElementById('add-kelas-dept');
+            if (select) select.innerHTML = MOCK_DB.departments.map(d => `<option value="${d.name}">${d.name}</option>`).join('');
+        }
+
+        function initMenuSiswa() {
+            const tbody = document.getElementById('siswa-table-body');
+            if (!tbody) return;
+
+            const filterClass = document.getElementById('filter-siswa-kelas').value;
+            const students = filterClass === 'all' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === filterClass);
+
+            tbody.innerHTML = students.map((st, idx) => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-2.5 font-bold text-center text-slate-400">${idx + 1}</td>
+                    <td class="px-4 py-2.5 font-mono font-bold text-slate-700">${st.nis}</td>
+                    <td class="px-4 py-2.5 font-extrabold text-slate-800">${st.name}</td>
+                    <td class="px-4 py-2.5 font-bold text-emerald-700">${st.classId}</td>
+                    <td class="px-4 py-2.5 text-center">
+                        <div class="flex justify-center items-center gap-1">
+                            <button onclick="openEditSiswaModal('${st.nis}')" class="p-1.5 text-brand-600 hover:bg-brand-50 rounded-lg active:scale-95" title="Edit Siswa"><i class="ph-bold ph-pencil-simple text-base"></i></button>
+                            <button onclick="deleteSiswa('${st.nis}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg active:scale-95" title="Hapus Siswa"><i class="ph-bold ph-trash text-base"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('') || `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 font-bold">Tidak ada data siswa.</td></tr>`;
+
+            const select = document.getElementById('filter-siswa-kelas');
+            if (select && select.children.length <= 1) {
+                select.innerHTML += MOCK_DB.classes.map(cls => `<option value="${cls.id}">${cls.name}</option>`).join('');
+            }
+        }
+
+        function filterSiswaTableFast() {
+            const q = document.getElementById('search-siswa-input').value.toLowerCase();
+            document.querySelectorAll('#siswa-table-body tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function filterWaliTable() {
+            const q = document.getElementById('search-wali-input').value.toLowerCase();
+            document.querySelectorAll('#wali-table-body tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function initMenuWali() {
+            const tbody = document.getElementById('wali-table-body');
+            if (!tbody) return;
+
+            tbody.innerHTML = MOCK_DB.teachers.map((t, idx) => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 font-bold text-center">${idx + 1}</td>
+                    <td class="px-4 py-3 font-mono font-bold">${t.nip}</td>
+                    <td class="px-4 py-3 font-extrabold">${t.name}</td>
+                    <td class="px-4 py-3 font-bold text-emerald-700">${t.classId}</td>
+                    <td class="px-4 py-3 font-bold">${t.dept}</td>
+                    <td class="px-4 py-3 text-center">
+                        <div class="flex justify-center items-center gap-1">
+                            <button onclick="openEditTeacherModal('${t.nip}')" class="p-1.5 text-brand-600 hover:bg-brand-50 rounded-lg active:scale-95"><i class="ph-bold ph-pencil-simple text-base"></i></button>
+                            <button onclick="deleteWali('${t.nip}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg active:scale-95"><i class="ph-bold ph-trash text-base"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function initMenuAbsen() {
+            const inputDate = document.getElementById('input-absen-date');
+            const inputKelas = document.getElementById('input-absen-kelas');
+            const rekapKelas = document.getElementById('rekap-absen-kelas');
+            const todayStr = normalizeDateStr(new Date());
+
+            if (inputDate && !inputDate.value) inputDate.value = todayStr;
+            if (inputKelas) inputKelas.innerHTML = '';
+            if (rekapKelas) rekapKelas.innerHTML = '';
+
+            const opts = MOCK_DB.classes.map(cls => `<option value="${cls.id}">${cls.name}</option>`).join('');
+
+            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'guru_bp' || currentUser.role === 'guru_mapel')) {
+                if (inputKelas) inputKelas.innerHTML = `<option value="" selected>-- Pilih Kelas Terlebih Dahulu --</option><option value="SEMUA">-- Semua Kelas --</option>` + opts;
+                if (rekapKelas) rekapKelas.innerHTML = `<option value="" selected>-- Pilih Kelas Terlebih Dahulu --</option><option value="SEMUA">-- Semua Kelas --</option>` + opts;
+            } else if (currentUser) {
+                if (inputKelas) inputKelas.innerHTML = `<option value="${currentUser.classId}">${currentUser.classId}</option>`;
+                if (rekapKelas) rekapKelas.innerHTML = `<option value="${currentUser.classId}">${currentUser.classId}</option>`;
+            }
+
+            if (currentUser && currentUser.role === 'guru_bp') switchAbsenTab('rekap');
+            else switchAbsenTab('isi');
+        }
+
+        function switchAbsenTab(tab) {
+            activeAbsenTab = tab;
+            isFormDirty = false;
+            const btnIsi = document.getElementById('tab-absen-isi');
+            const btnRekap = document.getElementById('tab-absen-rekap');
+            const secIsi = document.getElementById('section-absen-isi');
+            const secRekap = document.getElementById('section-absen-rekap');
+
+            if (tab === 'isi') {
+                btnIsi.className = 'flex-1 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs uppercase bg-brand-600 text-white shadow-soft';
+                btnRekap.className = 'flex-1 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs uppercase text-slate-500 hover:bg-slate-50';
+                secIsi.classList.remove('hidden-app');
+                secRekap.classList.add('hidden-app');
+                loadStudentAttendanceForm();
+            } else {
+                btnIsi.className = 'flex-1 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs uppercase text-slate-500 hover:bg-slate-50';
+                btnRekap.className = 'flex-1 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs uppercase bg-brand-600 text-white shadow-soft';
+                secIsi.classList.add('hidden-app');
+                secRekap.classList.remove('hidden-app');
+                toggleFilterInputs();
+            }
+        }
+
+        function checkDailyIsLocked(selectedDateStr, classId) {
+            if (!currentUser) return true;
+
+            const todayStr = normalizeDateStr(new Date());
+            const isPastDate = selectedDateStr < todayStr;
+            const isFutureDate = selectedDateStr > todayStr;
+
+            const lockKeySpecific = `${selectedDateStr}_${classId}`;
+            const lockKeyAll = `${selectedDateStr}_SEMUA`;
+
+            const locks = MOCK_DB.dailyLocks || {};
+
+            if (locks[lockKeySpecific] !== undefined) {
+                const val = locks[lockKeySpecific];
+                if (val === true || val === 'true') return true;
+                if (val === false || val === 'false') return false;
+            }
+
+            if (locks[lockKeyAll] !== undefined || locks[selectedDateStr] !== undefined) {
+                const valAll = locks[lockKeyAll] !== undefined ? locks[lockKeyAll] : locks[selectedDateStr];
+                if (valAll === true || valAll === 'true') return true;
+                if (valAll === false || valAll === 'false') return false;
+            }
+
+            if (currentUser.role === 'admin') return false;
+            if (currentUser.role === 'guru_bp') return true;
+
+            if (isPastDate || isFutureDate) return true;
+            return false;
+        }
+
+        // AKSELERASI SUPER CEPAT & URUTAN NAMA SISWA PERKELAS ABJAD A-Z
+        function loadStudentAttendanceForm(isSilent = false) {
+            if (!currentUser) return;
+            if (isSilent && isFormDirty) return;
+
+            const classId = document.getElementById('input-absen-kelas') ? document.getElementById('input-absen-kelas').value : '';
+            const selectedDateStr = document.getElementById('input-absen-date') ? normalizeDateStr(document.getElementById('input-absen-date').value) : '';
+            const todayStr = normalizeDateStr(new Date());
+
+            const tbody = document.getElementById('bulk-absen-table-body');
+            const submitBar = document.getElementById('bulk-absen-submit-bar');
+            const dailyRecapBanner = document.getElementById('daily-recap-banner');
+            const actionBar = document.getElementById('bulk-absen-action-bar');
+            const colHeaderKet = document.getElementById('col-header-ket');
+
+            if (!tbody) return;
+
+            // KONTROL KHUSUS: HANYA ADMIN MURNI YANG BISA MEAT KONTROL KUNCI/RESET
+            const isTrueAdmin = currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah' && currentUser.username !== 'kepsek';
+
+            if (colHeaderKet) {
+                colHeaderKet.textContent = isTrueAdmin ? "CATATAN, KESIANGAN/BOLOS & AKUN PENGISI DATA" : "CATATAN & OPSI KESIANGAN/BOLOS";
+            }
+
+            if (!classId) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-bold"><i class="ph-bold ph-hand-pointing text-3xl block mb-2 text-brand-600 animate-bounce"></i>Silakan pilih kelas terlebih dahulu untuk menampilkan daftar siswa.</td></tr>`;
+                if (submitBar) submitBar.classList.add('hidden-app'); 
+                if (actionBar) actionBar.classList.add('hidden-app'); 
+                if (dailyRecapBanner) dailyRecapBanner.classList.add('hidden-app');
+                return;
+            }
+
+            let classStudents = classId === 'SEMUA' ? [...MOCK_DB.students] : MOCK_DB.students.filter(s => s.classId === classId);
+            if (classStudents.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-semibold">Tidak ada siswa terdaftar</td></tr>`;
+                if (submitBar) submitBar.classList.add('hidden-app'); 
+                return;
+            }
+
+            // PENGURUTAN PERSISI PER-KELAS LALU ABJAD NAMA A-Z
+            classStudents.sort((a, b) => {
+                if (classId === 'SEMUA' && a.classId !== b.classId) {
+                    return a.classId.localeCompare(b.classId, 'id', { numeric: true });
+                }
+                return a.name.localeCompare(b.name, 'id');
+            });
+
+            const isLocked = checkDailyIsLocked(selectedDateStr, classId);
+            const isPastDate = selectedDateStr < todayStr;
+            const isFutureDate = selectedDateStr > todayStr;
+
+            const lockKeySpecific = `${selectedDateStr}_${classId}`;
+            const isExplicitlyClosed = MOCK_DB.dailyLocks && (MOCK_DB.dailyLocks[lockKeySpecific] === true || MOCK_DB.dailyLocks[lockKeySpecific] === 'true' || MOCK_DB.dailyLocks[`${selectedDateStr}_SEMUA`] === true);
+
+            const lockBanner = document.getElementById('lock-banner');
+            const lockText = document.getElementById('lock-banner-text');
+            if (lockBanner && lockText) {
+                if (isLocked) {
+                    lockBanner.classList.remove('hidden-app');
+                    if (isPastDate && !isExplicitlyClosed) {
+                        lockText.textContent = "Penginputan absen tanggal sebelumnya TERKUNCI. Hubungi Administrator untuk membuka kunci.";
+                    } else if (isFutureDate && !isExplicitlyClosed) {
+                        lockText.textContent = "Penginputan absen untuk tanggal mendatang ditutup.";
+                    } else if (isExplicitlyClosed) {
+                        lockText.textContent = `Penginputan absen tanggal ${selectedDateStr} untuk ${classId === 'SEMUA' ? 'Semua Kelas' : 'Kelas ' + classId} DITUTUP / DIKUNCI oleh Administrator.`;
+                    } else {
+                        lockText.textContent = "Formulir absensi tanggal ini dalam mode baca saja.";
+                    }
+                } else {
+                    lockBanner.classList.add('hidden-app');
+                }
+            }
+
+            // SEMBUNYIKAN KONTROL KUNCI & RESET UNTUK WAKASEK & KEPSEK
+            const resetBar = document.getElementById('admin-reset-bar');
+            if (resetBar) resetBar.classList.toggle('hidden-app', !isTrueAdmin);
+
+            const closeAttendanceBar = document.getElementById('admin-close-attendance-bar');
+            if (closeAttendanceBar) {
+                if (isTrueAdmin) {
+                    closeAttendanceBar.classList.remove('hidden-app');
+                    const btn = document.getElementById('btn-toggle-daily-lock');
+                    const desc = document.getElementById('close-status-desc');
+                    const targetName = classId === 'SEMUA' ? 'Semua Kelas' : `Kelas ${classId}`;
+
+                    if (isLocked) {
+                        btn.className = "bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase shrink-0";
+                        btn.textContent = `Buka Kunci Absen (${targetName})`;
+                        desc.innerHTML = `Status penginputan absen <b class="text-amber-300">${targetName}</b> (${selectedDateStr}) saat ini <b class="text-rose-400">DITUTUP / TERKUNCI</b>.`;
+                    } else {
+                        btn.className = "bg-rose-600 hover:bg-rose-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase shrink-0";
+                        btn.textContent = `Kunci Absen (${targetName})`;
+                        desc.innerHTML = `Status penginputan absen <b class="text-amber-300">${targetName}</b> (${selectedDateStr}) saat ini <b class="text-emerald-400">DIBUKA</b>.`;
+                    }
+                } else {
+                    closeAttendanceBar.classList.add('hidden-app');
+                }
+            }
+
+            if (submitBar) submitBar.classList.toggle('hidden-app', isLocked);
+            if (actionBar) actionBar.classList.toggle('hidden-app', isLocked);
+
+            const btnPresent = document.getElementById('btn-mark-all-present');
+            const btnHoliday = document.getElementById('btn-mark-all-holiday');
+            if (btnPresent) btnPresent.disabled = isLocked;
+            if (btnHoliday) btnHoliday.disabled = isLocked;
+
+            dailyRecapBanner.classList.remove('hidden-app');
+
+            // HASH MAP UNTUK PERFORMANCE O(1) BISA LOAD 2000 SISWA INSTAN
+            const attMap = new Map();
+            const studentStatsMap = new Map();
+
+            (MOCK_DB.attendance || []).forEach(a => {
+                const nisStr = a.nis.toString();
+                if (normalizeDateStr(a.date) === selectedDateStr) {
+                    attMap.set(nisStr, a);
+                }
+
+                if (!studentStatsMap.has(nisStr)) {
+                    studentStatsMap.set(nisStr, { alpa: 0, sakit: 0, terlambat: 0 });
+                }
+                const st = studentStatsMap.get(nisStr);
+                if (a.status === 'A') st.alpa++;
+                if (a.status === 'S') st.sakit++;
+                const rmk = (a.remark || '').toLowerCase();
+                if (rmk.includes('kesiangan') || rmk.includes('terlambat')) st.terlambat++;
+            });
+
+            const statuses = [
+                { val: 'H', label: 'H', desc: 'Hadir', active: 'bg-emerald-500 text-white border-emerald-500 shadow-md scale-105', base: 'hover:bg-emerald-50 text-emerald-600 border-emerald-200' },
+                { val: 'I', label: 'I', desc: 'Izin', active: 'bg-amber-500 text-white border-amber-500 shadow-md scale-105', base: 'hover:bg-amber-50 text-amber-600 border-amber-200' },
+                { val: 'S', label: 'S', desc: 'Sakit', active: 'bg-blue-500 text-white border-blue-500 shadow-md scale-105', base: 'hover:bg-blue-50 text-blue-600 border-blue-200' },
+                { val: 'A', label: 'A', desc: 'Alpa', active: 'bg-rose-500 text-white border-rose-500 shadow-md scale-105', base: 'hover:bg-rose-50 text-rose-600 border-rose-200' },
+                { val: 'D', label: 'D', desc: 'Disp', active: 'bg-purple-500 text-white border-purple-500 shadow-md scale-105', base: 'hover:bg-purple-50 text-purple-600 border-purple-200' },
+                { val: 'L', label: 'L', desc: 'Libur', active: 'bg-sky-500 text-white border-sky-500 shadow-md scale-105', base: 'hover:bg-sky-50 text-sky-600 border-sky-200' }
+            ];
+
+            const showWarningBadges = currentUser.role === 'wali' || currentUser.role === 'guru_bp' || isTrueAdmin;
+
+            const rowsHtml = classStudents.map((student, idx) => {
+                const existing = attMap.get(student.nis.toString());
+                const status = existing ? existing.status : '';
+                const remark = existing ? (existing.remark || '') : '';
+                const updatedBy = existing ? (existing.updatedBy || '') : '';
+                const tempFile = window[`attached_file_${student.nis}`];
+                
+                let attachName = '';
+                if (tempFile) attachName = tempFile.name;
+                else if (existing && (existing.attachment || existing.attachmentUrl || existing.attachmentName)) {
+                    attachName = (existing.attachment ? existing.attachment.name : existing.attachmentName) || 'Surat Bukti';
+                }
+
+                let radioHtml = `<div class="flex items-center gap-1 justify-center">`;
+                statuses.forEach(st => {
+                    const isActive = st.val === status;
+                    radioHtml += `
+                        <label class="${isLocked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} relative">
+                            <input type="radio" name="status-${student.nis}" value="${st.val}" ${isActive ? 'checked' : ''} ${isLocked ? 'disabled' : ''} onchange="handleStatusChange('${student.nis}', '${st.val}')" class="sr-only">
+                            <span id="label-${student.nis}-${st.val}" class="touch-pill flex flex-col items-center justify-center rounded-xl border text-[11px] font-extrabold transition-all w-8 h-8 sm:w-9 sm:h-9 active:scale-95 ${isActive ? st.active : st.base}">
+                                ${st.label}
+                                <span class="text-[6px] font-bold opacity-80 block">${st.desc}</span>
+                            </span>
+                        </label>
+                    `;
+                });
+                radioHtml += `</div>`;
+
+                const showUpdatedBadge = isTrueAdmin && updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit mt-0.5"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${updatedBy}</span>` : '';
+
+                // NOTIFIKASI PERINGATAN PEMBINAAN / HOME VISIT
+                let warningHtml = '';
+                if (showWarningBadges) {
+                    const stStat = studentStatsMap.get(student.nis.toString()) || { alpa: 0, sakit: 0, terlambat: 0 };
+                    if (stStat.alpa >= 3 || stStat.terlambat >= 3) {
+                        warningHtml += `<div class="mt-1 p-1 bg-red-100 border border-red-300 text-red-800 rounded-lg text-[9px] font-bold flex items-center gap-1"><i class="ph-bold ph-warning"></i> ⚠️ Lakukan Pembinaan & Pemanggilan Orang Tua (Alpa: ${stStat.alpa}x, Lambat: ${stStat.terlambat}x)</div>`;
+                    }
+                    if (stStat.sakit >= 3) {
+                        warningHtml += `<div class="mt-1 p-1 bg-amber-100 border border-amber-300 text-amber-800 rounded-lg text-[9px] font-bold flex items-center gap-1"><i class="ph-bold ph-first-aid"></i> 🩺 Perlu Dijenguk / Home Visit (Sakit: ${stStat.sakit}x)</div>`;
+                    }
+                }
+
+                return `
+                    <tr class="hover:bg-slate-50 transition-colors text-xs">
+                        <td class="px-1.5 py-2 font-bold text-slate-400 text-center">${idx + 1}</td>
+                        <td class="px-1.5 py-2 font-mono font-bold text-slate-700 text-[11px]">${student.nis}</td>
+                        <td class="px-2 py-2 font-extrabold text-slate-800 truncate max-w-[150px]">
+                            ${student.name}
+                            ${warningHtml}
+                        </td>
+                        <td class="px-1 py-2 text-center"><span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1 py-0.5 rounded inline-block">${student.classId}</span></td>
+                        <td class="px-2 py-2 text-center">${radioHtml}</td>
+                        <td class="px-2 py-2 min-w-[220px]">
+                            <div id="ket-container-${student.nis}" class="flex flex-col gap-1">
+                                <input type="text" id="ket-input-${student.nis}" value="${remark}" ${!isLocked ? '' : 'disabled'} onchange="isFormDirty=true" placeholder="Catatan / Alasan S, I, A, D..." class="w-full bg-slate-50 border rounded-xl px-2.5 py-1 text-[11px] font-semibold">
+                                
+                                <div id="updater-badge-${student.nis}">
+                                    ${showUpdatedBadge}
+                                </div>
+
+                                <div class="flex items-center gap-1.5 flex-wrap mt-0.5">
+                                    ${!isLocked ? `
+                                        <button type="button" onclick="setQuickRemark('${student.nis}', 'Kesiangan')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-1.5 py-0.5 rounded text-[9px] active:scale-95 transition-transform">+ Kesiangan</button>
+                                        <button type="button" onclick="setQuickRemark('${student.nis}', 'Bolos', true)" class="bg-rose-100 hover:bg-rose-200 text-rose-900 font-bold px-1.5 py-0.5 rounded text-[9px] active:scale-95 transition-transform">+ Bolos (Alpa)</button>
+                                    ` : ''}
+
+                                    <button type="button" onclick="triggerCameraCapture('${student.nis}')" class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all">
+                                        <i class="ph-bold ph-camera text-xs"></i> Kamera
+                                    </button>
+                                    <input type="file" id="file-cam-${student.nis}" accept="image/*" capture="camera" onchange="handleFileUpload(event, '${student.nis}')" class="hidden" ${isLocked ? 'disabled' : ''}>
+                                    
+                                    <button type="button" onclick="triggerFileSelect('${student.nis}')" class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-slate-800 hover:bg-slate-900 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all">
+                                        <i class="ph-bold ph-folder text-xs"></i> File/PDF
+                                    </button>
+                                    <input type="file" id="file-doc-${student.nis}" accept="image/*,application/pdf" onchange="handleFileUpload(event, '${student.nis}')" class="hidden" ${isLocked ? 'disabled' : ''}>
+
+                                    <div id="upload-indicator-${student.nis}" class="${attachName ? '' : 'hidden-app'} flex items-center gap-1 bg-brand-50 border border-brand-200 text-brand-900 px-2 py-1 rounded-lg text-[10px] shadow-2xs">
+                                        <i class="ph-bold ph-paperclip text-brand-600"></i>
+                                        <span id="file-name-${student.nis}" class="font-bold truncate max-w-[70px]">${attachName}</span>
+                                        
+                                        <button type="button" onclick="viewAttachmentFromDailyForm('${student.nis}')" class="bg-brand-600 hover:bg-brand-700 text-white font-bold px-1.5 py-0.5 rounded text-[9px] flex items-center gap-0.5 active:scale-95 transition-transform" title="Pratinjau Surat">
+                                            <i class="ph-bold ph-eye"></i> Lihat
+                                        </button>
+                                        
+                                        <button type="button" onclick="downloadAttachmentDirect('${student.nis}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-1.5 py-0.5 rounded text-[9px] flex items-center gap-0.5 active:scale-95 transition-transform" title="Unduh Berkas Langsung">
+                                            <i class="ph-bold ph-download-simple"></i> Unduh
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            tbody.innerHTML = rowsHtml;
+            updateLiveDailyRecap();
+        }
+
+        function filterDailyTable() {
+            const q = document.getElementById('search-daily-input').value.toLowerCase();
+            document.querySelectorAll('#bulk-absen-table-body tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function filterRecapTable() {
+            const q = document.getElementById('search-rekap-input').value.toLowerCase();
+            document.querySelectorAll('#rekap-matrix-table-body tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function handleStatusChange(nis, newStatus) {
+            isFormDirty = true;
+            const statuses = ['H', 'I', 'S', 'A', 'D', 'L'];
+            const styles = {
+                'H': { active: 'bg-emerald-500 text-white border-emerald-500 shadow-md scale-105', base: 'hover:bg-emerald-50 text-emerald-600 border-emerald-200' },
+                'I': { active: 'bg-amber-500 text-white border-amber-500 shadow-md scale-105', base: 'hover:bg-amber-50 text-amber-600 border-amber-200' },
+                'S': { active: 'bg-blue-500 text-white border-blue-500 shadow-md scale-105', base: 'hover:bg-blue-50 text-blue-600 border-blue-200' },
+                'A': { active: 'bg-rose-500 text-white border-rose-500 shadow-md scale-105', base: 'hover:bg-rose-50 text-rose-600 border-rose-200' },
+                'D': { active: 'bg-purple-500 text-white border-purple-500 shadow-md scale-105', base: 'hover:bg-purple-50 text-purple-600 border-purple-200' },
+                'L': { active: 'bg-sky-500 text-white border-sky-500 shadow-md scale-105', base: 'hover:bg-sky-50 text-sky-600 border-sky-200' }
+            };
+
+            statuses.forEach(st => {
+                const span = document.getElementById(`label-${nis}-${st}`);
+                if (span) {
+                    if (st === newStatus) span.className = `touch-pill flex flex-col items-center justify-center rounded-xl border text-[11px] font-extrabold transition-all w-8 h-8 sm:w-9 sm:h-9 active:scale-95 ${styles[st].active}`;
+                    else span.className = `touch-pill flex flex-col items-center justify-center rounded-xl border text-[11px] font-extrabold transition-all w-8 h-8 sm:w-9 sm:h-9 active:scale-95 ${styles[st].base}`;
+                }
+            });
+
+            if (currentUser) {
+                const recorderTag = `${currentUser.name} (${getRoleLabelFormatted(currentUser)})`;
+                window[`recorder_tag_${nis}`] = recorderTag;
+
+                if (currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah') {
+                    const badgeContainer = document.getElementById(`updater-badge-${nis}`);
+                    if (badgeContainer) {
+                        badgeContainer.innerHTML = `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${recorderTag}</span>`;
+                    }
+                }
+            }
+
+            updateLiveDailyRecap();
+        }
+
+        function updateLiveDailyRecap() {
+            const classId = document.getElementById('input-absen-kelas').value;
+            if (!classId) return;
+            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
+            const totalSiswa = classStudents.length;
+            if (totalSiswa === 0) return;
+
+            let h = 0, i = 0, s = 0, a = 0, dVal = 0, l = 0;
+            classStudents.forEach(student => {
+                const radioChecked = document.querySelector(`input[name="status-${student.nis}"]:checked`);
+                const currentStatus = radioChecked ? radioChecked.value : '';
+                if (currentStatus === 'H') h++;
+                else if (currentStatus === 'I') i++;
+                else if (currentStatus === 'S') s++;
+                else if (currentStatus === 'A') a++;
+                else if (currentStatus === 'D') dVal++;
+                else if (currentStatus === 'L') l++;
+            });
+
+            document.getElementById('recap-live-total').textContent = totalSiswa;
+            document.getElementById('recap-live-h').textContent = h;
+            document.getElementById('recap-live-i').textContent = i;
+            document.getElementById('recap-live-s').textContent = s;
+            document.getElementById('recap-live-a').textContent = a;
+            document.getElementById('recap-live-d').textContent = dVal;
+            document.getElementById('recap-live-l').textContent = l;
+
+            const totalActive = h + i + s + a + dVal;
+            const pct = totalActive > 0 ? Math.round(((h + dVal) / totalActive) * 100) : 100;
+            document.getElementById('recap-live-pct').textContent = pct + '%';
+            document.getElementById('recap-live-progress').style.width = pct + '%';
+        }
+
+        async function saveBulkAttendance(e) {
+            e.preventDefault();
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+
+            if (!classId) return showMessage('Peringatan', 'Silakan pilih kelas terlebih dahulu.');
+
+            const isLocked = checkDailyIsLocked(dateStr, classId);
+            if (isLocked) {
+                showMessage('Gagal', 'Absensi kelas/tanggal ini TERKUNCI. Data tidak dapat disimpan.');
+                return;
+            }
+
+            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
+            const recordsToSave = [];
+            const submitBtn = document.getElementById('btn-submit-bulk-absen');
+
+            const defaultRecorderTag = currentUser ? `${currentUser.name} (${getRoleLabelFormatted(currentUser)})` : 'Pengguna';
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<i class="ph-bold ph-spinner-gap text-base animate-spin"></i><span>Mengirim Data Absensi...</span>`;
+            }
+
+            classStudents.forEach(student => {
+                const radioChecked = document.querySelector(`input[name="status-${student.nis}"]:checked`);
+                if (!radioChecked) return;
+                const status = radioChecked.value;
+                const remarkInput = document.getElementById(`ket-input-${student.nis}`);
+                const remark = remarkInput ? remarkInput.value.trim() : '';
+                const tempFile = window[`attached_file_${student.nis}`];
+
+                const existing = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === dateStr);
+                const recorderTag = window[`recorder_tag_${student.nis}`] || (existing ? existing.updatedBy : defaultRecorderTag);
+
+                recordsToSave.push({
+                    nis: student.nis, date: dateStr, month: dateStr.slice(0, 7),
+                    status, remark, attachment: tempFile || (existing ? existing.attachment : null),
+                    updatedBy: recorderTag
+                });
+            });
+
+            recordsToSave.forEach(rec => {
+                const idx = MOCK_DB.attendance.findIndex(a => a.nis.toString() === rec.nis.toString() && normalizeDateStr(a.date) === dateStr);
+                if (idx !== -1) MOCK_DB.attendance[idx] = rec;
+                else MOCK_DB.attendance.push(rec);
+            });
+            
+            saveToStorage();
+            isFormDirty = false;
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Simpan Data Absensi</span>`;
+            }
+
+            showMessage('Berhasil', 'Data absensi harian berhasil disimpan & disinkronkan ke seluruh perangkat.');
+            loadStudentAttendanceForm();
+            await callCloudAPI("saveBulkAttendance", { records: recordsToSave });
+        }
+
+        async function resetDailyAttendance() {
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (!classId) return;
+            if (!confirm(`RESET ABSENSI: Kosongkan seluruh data absen kelas ${classId} tanggal ${dateStr}?`)) return;
+
+            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
+            const classStudentNises = classStudents.map(s => s.nis.toString());
+            
+            MOCK_DB.attendance = MOCK_DB.attendance.filter(a => !(classStudentNises.includes(a.nis.toString()) && normalizeDateStr(a.date) === dateStr));
+            saveToStorage();
+            isFormDirty = false;
+
+            showMessage('Sukses', `Data absensi kelas ${classId} tanggal ${dateStr} berhasil di-reset.`);
+            loadStudentAttendanceForm();
+            await callCloudAPI("resetDailyAttendance", { classId, date: dateStr });
+        }
+
+        async function toggleDailyLockByAdmin() {
+            if (!currentUser || currentUser.role !== 'admin' || currentUser.dept === 'Wakasek' || currentUser.dept === 'Kepala Sekolah') return;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            const classId = document.getElementById('input-absen-kelas').value;
+            if (!dateStr || !classId) return showMessage('Peringatan', 'Pilih kelas terlebih dahulu.');
+
+            if (!MOCK_DB.dailyLocks) MOCK_DB.dailyLocks = {};
+
+            const lockKeySpecific = `${dateStr}_${classId}`;
+            const isCurrentlyLocked = checkDailyIsLocked(dateStr, classId);
+            const nextStatus = !isCurrentlyLocked;
+
+            MOCK_DB.dailyLocks[lockKeySpecific] = nextStatus;
+            if (classId === 'SEMUA') {
+                MOCK_DB.dailyLocks[dateStr] = nextStatus;
+                MOCK_DB.classes.forEach(c => {
+                    MOCK_DB.dailyLocks[`${dateStr}_${c.id}`] = nextStatus;
+                });
+            }
+            saveToStorage();
+
+            const targetLabel = classId === 'SEMUA' ? 'Semua Kelas' : `Kelas ${classId}`;
+            showMessage('Sukses', `Penginputan absen tanggal ${dateStr} untuk ${targetLabel} berhasil di-${nextStatus ? 'TUTUP / KUNCI' : 'BUKA'}.`);
+
+            loadStudentAttendanceForm();
+            await callCloudAPI("toggleDailyLock", { date: dateStr, classId, locked: nextStatus, lockKey: lockKeySpecific });
+        }
+
+        function toggleFilterInputs() {
+            const rekapType = document.getElementById('rekap-type').value;
+            document.getElementById('filter-wrapper-daily').classList.add('hidden-app');
+            document.getElementById('filter-wrapper-weekly').classList.add('hidden-app');
+            document.getElementById('filter-wrapper-monthly').classList.add('hidden-app');
+            document.getElementById(`filter-wrapper-${rekapType}`).classList.remove('hidden-app');
+        }
+
+        // REKAPITULASI ACCELERATED FOR HIGH SPEED PRINTING & VIEWING
+        function renderAttendanceRecap() {
+            const classId = document.getElementById('rekap-absen-kelas').value;
+            const type = document.getElementById('rekap-type').value;
+            const headerEl = document.getElementById('rekap-table-header');
+            const tbody = document.getElementById('rekap-matrix-table-body');
+
+            if (!classId) {
+                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-slate-400 font-bold">Silakan pilih kelas terlebih dahulu.</td></tr>`;
+                return;
+            }
+
+            let classStudents = classId === 'SEMUA' ? [...MOCK_DB.students] : MOCK_DB.students.filter(s => s.classId === classId);
+
+            // URUTKAN ABJAD NAMA SISWA PERKELAS PADA SEMUA KELAS
+            classStudents.sort((a, b) => {
+                if (classId === 'SEMUA' && a.classId !== b.classId) {
+                    return a.classId.localeCompare(b.classId, 'id', { numeric: true });
+                }
+                return a.name.localeCompare(b.name, 'id');
+            });
+
+            const waliObj = getWaliForClass(classId);
+            const todayFormated = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            if (document.getElementById('recap-header-class')) document.getElementById('recap-header-class').textContent = classId;
+            if (document.getElementById('recap-header-period')) document.getElementById('recap-header-period').textContent = type.toUpperCase();
+            if (document.getElementById('recap-header-wali')) document.getElementById('recap-header-wali').textContent = waliObj.name;
+            if (document.getElementById('recap-header-nip')) document.getElementById('recap-header-nip').textContent = waliObj.nip;
+            if (document.getElementById('recap-header-today')) document.getElementById('recap-header-today').textContent = todayFormated;
+
+            document.getElementById('print-signature-name').textContent = waliObj.name;
+            document.getElementById('print-signature-nip').textContent = "NIP. " + waliObj.nip;
+            document.getElementById('print-class-label').textContent = classId;
+            document.getElementById('print-today-date').textContent = todayFormated;
+
+            const getStatusBadge = (st) => {
+                if (!st || st === '-') return '-';
+                if (st === 'H') return `<span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-emerald-100 text-emerald-800">H</span>`;
+                if (st === 'I') return `<span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-amber-100 text-amber-800">I</span>`;
+                if (st === 'S') return `<span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-blue-100 text-blue-800">S</span>`;
+                if (st === 'A') return `<span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-rose-100 text-rose-800">A</span>`;
+                if (st === 'D') return `<span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-purple-100 text-purple-800">D</span>`;
+                if (st === 'L') return `<span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-sky-100 text-sky-800">L</span>`;
+                return st;
+            };
+
+            const isUserAdmin = currentUser && currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah';
+
+            const attMap = new Map();
+            (MOCK_DB.attendance || []).forEach(a => {
+                const key = `${a.nis.toString()}_${normalizeDateStr(a.date)}`;
+                attMap.set(key, a);
+            });
+
+            if (type === 'monthly') {
+                const monthVal = document.getElementById('rekap-absen-month').value || new Date().toISOString().slice(0,7);
+                document.getElementById('print-month-label').textContent = monthVal;
+                const year = parseInt(monthVal.split('-')[0]);
+                const month = parseInt(monthVal.split('-')[1]);
+                const daysInMonth = new Date(year, month, 0).getDate();
+
+                let headerHtml = `<tr><th class="px-2.5 py-2 text-center">No</th><th class="px-2.5 py-2 text-left">NIS</th><th class="px-2 py-2 text-left">Nama Siswa</th><th class="px-1 py-2 text-center w-16">Kelas</th>`;
+                for (let d = 1; d <= daysInMonth; d++) headerHtml += `<th class="px-1 py-2 text-center text-[9px]">${d}</th>`;
+                headerHtml += `<th class="bg-emerald-50 text-emerald-700">H</th><th class="bg-amber-50 text-amber-700">I</th><th class="bg-blue-50 text-blue-700">S</th><th class="bg-rose-50 text-rose-700">A</th><th class="bg-purple-50 text-purple-700">D</th><th class="bg-sky-50 text-sky-700">L</th><th class="bg-emerald-100 text-emerald-900">Hadir (%)</th></tr>`;
+                headerEl.innerHTML = headerHtml;
+
+                tbody.innerHTML = classStudents.map((student, idx) => {
+                    let rH = 0, rI = 0, rS = 0, rA = 0, rD = 0, rL = 0;
+                    let daysHtml = '';
+                    for (let d = 1; d <= daysInMonth; d++) {
+                        const targetDate = `${monthVal}-${String(d).padStart(2, '0')}`;
+                        const att = attMap.get(`${student.nis.toString()}_${targetDate}`);
+                        let cellContent = '-';
+                        if (att) {
+                            cellContent = getStatusBadge(att.status);
+                            if (att.status === 'H') rH++;
+                            else if (att.status === 'I') rI++;
+                            else if (att.status === 'S') rS++;
+                            else if (att.status === 'A') rA++;
+                            else if (att.status === 'D') rD++;
+                            else if (att.status === 'L') rL++;
+                        }
+                        daysHtml += `<td class="px-1 py-1 text-center text-[10px] border">${cellContent}</td>`;
+                    }
+                    const totalActive = rH + rI + rS + rA + rD;
+                    const pct = totalActive > 0 ? Math.round(((rH + rD) / totalActive) * 100) : 100;
+
+                    return `
+                        <tr>
+                            <td class="px-2 py-1 text-center">${idx + 1}</td>
+                            <td class="px-2 py-1 font-mono font-bold">${student.nis}</td>
+                            <td class="px-2 py-1 font-extrabold text-slate-800 text-xs">${student.name}</td>
+                            <td class="px-1 py-1 text-center"><span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded">${student.classId}</span></td>
+                            ${daysHtml}
+                            <td class="font-bold text-emerald-700 text-center">${rH}</td>
+                            <td class="font-bold text-amber-700 text-center">${rI}</td>
+                            <td class="font-bold text-blue-700 text-center">${rS}</td>
+                            <td class="font-bold text-rose-700 text-center">${rA}</td>
+                            <td class="font-bold text-purple-700 text-center">${rD}</td>
+                            <td class="font-bold text-sky-700 text-center">${rL}</td>
+                            <td class="font-black bg-emerald-100 text-emerald-900 text-center">${pct}%</td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } else if (type === 'weekly') {
+                const startWeekVal = document.getElementById('rekap-absen-week').value || normalizeDateStr(new Date());
+                const startDate = new Date(startWeekVal);
+                document.getElementById('print-month-label').textContent = `Minggu ${startWeekVal}`;
+
+                let headerHtml = `<tr><th class="px-2.5 py-2 text-center">No</th><th class="px-2.5 py-2 text-left">NIS</th><th class="px-2 py-2 text-left">Nama Siswa</th><th class="px-1 py-2 text-center w-16">Kelas</th>`;
+                const dateCols = [];
+                for (let d = 0; d < 7; d++) {
+                    const currentDay = new Date(startDate);
+                    currentDay.setDate(startDate.getDate() + d);
+                    const dateStr = normalizeDateStr(currentDay);
+                    dateCols.push(dateStr);
+                    const dayLabel = currentDay.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' });
+                    headerHtml += `<th class="px-2 py-2 text-center text-[10px]">${dayLabel}</th>`;
+                }
+                headerHtml += `<th class="bg-emerald-50 text-emerald-700">H</th><th class="bg-amber-50 text-amber-700">I</th><th class="bg-blue-50 text-blue-700">S</th><th class="bg-rose-50 text-rose-700">A</th><th class="bg-purple-50 text-purple-700">D</th><th class="bg-sky-50 text-sky-700">L</th><th class="bg-emerald-100 text-emerald-900">Hadir (%)</th></tr>`;
+                headerEl.innerHTML = headerHtml;
+
+                tbody.innerHTML = classStudents.map((student, idx) => {
+                    let rH = 0, rI = 0, rS = 0, rA = 0, rD = 0, rL = 0;
+                    let daysHtml = '';
+                    dateCols.forEach(targetDate => {
+                        const att = attMap.get(`${student.nis.toString()}_${targetDate}`);
+                        let cellContent = '-';
+                        if (att) {
+                            cellContent = getStatusBadge(att.status);
+                            if (att.status === 'H') rH++;
+                            else if (att.status === 'I') rI++;
+                            else if (att.status === 'S') rS++;
+                            else if (att.status === 'A') rA++;
+                            else if (att.status === 'D') rD++;
+                            else if (att.status === 'L') rL++;
+                        }
+                        daysHtml += `<td class="px-2 py-1 text-center text-xs border">${cellContent}</td>`;
+                    });
+                    const totalActive = rH + rI + rS + rA + rD;
+                    const pct = totalActive > 0 ? Math.round(((rH + rD) / totalActive) * 100) : 100;
+
+                    return `
+                        <tr>
+                            <td class="px-2 py-1 text-center">${idx + 1}</td>
+                            <td class="px-2 py-1 font-mono font-bold">${student.nis}</td>
+                            <td class="px-2 py-1 font-extrabold text-slate-800 text-xs">${student.name}</td>
+                            <td class="px-1 py-1 text-center"><span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded">${student.classId}</span></td>
+                            ${daysHtml}
+                            <td class="font-bold text-emerald-700 text-center">${rH}</td>
+                            <td class="font-bold text-amber-700 text-center">${rI}</td>
+                            <td class="font-bold text-blue-700 text-center">${rS}</td>
+                            <td class="font-bold text-rose-700 text-center">${rA}</td>
+                            <td class="font-bold text-purple-700 text-center">${rD}</td>
+                            <td class="font-bold text-sky-700 text-center">${rL}</td>
+                            <td class="font-black bg-emerald-100 text-emerald-900 text-center">${pct}%</td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } else if (type === 'daily') {
+                const dateVal = document.getElementById('rekap-absen-date').value || normalizeDateStr(new Date());
+                document.getElementById('print-month-label').textContent = dateVal;
+
+                const colAkunHeader = isUserAdmin ? `<th class="px-3 py-2">Akun Pengisi Data</th>` : '';
+                headerEl.innerHTML = `<tr><th class="px-3 py-2 w-10 text-center">No</th><th class="px-3 py-2 w-24">NIS</th><th class="px-3 py-2 text-left">Nama Siswa</th><th class="px-2 py-2 text-center w-20">Kelas</th><th class="px-3 py-2 text-center">Status</th><th class="px-3 py-2">Catatan / Keterangan</th>${colAkunHeader}<th class="px-3 py-2 text-center no-print">Surat Bukti</th></tr>`;
+                
+                tbody.innerHTML = classStudents.map((student, idx) => {
+                    const att = attMap.get(`${student.nis.toString()}_${dateVal}`);
+                    const statusText = att ? getStatusBadge(att.status) : '-';
+                    const remarkText = att ? (att.remark || '-') : '-';
+                    
+                    const updaterTd = isUserAdmin 
+                        ? `<td class="px-3 py-2 text-xs font-bold text-brand-700 bg-brand-50/50">${att && att.updatedBy ? `<i class="ph-bold ph-user-check"></i> ${att.updatedBy}` : '-'}</td>` 
+                        : '';
+
+                    const hasAttach = att && (att.attachment || att.attachmentUrl || att.attachmentName);
+                    const attachBtn = hasAttach 
+                        ? `<button type="button" onclick="viewAttachmentFromRecap('${student.nis}', '${dateVal}')" class="text-brand-600 font-bold bg-brand-50 border border-brand-200 px-2 py-0.5 rounded-lg text-xs active:scale-95 transition-transform"><i class="ph-bold ph-file-text"></i> Lihat / Unduh</button>` 
+                        : '-';
+
+                    return `
+                        <tr>
+                            <td class="px-3 py-2 text-center">${idx + 1}</td>
+                            <td class="px-3 py-2 font-mono font-bold">${student.nis}</td>
+                            <td class="px-3 py-2 font-extrabold text-slate-800 text-xs">${student.name}</td>
+                            <td class="px-2 py-2 text-center"><span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">${student.classId}</span></td>
+                            <td class="px-3 py-2 text-center font-extrabold">${statusText}</td>
+                            <td class="px-3 py-2 text-xs">${remarkText}</td>
+                            ${updaterTd}
+                            <td class="px-3 py-2 text-center no-print">${attachBtn}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        // EXPORT EXCEL DENGAN REKAM AKUN PENGISI DATA
+        function exportToExcel() {
+            const classId = document.getElementById('rekap-absen-kelas').value;
+            const type = document.getElementById('rekap-type').value;
+            if (!classId) return showMessage('Peringatan', 'Silakan pilih kelas terlebih dahulu.');
+
+            let classStudents = classId === 'SEMUA' ? [...MOCK_DB.students] : MOCK_DB.students.filter(s => s.classId === classId);
+            classStudents.sort((a, b) => {
+                if (classId === 'SEMUA' && a.classId !== b.classId) {
+                    return a.classId.localeCompare(b.classId, 'id', { numeric: true });
+                }
+                return a.name.localeCompare(b.name, 'id');
+            });
+
+            const waliObj = getWaliForClass(classId);
+
+            let rows = [
+                ["PEMERINTAH PROVINSI JAWA BARAT"],
+                ["DINAS PENDIDIKAN CABANG DINAS WILAYAH VIII"],
+                ["SMK NEGERI 5 PANGALENGAN"],
+                ["REKAPITULASI PRESENSI KEHADIRAN SISWA"],
+                [`Kelas: ${classId}`],
+                []
+            ];
+
+            const attMap = new Map();
+            (MOCK_DB.attendance || []).forEach(a => {
+                const key = `${a.nis.toString()}_${normalizeDateStr(a.date)}`;
+                attMap.set(key, a);
+            });
+
+            if (type === 'monthly') {
+                const monthVal = document.getElementById('rekap-absen-month').value || new Date().toISOString().slice(0,7);
+                const year = parseInt(monthVal.split('-')[0]);
+                const month = parseInt(monthVal.split('-')[1]);
+                const daysInMonth = new Date(year, month, 0).getDate();
+
+                let header = ["No", "NIS", "Nama Siswa", "Kelas"];
+                for (let d = 1; d <= daysInMonth; d++) header.push(d.toString());
+                header.push("H", "I", "S", "A", "D", "L", "% Kehadiran");
+                rows.push(header);
+
+                classStudents.forEach((student, idx) => {
+                    let r = [idx + 1, student.nis, student.name, student.classId];
+                    let rH = 0, rI = 0, rS = 0, rA = 0, rD = 0, rL = 0;
+                    for (let d = 1; d <= daysInMonth; d++) {
+                        const targetDate = `${monthVal}-${String(d).padStart(2, '0')}`;
+                        const att = attMap.get(`${student.nis.toString()}_${targetDate}`);
+                        if (att) {
+                            r.push(att.status);
+                            if (att.status === 'H') rH++;
+                            else if (att.status === 'I') rI++;
+                            else if (att.status === 'S') rS++;
+                            else if (att.status === 'A') rA++;
+                            else if (att.status === 'D') rD++;
+                            else if (att.status === 'L') rL++;
+                        } else r.push("-");
+                    }
+                    const totalActive = rH + rI + rS + rA + rD;
+                    const pct = totalActive > 0 ? Math.round(((rH + rD) / totalActive) * 100) : 100;
+                    r.push(rH, rI, rS, rA, rD, rL, `${pct}%`);
+                    rows.push(r);
+                });
+            } else {
+                let header = ["No", "NIS", "Nama Siswa", "Kelas", "Status", "Keterangan", "Akun Pengisi Data"];
+                rows.push(header);
+                const dateVal = document.getElementById('rekap-absen-date').value || normalizeDateStr(new Date());
+                classStudents.forEach((student, idx) => {
+                    const att = attMap.get(`${student.nis.toString()}_${dateVal}`);
+                    rows.push([idx + 1, student.nis, student.name, student.classId, att ? att.status : '-', att ? att.remark : '-', att ? (att.updatedBy || '-') : '-']);
+                });
+            }
+
+            rows.push([], []);
+            rows.push(["", "", "Mengetahui,", "", "Pangalengan, Bandung, " + new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })]);
+            rows.push(["", "", "Wali Kelas Pengampu", "", "Kepala SMKN 5 Pangalengan"]);
+            rows.push([], []);
+            rows.push(["", "", waliObj.name, "", "Dini Puji Setiani, S.PdI."]);
+            rows.push(["", "", "NIP. " + waliObj.nip, "", "NIP. 197912012014102001"]);
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            XLSX.utils.book_append_sheet(wb, ws, "Rekap Absen");
+            XLSX.writeFile(wb, `Laporan_Absensi_SMKN5_${classId}_${type}.xlsx`);
+        }
+
+        // EXPORT WORD DENGAN KOP DOKUMEN DAN DATA LENGKAP
+        async function exportToWord() {
+            const classId = document.getElementById('rekap-absen-kelas').value;
+            if (!classId) return showMessage('Peringatan', 'Silakan pilih kelas terlebih dahulu.');
+            
+            renderAttendanceRecap();
+            const type = document.getElementById('rekap-type').value;
+            const waliObj = getWaliForClass(classId);
+
+            const headerHtml = document.getElementById('rekap-table-header').innerHTML;
+            const bodyHtml = document.getElementById('rekap-matrix-table-body').innerHTML;
+
+            const wordDocument = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset="utf-8">
+                    <title>Laporan Absensi SMKN 5 Pangalengan</title>
+                    <style>
+                        body { font-family: 'Times New Roman', serif; font-size: 10pt; color: #000; }
+                        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+                        th, td { border: 1px solid #000; padding: 5px; text-align: center; }
+                        th { background-color: #f2f2f2; font-weight: bold; }
+                    </style>
+                </head>
+                <body>
+                    <div style="text-align: center; font-weight: bold; border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 15px;">
+                        <h3 style="margin:0; text-transform: uppercase;">PEMERINTAH PROVINSI JAWA BARAT</h3>
+                        <h2 style="margin:0; text-transform: uppercase;">DINAS PENDIDIKAN CABANG DINAS WILAYAH VIII</h2>
+                        <h1 style="margin:0; font-size: 16pt; text-transform: uppercase;">SMK NEGERI 5 PANGALENGAN</h1>
+                        <p style="margin:0; font-size: 8pt; font-weight: normal;
+font-style: italic;">JL. Cinchona No 08 Tlp. 082316075702, Pangalengan, Kab. Bandung, Jawa Barat 40378</p>
+                    </div>
+                    <h3 style="text-align: center; text-decoration: underline; margin-bottom: 4px;">REKAPITULASI PRESENSI KEHADIRAN SISWA</h3>
+                    <p style="text-align: center; margin-top:0;">Kelas: <b>${classId}</b> | Periode: <b>${type.toUpperCase()}</b> | Wali Kelas: <b>${waliObj.name} (NIP: ${waliObj.nip})</b></p>
+                    <table>
+                        <thead>${headerHtml}</thead>
+                        <tbody>${bodyHtml}</tbody>
+                    </table>
+                    <br><br>
+                    <table style="border: none; width: 100%;">
+                        <tr style="border: none;">
+                            <td style="border: none; width: 50%; text-align: center;">
+                                Mengetahui,<br>Wali Kelas<br><br><br><br><b><u>${waliObj.name}</u></b><br>NIP. ${waliObj.nip}
+                            </td>
+                            <td style="border: none; width: 50%; text-align: center;">
+                                Pangalengan, Bandung, ${new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}<br>Kepala SMKN 5 Pangalengan<br><br><br><br><b><u>Dini Puji Setiani, S.PdI.</u></b><br>NIP. 197912012014102001
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff' + wordDocument], { type: 'application/msword;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            downloadFileUniversal(url, `Laporan_Absensi_SMKN5_${classId}_${type}.doc`);
+            setTimeout(() => URL.revokeObjectURL(url), 500);
+        }
+
+        // CETAK PRINT / PDF UNTUK ANDROID APK / IOS / BROWSER LAPTOP
+        async function triggerPrint() {
+            const classId = document.getElementById('rekap-absen-kelas').value;
+            if (!classId) return showMessage('Peringatan', 'Silakan pilih kelas terlebih dahulu.');
+
+            renderAttendanceRecap();
+            const type = document.getElementById('rekap-type').value;
+
+            let styleEl = document.getElementById('print-style-dynamic');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'print-style-dynamic';
+                document.head.appendChild(styleEl);
+            }
+
+            if (type === 'monthly' || type === 'weekly') {
+                styleEl.innerHTML = '@media print { @page { size: A4 landscape; margin: 0.8cm; } }';
+            } else {
+                styleEl.innerHTML = '@media print { @page { size: A4 portrait; margin: 0.8cm; } }';
+            }
+
+            window.focus();
+            setTimeout(() => {
+                try {
+                    window.print();
+                } catch (e) {
+                    alert("Fitur pencetakan otomatis didukung via browser/sistem HP Anda. Silakan pilih 'Simpan sebagai PDF' pada dialog yang muncul.");
+                }
+            }, 200);
+        }
+
+        function handleLogoError(img) { if (img) img.src = "https://i.ibb.co.com/HDHzkCT8/LVUke-CNhdr-Gdd-Ut6-Bnl-Bj-Mr9-XCSJb-Uy-Vxdv-CAzd-T.png/wp-content/uploads/2023/11/logo.png"; }
 
         // INITIALISASI UTAMA APLIKASI WEB & APK ANDROID/IOS
         document.addEventListener('DOMContentLoaded', () => {
