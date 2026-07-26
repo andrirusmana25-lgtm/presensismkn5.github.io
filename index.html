@@ -877,9 +877,9 @@
         </div>
     </div>
 
-    <!-- HIGH PERFORMANCE ENGINE JS (BAGIAN KELANJUTAN SKRIP BERIKUTNYA) -->
+    <!-- HIGH PERFORMANCE ENGINE JS (INTEGRATED FULL ENGINE) -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxD-OYdmXqqqNEsEU2zN9kn2vVrSZcLZYbsVxtR2W-EhrLCtIsbY7JAThtqBR5Os-VW/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyGKoP-QxDSwasvWDsKP3ZxyJUQ9ezB8xfmyocOGxbEGSqvujECufmFF8-xIT1DoVaJ/exec";
         let currentUser = null;
         let activeAbsenTab = 'isi';
         let currentTargetMenu = 'dashboard_admin';
@@ -1569,12 +1569,15 @@
             }
         }
 
+        /**
+         * PERBAIKAN PENGUNGGAHAN FOTO KAMERA & BERKAS PADA APK ANDROID DAN IOS
+         */
         function handleFileUpload(event, nis) {
             const classId = document.getElementById('input-absen-kelas').value;
             const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
             if (checkDailyIsLocked(dateStr, classId)) return;
 
-            const file = event.target.files[0];
+            const file = event.target.files && event.target.files[0];
             if (!file) return;
 
             isFormDirty = true;
@@ -1586,15 +1589,19 @@
                 indicator.classList.remove('hidden-app');
             }
 
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
+            const fileName = file.name || `Surat_${nis}_${Date.now()}.jpg`;
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const rawData = e.target.result;
+
+                if (file.type && file.type.startsWith('image/')) {
                     const img = new Image();
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
                         let width = img.width;
                         let height = img.height;
-                        const maxDim = 1200;
+                        const maxDim = 1000;
 
                         if (width > maxDim || height > maxDim) {
                             if (width > height) {
@@ -1611,32 +1618,38 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.70);
                         window[`attached_file_${nis}`] = {
-                            name: file.name || "Foto_Kamera.jpg",
-                            size: Math.round(compressedDataUrl.length * 0.75 / 1024) + ' KB',
+                            name: fileName,
+                            size: Math.round((compressedDataUrl.length * 0.75) / 1024) + ' KB',
                             type: 'image/jpeg',
-                            data: compressedDataUrl
+                            data: compressedDataUrl,
+                            url: compressedDataUrl
                         };
 
-                        if (indicator && nameSpan) nameSpan.textContent = file.name || "Foto_Kamera.jpg";
+                        if (indicator && nameSpan) nameSpan.textContent = fileName;
                     };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            } else {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    window[`attached_file_${nis}`] = {
-                        name: file.name,
-                        size: (file.size / 1024).toFixed(1) + ' KB',
-                        type: file.type,
-                        data: e.target.result
+                    img.onerror = function() {
+                        saveRawFilePayload(nis, fileName, file.size, file.type, rawData, indicator, nameSpan);
                     };
-                    if (indicator && nameSpan) nameSpan.textContent = file.name;
-                };
-                reader.readAsDataURL(file);
-            }
+                    img.src = rawData;
+                } else {
+                    saveRawFilePayload(nis, fileName, file.size, file.type, rawData, indicator, nameSpan);
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function saveRawFilePayload(nis, name, size, type, dataUrl, indicator, nameSpan) {
+            window[`attached_file_${nis}`] = {
+                name: name,
+                size: size ? ((size / 1024).toFixed(1) + ' KB') : 'Selesai',
+                type: type || 'application/octet-stream',
+                data: dataUrl,
+                url: dataUrl
+            };
+            if (indicator && nameSpan) nameSpan.textContent = name;
         }
 
         function triggerCameraCapture(nis) {
@@ -1663,7 +1676,7 @@
             const studentName = student ? student.name : nis;
 
             if (tempFile) {
-                viewRealOrMockLetter(studentName, tempFile.name, tempFile.size, tempFile.data, tempFile.type);
+                viewRealOrMockLetter(studentName, tempFile.name, tempFile.size, tempFile.data || tempFile.url, tempFile.type);
                 return;
             }
             const dateVal = normalizeDateStr(document.getElementById('input-absen-date').value);
@@ -1681,7 +1694,7 @@
                     studentName,
                     attObj.name || att.attachmentName || 'Dokumen Surat Bukti',
                     attObj.size || att.attachmentSize || 'Selesai',
-                    attObj.url || att.attachmentUrl || '',
+                    attObj.url || att.attachmentUrl || attObj.data || '',
                     attObj.type || att.attachmentType || ''
                 );
             } else {
@@ -1700,30 +1713,33 @@
             return url;
         }
 
+        /**
+         * PRATINJAU UNIVERSAL TANPA PERLU LOGIN EMAIL GOOGLE
+         */
         function viewRealOrMockLetter(studentName, fileName, fileSize, fileUrl, fileType = '') {
             let finalViewUrl = convertDriveUrlToDirect(fileUrl);
             window.currentActiveAttachment = { studentName, name: fileName || "Surat_Bukti", size: fileSize || "Selesai", url: finalViewUrl, type: fileType };
             
-            const isImage = (fileType && fileType.startsWith('image/')) || (finalViewUrl && (finalViewUrl.startsWith('data:image/') || finalViewUrl.match(/\.(jpeg|jpg|gif|png)$/i)));
+            const isImage = (fileType && fileType.startsWith('image/')) || 
+                            (finalViewUrl && (finalViewUrl.startsWith('data:image/') || finalViewUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i)));
             
             let previewHtml = '';
             if (isImage) {
                 previewHtml = `
-                    <div class="w-full bg-slate-50 border rounded-2xl p-2 text-center mb-3 min-h-[160px] flex items-center justify-center overflow-hidden">
-                        <img src="${finalViewUrl}" class="max-h-60 mx-auto rounded-xl shadow-md object-contain" onerror="this.src='https://smkn5pangalengan.sch.id/wp-content/uploads/2023/11/logo.png'"/>
+                    <div class="w-full bg-slate-900 border rounded-2xl p-2 text-center mb-3 min-h-[200px] flex items-center justify-center overflow-hidden">
+                        <img src="${finalViewUrl}" class="max-h-72 w-auto mx-auto rounded-xl shadow-lg object-contain" alt="Bukti Surat"/>
                     </div>`;
-            } else if (fileUrl && fileUrl.includes("drive.google.com")) {
+            } else if (finalViewUrl && finalViewUrl.startsWith('data:application/pdf')) {
                 previewHtml = `
                     <div class="w-full bg-slate-50 border rounded-2xl p-4 text-center mb-3">
-                        <i class="ph-fill ph-file-text text-5xl text-brand-600 mb-2"></i>
+                        <i class="ph-fill ph-file-pdf text-6xl text-rose-600 mb-2"></i>
                         <h4 class="font-bold text-xs text-slate-800 break-all">${fileName}</h4>
                         <p class="text-[10px] text-slate-400 mt-0.5">${fileSize}</p>
-                        <a href="${fileUrl}" target="_blank" class="inline-block mt-3 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-xl text-xs font-bold underline">Buka di Google Drive / Browser</a>
                     </div>`;
             } else {
                 previewHtml = `
                     <div class="w-full bg-slate-50 border rounded-2xl p-6 text-center mb-3">
-                        <i class="ph-fill ph-file-text text-5xl text-brand-600 mb-2"></i>
+                        <i class="ph-fill ph-file-text text-6xl text-brand-600 mb-2"></i>
                         <h4 class="font-bold text-xs text-slate-800 break-all">${fileName}</h4>
                         <p class="text-[10px] text-slate-400 mt-0.5">${fileSize}</p>
                     </div>`;
@@ -1731,8 +1747,8 @@
 
             const actionButtons = `
                 <div class="flex gap-2 mt-3">
-                    <button type="button" onclick="triggerActiveAttachmentDownload()" class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs uppercase shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
-                        <i class="ph-bold ph-download-simple text-sm"></i> Unduh / Buka Berkas
+                    <button type="button" onclick="triggerActiveAttachmentDownload()" class="flex-1 py-3 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold rounded-xl text-xs uppercase shadow-md flex items-center justify-center gap-1.5 transition-transform">
+                        <i class="ph-bold ph-download-simple text-sm"></i> Unduh / Buka File
                     </button>
                 </div>`;
 
@@ -1744,11 +1760,11 @@
             const dateVal = normalizeDateStr(document.getElementById('input-absen-date').value);
             const att = MOCK_DB.attendance.find(a => a.nis.toString() === nis.toString() && normalizeDateStr(a.date) === dateVal);
             
-            if (tempFile && tempFile.data) {
-                downloadFileUniversal(tempFile.data, tempFile.name || "Surat_Bukti");
+            if (tempFile && (tempFile.data || tempFile.url)) {
+                downloadFileUniversal(tempFile.data || tempFile.url, tempFile.name || "Surat_Bukti");
             } else if (att && (att.attachment || att.attachmentUrl || att.attachmentName)) {
                 const attObj = att.attachment || {};
-                downloadFileUniversal(attObj.url || att.attachmentUrl || '', attObj.name || att.attachmentName || 'Surat_Bukti');
+                downloadFileUniversal(attObj.url || att.attachmentUrl || attObj.data || '', attObj.name || att.attachmentName || 'Surat_Bukti');
             } else {
                 showMessage('Info', 'Berkas surat belum tersedia.');
             }
@@ -2249,7 +2265,9 @@
             return false;
         }
 
-        // AKSELERASI SUPER CEPAT & URUTAN NAMA SISWA PERKELAS ABJAD A-Z
+        /**
+         * AKSELERASI SUPER KENCANG "SEMUA KELAS" (LOAD 1000+ SISWA DALAM HITUNGAN MILIDETIK)
+         */
         function loadStudentAttendanceForm(isSilent = false) {
             if (!currentUser) return;
             if (isSilent && isFormDirty) return;
@@ -2266,7 +2284,6 @@
 
             if (!tbody) return;
 
-            // KONTROL KHUSUS: HANYA ADMIN MURNI YANG BISA MEAT KONTROL KUNCI/RESET
             const isTrueAdmin = currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah' && currentUser.username !== 'kepsek';
 
             if (colHeaderKet) {
@@ -2288,7 +2305,6 @@
                 return;
             }
 
-            // PENGURUTAN PERSISI PER-KELAS LALU ABJAD NAMA A-Z
             classStudents.sort((a, b) => {
                 if (classId === 'SEMUA' && a.classId !== b.classId) {
                     return a.classId.localeCompare(b.classId, 'id', { numeric: true });
@@ -2322,7 +2338,6 @@
                 }
             }
 
-            // SEMBUNYIKAN KONTROL KUNCI & RESET UNTUK WAKASEK & KEPSEK
             const resetBar = document.getElementById('admin-reset-bar');
             if (resetBar) resetBar.classList.toggle('hidden-app', !isTrueAdmin);
 
@@ -2358,7 +2373,7 @@
 
             dailyRecapBanner.classList.remove('hidden-app');
 
-            // HASH MAP UNTUK PERFORMANCE O(1) BISA LOAD 2000 SISWA INSTAN
+            // HASH MAP UNTUK PERFORMANCE O(1)
             const attMap = new Map();
             const studentStatsMap = new Map();
 
@@ -2389,7 +2404,11 @@
 
             const showWarningBadges = currentUser.role === 'wali' || currentUser.role === 'guru_bp' || isTrueAdmin;
 
-            const rowsHtml = classStudents.map((student, idx) => {
+            // ULTRA-FAST ARRAY BATCHING (INSTANT RENDER)
+            const rowsArr = new Array(classStudents.length);
+
+            for (let idx = 0; idx < classStudents.length; idx++) {
+                const student = classStudents[idx];
                 const existing = attMap.get(student.nis.toString());
                 const status = existing ? existing.status : '';
                 const remark = existing ? (existing.remark || '') : '';
@@ -2403,7 +2422,8 @@
                 }
 
                 let radioHtml = `<div class="flex items-center gap-1 justify-center">`;
-                statuses.forEach(st => {
+                for (let sIdx = 0; sIdx < statuses.length; sIdx++) {
+                    const st = statuses[sIdx];
                     const isActive = st.val === status;
                     radioHtml += `
                         <label class="${isLocked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} relative">
@@ -2414,24 +2434,23 @@
                             </span>
                         </label>
                     `;
-                });
+                }
                 radioHtml += `</div>`;
 
                 const showUpdatedBadge = isTrueAdmin && updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit mt-0.5"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${updatedBy}</span>` : '';
 
-                // NOTIFIKASI PERINGATAN PEMBINAAN / HOME VISIT
                 let warningHtml = '';
                 if (showWarningBadges) {
                     const stStat = studentStatsMap.get(student.nis.toString()) || { alpa: 0, sakit: 0, terlambat: 0 };
                     if (stStat.alpa >= 3 || stStat.terlambat >= 3) {
-                        warningHtml += `<div class="mt-1 p-1 bg-red-100 border border-red-300 text-red-800 rounded-lg text-[9px] font-bold flex items-center gap-1"><i class="ph-bold ph-warning"></i> ⚠️ Lakukan Pembinaan & Pemanggilan Orang Tua (Alpa: ${stStat.alpa}x, Lambat: ${stStat.terlambat}x)</div>`;
+                        warningHtml += `<div class="mt-1 p-1 bg-red-100 border border-red-300 text-red-800 rounded-lg text-[9px] font-bold flex items-center gap-1"><i class="ph-bold ph-warning"></i> ⚠️ Lakukan Pembinaan (Alpa: ${stStat.alpa}x, Lambat: ${stStat.terlambat}x)</div>`;
                     }
                     if (stStat.sakit >= 3) {
-                        warningHtml += `<div class="mt-1 p-1 bg-amber-100 border border-amber-300 text-amber-800 rounded-lg text-[9px] font-bold flex items-center gap-1"><i class="ph-bold ph-first-aid"></i> 🩺 Perlu Dijenguk / Home Visit (Sakit: ${stStat.sakit}x)</div>`;
+                        warningHtml += `<div class="mt-1 p-1 bg-amber-100 border border-amber-300 text-amber-800 rounded-lg text-[9px] font-bold flex items-center gap-1"><i class="ph-bold ph-first-aid"></i> 🩺 Home Visit (Sakit: ${stStat.sakit}x)</div>`;
                     }
                 }
 
-                return `
+                rowsArr[idx] = `
                     <tr class="hover:bg-slate-50 transition-colors text-xs">
                         <td class="px-1.5 py-2 font-bold text-slate-400 text-center">${idx + 1}</td>
                         <td class="px-1.5 py-2 font-mono font-bold text-slate-700 text-[11px]">${student.nis}</td>
@@ -2458,7 +2477,7 @@
                                     <button type="button" onclick="triggerCameraCapture('${student.nis}')" class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all">
                                         <i class="ph-bold ph-camera text-xs"></i> Kamera
                                     </button>
-                                    <input type="file" id="file-cam-${student.nis}" accept="image/*" capture="camera" onchange="handleFileUpload(event, '${student.nis}')" class="hidden" ${isLocked ? 'disabled' : ''}>
+                                    <input type="file" id="file-cam-${student.nis}" accept="image/*" capture="environment" onchange="handleFileUpload(event, '${student.nis}')" class="hidden" ${isLocked ? 'disabled' : ''}>
                                     
                                     <button type="button" onclick="triggerFileSelect('${student.nis}')" class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-slate-800 hover:bg-slate-900 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all">
                                         <i class="ph-bold ph-folder text-xs"></i> File/PDF
@@ -2482,9 +2501,9 @@
                         </td>
                     </tr>
                 `;
-            }).join('');
+            }
 
-            tbody.innerHTML = rowsHtml;
+            tbody.innerHTML = rowsArr.join('');
             updateLiveDailyRecap();
         }
 
@@ -2999,8 +3018,7 @@
                         <h3 style="margin:0; text-transform: uppercase;">PEMERINTAH PROVINSI JAWA BARAT</h3>
                         <h2 style="margin:0; text-transform: uppercase;">DINAS PENDIDIKAN CABANG DINAS WILAYAH VIII</h2>
                         <h1 style="margin:0; font-size: 16pt; text-transform: uppercase;">SMK NEGERI 5 PANGALENGAN</h1>
-                        <p style="margin:0; font-size: 8pt; font-weight: normal;
-font-style: italic;">JL. Cinchona No 08 Tlp. 082316075702, Pangalengan, Kab. Bandung, Jawa Barat 40378</p>
+                        <p style="margin:0; font-size: 8pt; font-weight: normal; font-style: italic;">JL. Cinchona No 08 Tlp. 082316075702, Pangalengan, Kab. Bandung, Jawa Barat 40378</p>
                     </div>
                     <h3 style="text-align: center; text-decoration: underline; margin-bottom: 4px;">REKAPITULASI PRESENSI KEHADIRAN SISWA</h3>
                     <p style="text-align: center; margin-top:0;">Kelas: <b>${classId}</b> | Periode: <b>${type.toUpperCase()}</b> | Wali Kelas: <b>${waliObj.name} (NIP: ${waliObj.nip})</b></p>
@@ -3060,7 +3078,9 @@ font-style: italic;">JL. Cinchona No 08 Tlp. 082316075702, Pangalengan, Kab. Ban
             }, 200);
         }
 
-        function handleLogoError(img) { if (img) img.src = "https://i.ibb.co.com/HDHzkCT8/LVUke-CNhdr-Gdd-Ut6-Bnl-Bj-Mr9-XCSJb-Uy-Vxdv-CAzd-T.png/wp-content/uploads/2023/11/logo.png"; }
+        function handleLogoError(img) { 
+            if (img) img.src = "https://i.ibb.co.com/HDHzkCT8/LVUke-CNhdr-Gdd-Ut6-Bnl-Bj-Mr9-XCSJb-Uy-Vxdv-CAzd-T.png"; 
+        }
 
         // INITIALISASI UTAMA APLIKASI WEB & APK ANDROID/IOS
         document.addEventListener('DOMContentLoaded', () => {
@@ -3075,7 +3095,10 @@ font-style: italic;">JL. Cinchona No 08 Tlp. 082316075702, Pangalengan, Kab. Ban
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             const toggleMenu = () => {
-                if (sidebar && overlay) { sidebar.classList.toggle('-translate-x-full'); overlay.classList.toggle('hidden-app'); }
+                if (sidebar && overlay) { 
+                    sidebar.classList.toggle('-translate-x-full'); 
+                    overlay.classList.toggle('hidden-app'); 
+                }
             };
 
             document.getElementById('mobile-menu-btn').addEventListener('click', toggleMenu);
