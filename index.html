@@ -229,7 +229,7 @@
                             <div class="relative">
                                 <select id="login-role" class="w-full appearance-none bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-bold focus:ring-2 focus:ring-brand-500/30 shadow-xs">
                                     <option value="admin">👨‍💻 Administrator / Kepsek / Wakasek</option>
-                                    <option value="wali">👨‍🏫 Wali Kelas</option>
+                                    <option value="wali">👨‍🏫 Wali Kelas / Guru</option>
                                     <option value="guru_bp">👨‍🏫 Guru BP / BK</option>
                                     <option value="guru_mapel">📖 Guru Mata Pelajaran</option>
                                     <option value="siswa">🧑‍🎓 Siswa / Seksi Absen</option>
@@ -726,8 +726,8 @@
                         <option value="Wali Kelas">👨‍🏫 Wali Kelas</option>
                         <option value="BP/BK">👨‍🏫 Guru BP / BK</option>
                         <option value="Mapel">📖 Guru Mata Pelajaran</option>
-                        <option value="Kepala Sekolah">👑 Kepala Sekolah / Pimpinan</option>
                         <option value="Wakasek">⭐ Wakasek / Staf Pengawas</option>
+                        <option value="Kepala Sekolah">👑 Kepala Sekolah / Pimpinan</option>
                     </select>
                 </div>
                 <div>
@@ -787,7 +787,7 @@
                     <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Pilih Kategori Pengguna</label>
                     <select id="admin-target-type" onchange="populateAdminTargetUsers()" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold">
                         <option value="admin">Administrator / Kepsek / Wakasek</option>
-                        <option value="guru">Wali Kelas / Guru / BP BK</option>
+                        <option value="guru">Wali Kelas / Guru / BP BK / Wakasek</option>
                         <option value="siswa">Siswa / Seksi Absensi</option>
                     </select>
                 </div>
@@ -847,6 +847,7 @@
         let currentUser = null;
         let activeAbsenTab = 'isi';
         let isSyncing = false;
+        let isFormDirty = false; // Mencegah auto-sync mereset pilihan centang user saat mengisi
 
         function toggleDarkMode() {
             const html = document.documentElement;
@@ -950,9 +951,13 @@
 
         function getRoleLabelFormatted(user) {
             if (!user) return "User";
-            if (user.role === 'admin') return user.username === 'kepsek' ? 'Kepala Sekolah' : 'Administrator';
+            if (user.role === 'admin') {
+                if (user.dept === 'Wakasek') return 'Wakasek';
+                if (user.dept === 'Kepala Sekolah' || user.username === 'kepsek') return 'Kepala Sekolah';
+                return 'Administrator';
+            }
             if (user.role === 'siswa') return `Seksi Absen ${user.classId || ''}`;
-            if (user.role === 'wali') return `Wali Kelas ${user.classId || ''}`;
+            if (user.role === 'wali') return user.dept === 'Wakasek' ? 'Wakasek' : `Wali Kelas ${user.classId || ''}`;
             if (user.role === 'guru_bp') return `Guru BP/BK`;
             if (user.role === 'guru_mapel') return `Guru Mapel`;
             return user.dept || user.role;
@@ -990,15 +995,11 @@
             isSyncing = false;
 
             if (result && result.success) {
-                let stateChanged = false;
-
                 if (result.dailyLocks && JSON.stringify(MOCK_DB.dailyLocks) !== JSON.stringify(result.dailyLocks)) {
                     MOCK_DB.dailyLocks = result.dailyLocks;
-                    stateChanged = true;
                 }
                 if (result.attendance && JSON.stringify(MOCK_DB.attendance) !== JSON.stringify(result.attendance)) {
                     MOCK_DB.attendance = result.attendance;
-                    stateChanged = true;
                 }
 
                 if (result.departments && result.departments.length) MOCK_DB.departments = result.departments;
@@ -1014,8 +1015,8 @@
                     badgeText.innerHTML = '<span class="w-2 h-2 rounded-full bg-white animate-ping inline-block mr-1"></span>🔥 FIREBASE INSTANT';
                 }
 
-                // SINKRONISASI REALTIME KUNCIAN & ABSENSI DI LAYAR HAK AKSES
-                if (activeAbsenTab === 'isi' && document.getElementById('input-absen-kelas')) {
+                // SINKRONISASI REALTIME KUNCIAN & ABSENSI DI LAYAR HAK AKSES (JIKA FORM TIDAK SEDANG DIISI)
+                if (activeAbsenTab === 'isi' && document.getElementById('input-absen-kelas') && !isFormDirty) {
                     loadStudentAttendanceForm(true);
                 }
 
@@ -1040,10 +1041,11 @@
             };
         }
 
-        // HADIR SEMUA & LIBUR SEMUA
+        // HADIR SEMUA & LIBUR SEMUA (PERBAIKAN LANGSUNG TERUPDATE & TIDAK DIHAPUS AUTO-SYNC)
         function markAllPresent() {
             const radios = document.querySelectorAll('#bulk-absen-table-body input[type="radio"][value="H"]');
             if (radios.length === 0) return;
+            isFormDirty = true;
             radios.forEach(radio => {
                 if (!radio.disabled) {
                     radio.checked = true;
@@ -1056,6 +1058,7 @@
         function markAllHoliday() {
             const radios = document.querySelectorAll('#bulk-absen-table-body input[type="radio"][value="L"]');
             if (radios.length === 0) return;
+            isFormDirty = true;
             radios.forEach(radio => {
                 if (!radio.disabled) {
                     radio.checked = true;
@@ -1187,7 +1190,7 @@
             callCloudAPI("deleteSiswa", { nis });
         }
 
-        // KELOLA GURU / WALI / PIMPINAN
+        // KELOLA GURU / WALI / WAKASEK / PIMPINAN
         function openAddWaliModal() {
             document.getElementById('wali-edit-mode').value = 'add';
             document.getElementById('modal-wali-title').textContent = 'Tambah Guru / Akun Pimpinan';
@@ -1250,7 +1253,7 @@
 
             saveToStorage();
             closeWaliModal();
-            initMenuWali();
+            if (document.getElementById('wali-table-body')) initMenuWali();
             showMessage('Sukses', 'Data akun berhasil disimpan & disinkronkan.');
             callCloudAPI("saveTeacher", { nip, name, dept, classId, pass });
         }
@@ -1299,7 +1302,10 @@
             const type = document.getElementById('admin-target-type').value;
             const select = document.getElementById('admin-target-user');
             if (type === 'admin') {
-                select.innerHTML = MOCK_DB.admins.map(a => `<option value="${a.username}">${a.name} (${a.username})</option>`).join('');
+                const pimpinanTeachers = MOCK_DB.teachers.filter(t => t.dept === 'Wakasek' || t.dept === 'Kepala Sekolah');
+                let html = MOCK_DB.admins.map(a => `<option value="${a.username}">${a.name} (${a.username})</option>`).join('');
+                html += pimpinanTeachers.map(t => `<option value="${t.nip}">${t.name} - ${t.dept} (${t.nip})</option>`).join('');
+                select.innerHTML = html;
             } else if (type === 'guru') {
                 select.innerHTML = MOCK_DB.teachers.map(t => `<option value="${t.nip}">${t.name} - ${t.dept} (${t.nip})</option>`).join('');
             } else {
@@ -1315,22 +1321,31 @@
 
             if (!newPass) return;
 
-            if (type === 'admin') {
-                const adm = MOCK_DB.admins.find(a => a.username.toString() === targetId);
-                if (adm) adm.pass = newPass;
-            } else if (type === 'guru') {
-                const tr = MOCK_DB.teachers.find(t => t.nip.toString() === targetId);
-                if (tr) tr.pass = newPass;
-            } else {
-                const st = MOCK_DB.students.find(s => s.nis.toString() === targetId);
-                if (st) st.pass = newPass;
-            }
+            let updatedInTeacher = false;
+            let updatedInAdmin = false;
+            let updatedInStudent = false;
+
+            const adm = MOCK_DB.admins.find(a => a.username.toString() === targetId);
+            if (adm) { adm.pass = newPass; updatedInAdmin = true; }
+
+            const tr = MOCK_DB.teachers.find(t => t.nip.toString() === targetId);
+            if (tr) { tr.pass = newPass; updatedInTeacher = true; }
+
+            const st = MOCK_DB.students.find(s => s.nis.toString() === targetId);
+            if (st) { st.pass = newPass; updatedInStudent = true; }
 
             saveToStorage();
             closeManageUsersModal();
             document.getElementById('admin-target-pass').value = '';
             showMessage('Sukses', 'Password user berhasil diperbarui & disinkronkan ke seluruh gadget.');
-            callCloudAPI("updateUserPasswordByAdmin", { type, id: targetId, pass: newPass });
+
+            if (updatedInTeacher && tr) {
+                callCloudAPI("saveTeacher", { nip: tr.nip, name: tr.name, dept: tr.dept, classId: tr.classId, pass: newPass });
+            } else if (updatedInStudent && st) {
+                callCloudAPI("saveSiswa", { nis: st.nis, name: st.name, classId: st.classId, pass: newPass });
+            } else {
+                callCloudAPI("updateUserPasswordByAdmin", { type, id: targetId, pass: newPass });
+            }
         }
 
         async function saveSelfPassword(e) {
@@ -1338,38 +1353,58 @@
             const newPass = document.getElementById('self-new-password').value.trim();
             if (!newPass) return;
 
-            const id = (currentUser.nis || currentUser.nip || currentUser.username || currentUser.id).toString();
+            const id = (currentUser.nip || currentUser.nis || currentUser.username || currentUser.id).toString();
             currentUser.pass = newPass;
             localStorage.setItem('smkn5_user_session', JSON.stringify(currentUser));
 
-            if (currentUser.role === 'admin') {
-                const adm = MOCK_DB.admins.find(a => a.username.toString() === id);
-                if (adm) adm.pass = newPass;
-            } else if (currentUser.role === 'siswa') {
-                const st = MOCK_DB.students.find(s => s.nis.toString() === id);
-                if (st) st.pass = newPass;
-            } else {
-                const tr = MOCK_DB.teachers.find(t => t.nip.toString() === id);
-                if (tr) tr.pass = newPass;
-            }
-            
+            const adm = MOCK_DB.admins.find(a => a.username.toString() === id);
+            if (adm) adm.pass = newPass;
+
+            const tr = MOCK_DB.teachers.find(t => t.nip.toString() === id);
+            if (tr) tr.pass = newPass;
+
+            const st = MOCK_DB.students.find(s => s.nis.toString() === id);
+            if (st) st.pass = newPass;
+
             saveToStorage();
             document.getElementById('self-new-password').value = '';
             closeChangePasswordModal();
             showMessage('Sukses', 'Kata sandi Anda berhasil diperbarui & disinkronkan.');
-            callCloudAPI("updateSelfPassword", { role: currentUser.role, id, pass: newPass });
+
+            if (tr) {
+                callCloudAPI("saveTeacher", { nip: tr.nip, name: tr.name, dept: tr.dept, classId: tr.classId, pass: newPass });
+            } else if (st) {
+                callCloudAPI("saveSiswa", { nis: st.nis, name: st.name, classId: st.classId, pass: newPass });
+            } else {
+                callCloudAPI("updateSelfPassword", { role: currentUser.role, id, pass: newPass });
+            }
         }
 
-        // TOMBOL PINTAR KESIANGAN & BOLOS DENGAN REKAM JEJAK
+        // TOMBOL PINTAR KESIANGAN & BOLOS DENGAN REKAM JEJAK PENUH AKUN PENGISI
         function setQuickRemark(nis, remarkText, isBolos = false) {
+            isFormDirty = true;
             const input = document.getElementById(`ket-input-${nis}`);
             if (input) input.value = remarkText;
+
             if (isBolos) {
                 const radioA = document.querySelector(`input[name="status-${nis}"][value="A"]`);
                 if (radioA && !radioA.disabled) {
                     radioA.checked = true;
                     handleStatusChange(nis, 'A');
                 }
+            } else {
+                const radioH = document.querySelector(`input[name="status-${nis}"][value="H"]`);
+                if (radioH && !radioH.disabled && !document.querySelector(`input[name="status-${nis}"]:checked`)) {
+                    radioH.checked = true;
+                    handleStatusChange(nis, 'H');
+                }
+            }
+
+            // PERBAIKAN: TAMPILKAN LANGSUNG BADGE PREVIEW NAMA PENGISI PADA BARIS INI
+            const recorderTag = `${currentUser.name} (${getRoleLabelFormatted(currentUser)})`;
+            const badgeContainer = document.getElementById(`updater-badge-${nis}`);
+            if (badgeContainer) {
+                badgeContainer.innerHTML = `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${recorderTag}</span>`;
             }
         }
 
@@ -1378,6 +1413,7 @@
             const file = event.target.files[0];
             if (!file) return;
 
+            isFormDirty = true;
             const indicator = document.getElementById(`upload-indicator-${nis}`);
             const nameSpan = document.getElementById(`file-name-${nis}`);
             
@@ -1440,6 +1476,7 @@
         }
 
         function removeAttachedFile(nis) {
+            isFormDirty = true;
             const camInput = document.getElementById(`file-cam-${nis}`);
             const docInput = document.getElementById(`file-doc-${nis}`);
             if (camInput) camInput.value = '';
@@ -1572,7 +1609,7 @@
             setTimeout(() => modal.classList.add('hidden-app'), 300);
         }
 
-        // LOGIN ENGINE
+        // LOGIN ENGINE DENGAN DUKUNGAN PENUH AKUN WAKASEK / PIMPINAN
         async function handleLogin(e) {
             e.preventDefault();
             const role = document.getElementById('login-role').value;
@@ -1585,8 +1622,12 @@
 
             if (role === 'admin') {
                 const adminMatch = MOCK_DB.admins.find(a => a.username.toString() === uid && a.pass.toString() === pass);
-                if (adminMatch || (uid === 'admin' && pass === 'admin')) {
-                    foundUser = { id: uid, username: uid, name: adminMatch ? adminMatch.name : 'Sistem Administrator', role: 'admin' };
+                const teacherPimpinanMatch = MOCK_DB.teachers.find(t => t.nip.toString() === uid && t.pass.toString() === pass && (t.dept === 'Wakasek' || t.dept === 'Kepala Sekolah'));
+                
+                if (adminMatch || teacherPimpinanMatch || (uid === 'admin' && pass === 'admin')) {
+                    const matchedName = adminMatch ? adminMatch.name : (teacherPimpinanMatch ? teacherPimpinanMatch.name : 'Sistem Administrator');
+                    const matchedDept = teacherPimpinanMatch ? teacherPimpinanMatch.dept : 'admin';
+                    foundUser = { id: uid, username: uid, nip: uid, name: matchedName, role: 'admin', dept: matchedDept };
                     authenticated = true;
                 }
             } else if (role === 'wali') {
@@ -1634,7 +1675,9 @@
             document.getElementById('user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
             
             let labelBadge = currentUser.role.toUpperCase();
-            if (currentUser.role === 'wali') labelBadge = `Wali Kelas: ${currentUser.classId}`;
+            if (currentUser.role === 'admin') {
+                labelBadge = currentUser.dept === 'Wakasek' ? 'Wakasek' : (currentUser.dept === 'Kepala Sekolah' ? 'Kepala Sekolah' : 'Administrator');
+            } else if (currentUser.role === 'wali') labelBadge = currentUser.dept === 'Wakasek' ? 'Wakasek' : `Wali Kelas: ${currentUser.classId}`;
             else if (currentUser.role === 'guru_bp') labelBadge = `Guru BP / BK`;
             else if (currentUser.role === 'guru_mapel') labelBadge = `Guru Mata Pelajaran`;
             else if (currentUser.role === 'siswa') labelBadge = `Seksi Absen: ${currentUser.classId}`;
@@ -1683,6 +1726,7 @@
         }
 
         function navigateTo(target) {
+            isFormDirty = false;
             const mainContent = document.getElementById('main-content');
             mainContent.innerHTML = '';
 
@@ -1951,6 +1995,7 @@
 
         function switchAbsenTab(tab) {
             activeAbsenTab = tab;
+            isFormDirty = false;
             const btnIsi = document.getElementById('tab-absen-isi');
             const btnRekap = document.getElementById('tab-absen-rekap');
             const secIsi = document.getElementById('section-absen-isi');
@@ -1971,7 +2016,6 @@
             }
         }
 
-        // INPUT ABSENSI HARIAN (PERBAIKAN KUNCI ABSEN KETAT & JEJAK PEMBUAT DATA REALTIME)
         function checkDailyIsLocked(selectedDateStr, classId) {
             const todayStr = normalizeDateStr(new Date());
             const isFutureDate = selectedDateStr > todayStr;
@@ -1991,16 +2035,17 @@
                                     (lockAll === false || lockAll === 'false') ||
                                     (lockDate === false || lockDate === 'false');
 
-            if (currentUser.role === 'guru_bp') return true; // Hanya baca untuk BP/BK
-            if (currentUser.role === 'admin') return isFutureDate; // Admin bisa menginput kapanpun kecuali tanggal depan
+            if (currentUser.role === 'guru_bp') return true;
+            if (currentUser.role === 'admin') return isFutureDate;
 
-            // UNTUK SEKSI ABSEN / WALI KELAS / GURU MAPEL
             if (isExplicitlyClosed) return true;
             if (isExplicitlyOpened) return false;
             return isFutureDate;
         }
 
         function loadStudentAttendanceForm(isSilent = false) {
+            if (isSilent && isFormDirty) return; // Mencegah reset centangan saat user sedang mengisi
+            
             const classId = document.getElementById('input-absen-kelas') ? document.getElementById('input-absen-kelas').value : '';
             const selectedDateStr = document.getElementById('input-absen-date') ? normalizeDateStr(document.getElementById('input-absen-date').value) : '';
             const todayStr = normalizeDateStr(new Date());
@@ -2129,9 +2174,11 @@
                         <td class="px-2 py-2 text-center">${radioHtml}</td>
                         <td class="px-2 py-2 min-w-[220px]">
                             <div id="ket-container-${student.nis}" class="flex flex-col gap-1">
-                                <input type="text" id="ket-input-${student.nis}" value="${remark}" ${!isLocked ? '' : 'disabled'} placeholder="Catatan / Alasan S, I, A, D..." class="w-full bg-slate-50 border rounded-xl px-2.5 py-1 text-[11px] font-semibold">
+                                <input type="text" id="ket-input-${student.nis}" value="${remark}" ${!isLocked ? '' : 'disabled'} onchange="isFormDirty=true" placeholder="Catatan / Alasan S, I, A, D..." class="w-full bg-slate-50 border rounded-xl px-2.5 py-1 text-[11px] font-semibold">
                                 
-                                ${updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${updatedBy}</span>` : ''}
+                                <div id="updater-badge-${student.nis}">
+                                    ${updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${updatedBy}</span>` : ''}
+                                </div>
 
                                 <div class="flex items-center gap-1.5 flex-wrap mt-0.5">
                                     ${!isLocked ? `
@@ -2189,6 +2236,7 @@
         }
 
         function handleStatusChange(nis, newStatus) {
+            isFormDirty = true;
             const statuses = ['H', 'I', 'S', 'A', 'D', 'L'];
             const styles = {
                 'H': { active: 'bg-emerald-500 text-white border-emerald-500 shadow-md scale-105', base: 'hover:bg-emerald-50 text-emerald-600 border-emerald-200' },
@@ -2206,6 +2254,12 @@
                     else span.className = `touch-pill flex flex-col items-center justify-center rounded-xl border text-[11px] font-extrabold transition-all w-8 h-8 sm:w-9 sm:h-9 active:scale-95 ${styles[st].base}`;
                 }
             });
+
+            const recorderTag = `${currentUser.name} (${getRoleLabelFormatted(currentUser)})`;
+            const badgeContainer = document.getElementById(`updater-badge-${nis}`);
+            if (badgeContainer) {
+                badgeContainer.innerHTML = `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${recorderTag}</span>`;
+            }
 
             updateLiveDailyRecap();
         }
@@ -2242,13 +2296,12 @@
             document.getElementById('recap-live-progress').style.width = pct + '%';
         }
 
-        // SIMPAN ABSEN DENGAN VERIFIKASI KUNCI KETAT & REKAM JEJAK JELEK/BAIK
+        // SIMPAN ABSEN DENGAN VERIFIKASI KUNCI KETAT & REKAM JEJAK PENGISI LENGKAP
         async function saveBulkAttendance(e) {
             e.preventDefault();
             const classId = document.getElementById('input-absen-kelas').value;
             const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
 
-            // PROTEKSI GANDA BILA ABSENSI TERKUNCI
             const isLocked = checkDailyIsLocked(dateStr, classId);
             if (isLocked) {
                 showMessage('Gagal', 'Absensi kelas/tanggal ini TERKUNCI. Data tidak dapat disimpan.');
@@ -2288,7 +2341,9 @@
                 if (idx !== -1) MOCK_DB.attendance[idx] = rec;
                 else MOCK_DB.attendance.push(rec);
             });
+            
             saveToStorage();
+            isFormDirty = false;
 
             if (submitBtn) {
                 submitBtn.disabled = false;
@@ -2296,6 +2351,7 @@
             }
 
             showMessage('Berhasil', 'Data absensi harian berhasil disimpan & disinkronkan ke seluruh gadget.');
+            loadStudentAttendanceForm();
             callCloudAPI("saveBulkAttendance", { records: recordsToSave });
         }
 
@@ -2309,13 +2365,14 @@
             
             MOCK_DB.attendance = MOCK_DB.attendance.filter(a => !(classStudentNises.includes(a.nis.toString()) && normalizeDateStr(a.date) === dateStr));
             saveToStorage();
+            isFormDirty = false;
 
             showMessage('Sukses', `Data absensi kelas ${classId} tanggal ${dateStr} berhasil di-reset.`);
             loadStudentAttendanceForm();
             callCloudAPI("resetDailyAttendance", { classId, date: dateStr });
         }
 
-        // TUTUP ABSEN HARI INI PER KELAS OLEH ADMIN REALTIME REALTIME LINTAS GADGET
+        // TUTUP ABSEN HARI INI PER KELAS OLEH ADMIN REALTIME LINTAS GADGET
         async function toggleDailyLockByAdmin() {
             const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
             const classId = document.getElementById('input-absen-kelas').value;
