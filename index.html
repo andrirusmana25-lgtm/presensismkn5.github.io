@@ -2,8 +2,7 @@
 <html lang="id" class="w-full max-w-full overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
-    <!-- META VIEWPORT DENGAN DUKUNGAN PINCH ZOOM IN / ZOOM OUT DUA JARI -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.3, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=0.85, minimum-scale=0.3, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <title>Sistem Absensi Modern - SMKN 5 Pangalengan</title>
     
     <!-- Tailwind CSS -->
@@ -66,7 +65,7 @@
             width: 100%; max-width: 100vw; 
             font-family: 'Outfit', sans-serif;
             -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
+            -webkit-overflow-scrolling: touch;
         }
 
         .dark body, .dark #app-view, .dark main {
@@ -132,7 +131,7 @@
             }
             #sidebar, header, #btn-print, .no-print, #tab-absen-isi, #tab-absen-rekap, 
             #section-absen-isi, #daily-recap-banner, #admin-reset-bar, #admin-close-attendance-bar,
-            #lock-banner, #page-title, #page-subtitle, #db-status-badge, .search-box-wrapper, #class-checkboxes-container { 
+            #lock-banner, #page-title, #page-subtitle, #db-status-badge, .search-box-wrapper { 
                 display: none !important; 
             }
             #app-view, main, #main-content, .print-container {
@@ -489,23 +488,54 @@
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-card border overflow-hidden flex flex-col min-w-0 max-w-full">
-                    <div class="p-3 sm:p-4 border-b flex flex-col gap-3 bg-slate-50/50 justify-between no-print">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 w-full">
+                    <div class="p-3 sm:p-4 border-b flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-slate-50/50 justify-between no-print">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 w-full">
                             <div>
-                                <label class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Tanggal Absensi</label>
-                                <input type="date" id="input-absen-date" onchange="clearTemporaryInputs(); loadStudentAttendanceForm();" class="w-full bg-white border rounded-xl px-3 py-2 text-xs font-bold">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Tanggal</label>
+                                <input type="date" id="input-absen-date" onchange="clearTemporaryInputs(); loadStudentAttendanceForm();" class="w-full bg-white border rounded-xl px-3 py-1.5 text-xs font-bold">
                             </div>
                             <div>
-                                <label class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Pencarian Siswa</label>
-                                <input type="text" id="search-daily-input" onkeyup="filterDailyTable()" placeholder="🔍 Cari Nama / NIS..." class="w-full bg-white border rounded-xl px-3 py-2 text-xs font-semibold">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Pilih Kelas</label>
+                                <select id="input-absen-kelas" onchange="clearTemporaryInputs(); loadStudentAttendanceForm();" class="w-full bg-white border rounded-xl px-3 py-1.5 text-xs font-bold"></select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Pencarian</label>
+                                <input type="text" id="search-daily-input" onkeyup="filterDailyTable()" placeholder="🔍 Cari Nama / NIS..." class="w-full bg-white border rounded-xl px-3 py-1.5 text-xs font-semibold">
                             </div>
                         </div>
+                    </div>
 
-                        <!-- PANEL CHECKBOX MULTI-KELAS (DAPAT MEMILIH LEBIH DARI SATU KELAS SEKALIGUS) -->
+                    <!-- BANNER PEMBERITAHUAN PENGUNCIAN TANGGAL -->
+                    <div id="lock-banner" class="hidden-app mx-3 sm:mx-4 mt-3 p-3 sm:p-4 bg-rose-50 border border-rose-200 rounded-2xl flex gap-3 items-center text-rose-800 no-print">
+                        <i class="ph-fill ph-lock-key text-xl sm:text-2xl text-rose-600 shrink-0"></i>
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1.5">Pilih Kelas Yang Ditampilkan (Centang Satu / LebihDariSatu):</label>
-                            <div id="class-checkboxes-container" class="flex flex-wrap items-center gap-1.5 max-h-32 overflow-y-auto p-2 bg-slate-100/70 border border-slate-200 rounded-2xl custom-scroll"></div>
+                            <h4 class="font-extrabold text-xs sm:text-sm text-rose-900">Formulir Absensi Terkunci</h4>
+                            <p class="text-[11px] sm:text-xs text-rose-600" id="lock-banner-text">Penginputan absen untuk tanggal/kelas ini telah ditutup.</p>
                         </div>
+                    </div>
+
+                    <!-- KONTROL RESET ABSEN KHUSUS ADMIN MURNI -->
+                    <div id="admin-reset-bar" class="hidden-app mx-3 sm:mx-4 mt-3 p-3 sm:p-4 bg-amber-50 border border-amber-200 rounded-2xl flex justify-between items-center gap-3 no-print">
+                        <div class="flex gap-2.5 items-center">
+                            <i class="ph-fill ph-arrow-counter-clockwise text-xl sm:text-2xl text-amber-700"></i>
+                            <div>
+                                <h4 class="font-extrabold text-xs sm:text-sm text-amber-900">Reset Absensi Kelas Ini (Admin Murni)</h4>
+                                <p class="text-[11px] sm:text-xs text-amber-600">Kosongkan data absensi kelas terpilih untuk tanggal ini.</p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="resetDailyAttendance()" class="bg-amber-600 hover:bg-amber-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase shrink-0">Reset Absen</button>
+                    </div>
+
+                    <!-- KONTROL KUNCI ABSEN KHUSUS ADMIN MURNI -->
+                    <div id="admin-close-attendance-bar" class="hidden-app mx-3 sm:mx-4 mt-3 p-3 sm:p-4 bg-slate-900 text-white rounded-2xl flex justify-between items-center gap-3 no-print">
+                        <div class="flex gap-2.5 items-center">
+                            <i class="ph-fill ph-shield-check text-xl sm:text-2xl text-brand-400"></i>
+                            <div>
+                                <h4 class="font-extrabold text-xs sm:text-sm">Kontrol Kunci Absensi Harian (Admin)</h4>
+                                <p class="text-[11px] sm:text-xs text-slate-300" id="close-status-desc">Status penginputan absen kelas ini saat ini DIBUKA.</p>
+                            </div>
+                        </div>
+                        <button type="button" id="btn-toggle-daily-lock" onclick="toggleDailyLockByAdmin()" class="bg-rose-600 hover:bg-rose-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase shrink-0">Tutup Absen Kelas Ini</button>
                     </div>
 
                     <form id="form-save-bulk-attendance" onsubmit="saveBulkAttendance(event)" class="flex flex-col flex-1 min-w-0 max-w-full">
@@ -518,7 +548,7 @@
 
                         <!-- TABEL ABSENSI -->
                         <div class="overflow-x-auto w-full max-w-full p-1 sm:p-2 custom-scroll">
-                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-[650px]">
+                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-[580px]">
                                 <thead class="bg-slate-50 border-b">
                                     <tr class="text-slate-400 text-[10px] sm:text-xs font-bold uppercase">
                                         <th class="px-1.5 py-2.5 w-8 text-center">NO</th>
@@ -527,7 +557,6 @@
                                         <th class="px-1 py-2.5 text-center w-16">KELAS</th>
                                         <th class="px-2 py-2.5 text-center">STATUS KEHADIRAN</th>
                                         <th class="px-2 py-2.5" id="col-header-ket">CATATAN & OPSI</th>
-                                        <th class="px-2 py-2.5" id="col-header-call">PEMBINAAN & PEMANGGILAN</th>
                                     </tr>
                                 </thead>
                                 <tbody id="bulk-absen-table-body" class="text-xs divide-y divide-slate-100"></tbody>
@@ -549,7 +578,7 @@
                     <div class="p-3 sm:p-4 border-b flex flex-col xl:flex-row gap-3 items-stretch xl:items-center bg-slate-50/50 justify-between no-print">
                         <div class="flex flex-wrap gap-2 sm:gap-3 items-end">
                             <div>
-                                <label class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Pilih Kelas Laporan</label>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Pilih Kelas</label>
                                 <select id="rekap-absen-kelas" class="bg-white border rounded-xl px-2.5 py-1.5 text-xs font-bold"></select>
                             </div>
                             <div>
@@ -604,7 +633,7 @@
                         <div class="w-20 h-20 invisible shrink-0"></div>
                     </div>
 
-                    <!-- HEADER INFORMASI REKAPITULASI -->
+                    <!-- HEADER INFORMASI REKAPITULASI DENGAN WALI KELAS & TEMPAT TANGGAL -->
                     <div class="p-4 bg-slate-50 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-2 text-xs font-bold text-slate-700">
                         <div>
                             <p>Kelas: <span id="recap-header-class" class="text-emerald-700 font-extrabold">-</span> &nbsp;|&nbsp; Periode: <span id="recap-header-period" class="text-brand-600 font-extrabold">-</span></p>
@@ -652,7 +681,7 @@
         </div>
     </template>
 
-    <!-- MODALS -->
+    <!-- MODAL EDIT / TAMBAH SISWA -->
     <div id="modal-siswa" class="hidden-app fixed inset-0 bg-slate-950/60 z-[120] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
@@ -682,6 +711,7 @@
         </div>
     </div>
 
+    <!-- MODAL EDIT / TAMBAH WALI / GURU / PIMPINAN -->
     <div id="modal-wali" class="hidden-app fixed inset-0 bg-slate-950/60 z-[120] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
@@ -721,6 +751,96 @@
         </div>
     </div>
 
+    <!-- MODAL DIAGNOSTIC FIREBASE / CLOUD -->
+    <div id="modal-diagnostic" class="hidden-app fixed inset-0 bg-slate-950/60 z-[150] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-sm font-extrabold text-slate-800">🔥 Status Cloud Engine Presensi</h3>
+                <button type="button" onclick="closeDiagnosticModal()" class="text-slate-400 p-1"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div class="p-3 bg-slate-50 border rounded-xl flex items-center justify-between">
+                    <span class="font-bold text-slate-600">Status Server Cloud:</span>
+                    <span id="diag-status-text" class="font-extrabold text-emerald-600">TERHUBUNG (ONLINE)</span>
+                </div>
+                <div class="p-3 bg-slate-50 border rounded-xl flex items-center justify-between">
+                    <span class="font-bold text-slate-600">Total Kelas Tersimpan:</span>
+                    <span id="diag-total-kelas" class="font-extrabold text-slate-800">0</span>
+                </div>
+                <div class="p-3 bg-slate-50 border rounded-xl flex items-center justify-between">
+                    <span class="font-bold text-slate-600">Total Siswa Tersimpan:</span>
+                    <span id="diag-total-siswa" class="font-extrabold text-slate-800">0</span>
+                </div>
+                <div class="p-3 bg-slate-50 border rounded-xl flex items-center justify-between">
+                    <span class="font-bold text-slate-600">Total Guru/Staff Tersimpan:</span>
+                    <span id="diag-total-guru" class="font-extrabold text-slate-800">0</span>
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button type="button" onclick="synchronizeDatabase(true)" class="flex-1 py-2.5 bg-brand-600 text-white font-bold rounded-xl text-xs uppercase shadow-md active:scale-95 transition-transform">Uji Koneksi Ulang</button>
+                <button type="button" onclick="closeDiagnosticModal()" class="py-2.5 px-4 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs uppercase">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL KELOLA PASSWORD & BUAT AKUN BARU (ADMIN) -->
+    <div id="modal-manage-users" class="hidden-app fixed inset-0 bg-slate-950/60 z-[120] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-extrabold text-slate-800">🔑 Kelola Password & Edit/Buat Akun</h3>
+                <button type="button" onclick="closeManageUsersModal()" class="text-slate-400 p-1"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <form id="form-manage-pass" onsubmit="saveUserPasswordByAdmin(event)" class="space-y-3">
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Pilih Kategori Pengguna</label>
+                    <select id="admin-target-type" onchange="populateAdminTargetUsers()" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold">
+                        <option value="admin">Administrator / Kepsek / Wakasek</option>
+                        <option value="guru">Wali Kelas / Guru / BP BK / Wakasek</option>
+                        <option value="siswa">Siswa / Seksi Absensi</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Pilih Akun User Target atau Buat Baru</label>
+                    <select id="admin-target-user" onchange="toggleNewUserFields()" class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-bold"></select>
+                </div>
+
+                <div id="new-user-extra-fields" class="space-y-3 p-3.5 bg-brand-50/50 border border-brand-200 rounded-2xl">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-600 mb-1" id="lbl-user-id">Username / NIP / NIS</label>
+                        <input type="text" id="admin-new-user-id" required placeholder="Masukkan ID / Username..." class="w-full bg-white border rounded-xl px-3 py-2 text-xs font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-600 mb-1">Nama Lengkap</label>
+                        <input type="text" id="admin-new-user-name" required placeholder="Nama Lengkap Beserta Gelar..." class="w-full bg-white border rounded-xl px-3 py-2 text-xs font-semibold">
+                    </div>
+                    <div id="admin-new-user-dept-wrapper">
+                        <label class="block text-[10px] font-bold uppercase text-slate-600 mb-1">Jabatan / Peran</label>
+                        <select id="admin-new-user-dept" class="w-full bg-white border rounded-xl px-3 py-2 text-xs font-bold">
+                            <option value="Wakasek">⭐ Wakasek / Staf Pimpinan</option>
+                            <option value="Kepala Sekolah">👑 Kepala Sekolah</option>
+                            <option value="Wali Kelas">👨‍🏫 Wali Kelas</option>
+                            <option value="BP/BK">👨‍🏫 Guru BP / BK</option>
+                            <option value="Mapel">📖 Guru Mata Pelajaran</option>
+                        </select>
+                    </div>
+                    <div id="admin-new-user-class-wrapper">
+                        <label class="block text-[10px] font-bold uppercase text-slate-600 mb-1">Pilih Kelas (Bila Wali/Siswa)</label>
+                        <select id="admin-new-user-class" class="w-full bg-white border rounded-xl px-3 py-2 text-xs font-bold"></select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Password Baru</label>
+                    <input type="text" id="admin-target-pass" required placeholder="Masukkan kata sandi baru..." class="w-full bg-slate-50 border rounded-xl px-3 py-2 text-xs font-semibold">
+                </div>
+                <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs uppercase transition-all flex items-center justify-center gap-1.5 shadow-md">
+                    <i class="ph-bold ph-floppy-disk text-base"></i> Simpan & Sync Real-Time Ke Spreadsheet & Firebase
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PRATINJAU DOKUMEN LAPTOP & PERANGKAT LAIN -->
     <div id="doc-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[140] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-5 border">
             <div class="flex justify-between items-center mb-3">
@@ -732,6 +852,7 @@
         </div>
     </div>
 
+    <!-- MODAL GANTI PASSWORD DIRI SENDIRI -->
     <div id="change-self-password-modal" class="hidden-app fixed inset-0 bg-slate-950/60 z-[116] flex items-center justify-center backdrop-blur-sm px-4 opacity-0 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 space-y-4">
             <div class="flex justify-between items-center">
@@ -758,7 +879,7 @@
 
     <!-- HIGH PERFORMANCE ENGINE JS (INTEGRATED FULL ENGINE) -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxJ9bo2acFj4ESsreJEmUsQMiCP8b6uhgPRFhXzaxIxgCpu33nFC_PJlij0XfnQuIb_/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwfQ8T3AQVKlm18OO1Ml3yanpyTDo-BYuoLI9e5VzGc6MW16tJs5W7iyeOY_FvGZQg9/exec";
         let currentUser = null;
         let activeAbsenTab = 'isi';
         let currentTargetMenu = 'dashboard_admin';
@@ -839,7 +960,6 @@
                 { username: "kepsek", name: "Dini Puji Setiani, S.PdI.", pass: "kepsek123" }
             ],
             dailyLocks: {},
-            callLogs: {},
             departments: [
                 { id: "PPLG", name: "Pengembangan Perangkat Lunak & Gim" },
                 { id: "TKT", name: "Teknik Jaringan Komputer & Telekomunikasi" },
@@ -924,7 +1044,6 @@
 
             if (result && result.success) {
                 MOCK_DB.dailyLocks = result.dailyLocks || {};
-                if (result.callLogs) MOCK_DB.callLogs = result.callLogs;
                 if (result.attendance && Array.isArray(result.attendance)) MOCK_DB.attendance = result.attendance;
                 if (result.departments && result.departments.length) MOCK_DB.departments = result.departments;
                 if (result.classes && result.classes.length) MOCK_DB.classes = result.classes;
@@ -975,6 +1094,10 @@
         }
 
         function markAllPresent() {
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (checkDailyIsLocked(dateStr, classId)) return;
+
             const radios = document.querySelectorAll('#bulk-absen-table-body input[type="radio"][value="H"]');
             if (radios.length === 0) return;
             isFormDirty = true;
@@ -988,6 +1111,10 @@
         }
 
         function markAllHoliday() {
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (checkDailyIsLocked(dateStr, classId)) return;
+
             const radios = document.querySelectorAll('#bulk-absen-table-body input[type="radio"][value="L"]');
             if (radios.length === 0) return;
             isFormDirty = true;
@@ -1000,538 +1127,456 @@
             });
         }
 
-        function initMenuKelas() {
-            const tbody = document.getElementById('kelas-table-body');
-            if (!tbody) return;
+        // KELOLA KELAS
+        async function saveNewKelas(e) {
+            e.preventDefault();
+            const name = document.getElementById('add-kelas-name').value.trim();
+            const dept = document.getElementById('add-kelas-dept').value;
+            if (!name) return;
 
-            tbody.innerHTML = MOCK_DB.classes.map((cls, idx) => `
-                <tr>
-                    <td class="px-4 py-3 font-bold text-center">${idx + 1}</td>
-                    <td class="px-4 py-3 font-extrabold">${cls.name}</td>
-                    <td class="px-4 py-3">${cls.department}</td>
-                    <td class="px-4 py-3 text-center">
-                        <div class="flex justify-center items-center gap-1">
-                            <button onclick="openEditKelasModal('${cls.id}')" class="p-1.5 text-brand-600 hover:bg-brand-50 rounded-lg active:scale-95"><i class="ph-bold ph-pencil-simple text-base"></i></button>
-                            <button onclick="deleteKelas('${cls.id}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg active:scale-95"><i class="ph-bold ph-trash text-base"></i></button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            const id = name.replace(/\s+/g, '_');
+            const editId = window.editingKelasId;
 
-            const select = document.getElementById('add-kelas-dept');
-            if (select) select.innerHTML = MOCK_DB.departments.map(d => `<option value="${d.name}">${d.name}</option>`).join('');
-        }
-
-        function initMenuSiswa() {
-            const tbody = document.getElementById('siswa-table-body');
-            if (!tbody) return;
-
-            const filterClass = document.getElementById('filter-siswa-kelas').value;
-            const students = filterClass === 'all' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === filterClass);
-
-            tbody.innerHTML = students.map((st, idx) => `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-4 py-2.5 font-bold text-center text-slate-400">${idx + 1}</td>
-                    <td class="px-4 py-2.5 font-mono font-bold text-slate-700">${st.nis}</td>
-                    <td class="px-4 py-2.5 font-extrabold text-slate-800">${st.name}</td>
-                    <td class="px-4 py-2.5 font-bold text-emerald-700">${st.classId}</td>
-                    <td class="px-4 py-2.5 text-center">
-                        <div class="flex justify-center items-center gap-1">
-                            <button onclick="openEditSiswaModal('${st.nis}')" class="p-1.5 text-brand-600 hover:bg-brand-50 rounded-lg active:scale-95" title="Edit Siswa"><i class="ph-bold ph-pencil-simple text-base"></i></button>
-                            <button onclick="deleteSiswa('${st.nis}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg active:scale-95" title="Hapus Siswa"><i class="ph-bold ph-trash text-base"></i></button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('') || `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 font-bold">Tidak ada data siswa.</td></tr>`;
-
-            const select = document.getElementById('filter-siswa-kelas');
-            if (select && select.children.length <= 1) {
-                select.innerHTML += MOCK_DB.classes.map(cls => `<option value="${cls.id}">${cls.name}</option>`).join('');
-            }
-        }
-
-        function filterSiswaTableFast() {
-            const q = document.getElementById('search-siswa-input').value.toLowerCase();
-            document.querySelectorAll('#siswa-table-body tr').forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
-            });
-        }
-
-        function filterWaliTable() {
-            const q = document.getElementById('search-wali-input').value.toLowerCase();
-            document.querySelectorAll('#wali-table-body tr').forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
-            });
-        }
-
-        function initMenuWali() {
-            const tbody = document.getElementById('wali-table-body');
-            if (!tbody) return;
-
-            tbody.innerHTML = MOCK_DB.teachers.map((t, idx) => `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-4 py-3 font-bold text-center">${idx + 1}</td>
-                    <td class="px-4 py-3 font-mono font-bold">${t.nip}</td>
-                    <td class="px-4 py-3 font-extrabold">${t.name}</td>
-                    <td class="px-4 py-3 font-bold text-emerald-700">${t.classId}</td>
-                    <td class="px-4 py-3 font-bold">${t.dept}</td>
-                    <td class="px-4 py-3 text-center">
-                        <div class="flex justify-center items-center gap-1">
-                            <button onclick="openEditTeacherModal('${t.nip}')" class="p-1.5 text-brand-600 hover:bg-brand-50 rounded-lg active:scale-95"><i class="ph-bold ph-pencil-simple text-base"></i></button>
-                            <button onclick="deleteWali('${t.nip}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg active:scale-95"><i class="ph-bold ph-trash text-base"></i></button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        /**
-         * INITIATOR MENU ABSEN + PANEL CHECKBOX MULTI KELAS
-         */
-        function initMenuAbsen() {
-            const inputDate = document.getElementById('input-absen-date');
-            const rekapKelas = document.getElementById('rekap-absen-kelas');
-            const todayStr = normalizeDateStr(new Date());
-
-            if (inputDate && !inputDate.value) inputDate.value = todayStr;
-            if (rekapKelas) rekapKelas.innerHTML = '';
-
-            const opts = MOCK_DB.classes.map(cls => `<option value="${cls.id}">${cls.name}</option>`).join('');
-
-            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'guru_bp' || currentUser.role === 'guru_mapel')) {
-                if (rekapKelas) rekapKelas.innerHTML = `<option value="" selected>-- Pilih Kelas Laporan --</option><option value="SEMUA">-- Semua Kelas --</option>` + opts;
-            } else if (currentUser) {
-                if (rekapKelas) rekapKelas.innerHTML = `<option value="${currentUser.classId}">${currentUser.classId}</option>`;
-            }
-
-            renderClassCheckboxes();
-
-            if (currentUser && currentUser.role === 'guru_bp') switchAbsenTab('rekap');
-            else switchAbsenTab('isi');
-        }
-
-        /**
-         * GENERATOR CHECKBOX MULTI-SELECT KELAS
-         */
-        function renderClassCheckboxes() {
-            const container = document.getElementById('class-checkboxes-container');
-            if (!container) return;
-
-            let html = '';
-
-            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'guru_bp' || currentUser.role === 'guru_mapel')) {
-                html += `
-                    <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 text-white text-[10px] font-extrabold cursor-pointer select-none shadow-xs active:scale-95">
-                        <input type="checkbox" id="chk-class-all" onchange="toggleAllClassCheckboxes(this)" class="rounded text-brand-500 focus:ring-0">
-                        <span>PILIH SEMUA</span>
-                    </label>
-                `;
-                MOCK_DB.classes.forEach(c => {
-                    html += `
-                        <label class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-800 text-[10px] font-extrabold cursor-pointer select-none hover:bg-emerald-50 active:scale-95 transition-all">
-                            <input type="checkbox" name="class-select-chk" value="${c.id}" onchange="onClassCheckboxChange()" class="rounded text-brand-600 focus:ring-0">
-                            <span>${c.name}</span>
-                        </label>
-                    `;
-                });
-            } else if (currentUser) {
-                const userClass = currentUser.classId;
-                html += `
-                    <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-[10px] font-extrabold cursor-pointer select-none shadow-xs">
-                        <input type="checkbox" name="class-select-chk" value="${userClass}" checked disabled class="rounded text-white focus:ring-0">
-                        <span>KELAS: ${userClass}</span>
-                    </label>
-                `;
-            }
-
-            container.innerHTML = html;
-        }
-
-        function toggleAllClassCheckboxes(masterChk) {
-            const isChecked = masterChk.checked;
-            document.querySelectorAll('input[name="class-select-chk"]').forEach(chk => {
-                chk.checked = isChecked;
-            });
-            clearTemporaryInputs();
-            loadStudentAttendanceForm();
-        }
-
-        function onClassCheckboxChange() {
-            const masterChk = document.getElementById('chk-class-all');
-            const allChks = document.querySelectorAll('input[name="class-select-chk"]');
-            const checkedChks = document.querySelectorAll('input[name="class-select-chk"]:checked');
-            
-            if (masterChk) {
-                masterChk.checked = (allChks.length > 0 && allChks.length === checkedChks.length);
-            }
-
-            clearTemporaryInputs();
-            loadStudentAttendanceForm();
-        }
-
-        function getSelectedClassIds() {
-            if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'guru_bp' && currentUser.role !== 'guru_mapel') {
-                return currentUser.classId ? [currentUser.classId] : [];
-            }
-            const checkedBoxes = document.querySelectorAll('input[name="class-select-chk"]:checked');
-            return Array.from(checkedBoxes).map(cb => cb.value);
-        }
-
-        function switchAbsenTab(tab) {
-            activeAbsenTab = tab;
-            isFormDirty = false;
-            const btnIsi = document.getElementById('tab-absen-isi');
-            const btnRekap = document.getElementById('tab-absen-rekap');
-            const secIsi = document.getElementById('section-absen-isi');
-            const secRekap = document.getElementById('section-absen-rekap');
-
-            if (tab === 'isi') {
-                btnIsi.className = 'flex-1 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs uppercase bg-brand-600 text-white shadow-soft';
-                btnRekap.className = 'flex-1 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs uppercase text-slate-500 hover:bg-slate-50';
-                secIsi.classList.remove('hidden-app');
-                secRekap.classList.add('hidden-app');
-                loadStudentAttendanceForm();
+            if (editId) {
+                const idx = MOCK_DB.classes.findIndex(c => c.id === editId);
+                if (idx !== -1) MOCK_DB.classes[idx] = { id, name, department: dept };
+                window.editingKelasId = null;
             } else {
-                btnIsi.className = 'flex-1 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs uppercase text-slate-500 hover:bg-slate-50';
-                btnRekap.className = 'flex-1 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs uppercase bg-brand-600 text-white shadow-soft';
-                secIsi.classList.add('hidden-app');
-                secRekap.classList.remove('hidden-app');
-                toggleFilterInputs();
-            }
-        }
-
-        function checkDailyIsLocked(selectedDateStr, classId) {
-            return false; // IZIN TERBUKA PENUH
-        }
-
-        /**
-         * AKSELERASI TABEL SISWA TERPILIH (MULTI-KELAS CHECKBOX) + OTOMATIS TERSIMPAN PEMANGGILAN
-         */
-        function loadStudentAttendanceForm(isSilent = false) {
-            if (!currentUser) return;
-            if (isSilent && isFormDirty) return;
-
-            const selectedClasses = getSelectedClassIds();
-            const selectedDateStr = document.getElementById('input-absen-date') ? normalizeDateStr(document.getElementById('input-absen-date').value) : '';
-
-            const tbody = document.getElementById('bulk-absen-table-body');
-            const submitBar = document.getElementById('bulk-absen-submit-bar');
-            const dailyRecapBanner = document.getElementById('daily-recap-banner');
-            const actionBar = document.getElementById('bulk-absen-action-bar');
-            const colHeaderCall = document.getElementById('col-header-call');
-
-            if (!tbody) return;
-
-            const isShowCallCol = ['admin', 'wali', 'guru_bp'].includes(currentUser.role);
-            if (colHeaderCall) colHeaderCall.style.display = isShowCallCol ? '' : 'none';
-
-            if (selectedClasses.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-slate-400 font-bold"><i class="ph-bold ph-hand-pointing text-3xl block mb-2 text-brand-600 animate-bounce"></i>Silakan centang minimal satu kelas di atas untuk menampilkan daftar siswa.</td></tr>`;
-                if (submitBar) submitBar.classList.add('hidden-app'); 
-                if (actionBar) actionBar.classList.add('hidden-app'); 
-                if (dailyRecapBanner) dailyRecapBanner.classList.add('hidden-app');
-                return;
+                if (MOCK_DB.classes.some(c => c.id === id)) {
+                    showMessage('Peringatan', 'Kelas ini sudah terdaftar.');
+                    return;
+                }
+                MOCK_DB.classes.push({ id, name, department: dept });
             }
 
-            // FILTER SISWA DARI SELURUH KELAS YANG DICENTANG
-            let classStudents = MOCK_DB.students.filter(s => selectedClasses.includes(s.classId));
-            if (classStudents.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-slate-400 font-semibold">Tidak ada siswa terdaftar pada kelas yang dipilih.</td></tr>`;
-                if (submitBar) submitBar.classList.add('hidden-app'); 
-                return;
-            }
-
-            // URUTKAN KELAS KEMUDIAN NAMA A-Z
-            classStudents.sort((a, b) => {
-                if (a.classId !== b.classId) {
-                    return a.classId.localeCompare(b.classId, 'id', { numeric: true });
-                }
-                return a.name.localeCompare(b.name, 'id');
-            });
-
-            if (submitBar) submitBar.classList.remove('hidden-app');
-            if (actionBar) actionBar.classList.remove('hidden-app');
-            dailyRecapBanner.classList.remove('hidden-app');
-
-            // HASH MAP PERFORMANCE O(1)
-            const attMap = new Map();
-            const studentStatsMap = new Map();
-
-            (MOCK_DB.attendance || []).forEach(a => {
-                const nisStr = a.nis.toString();
-                if (normalizeDateStr(a.date) === selectedDateStr) {
-                    attMap.set(nisStr, a);
-                }
-
-                if (!studentStatsMap.has(nisStr)) {
-                    studentStatsMap.set(nisStr, { alpa: 0, sakit: 0, terlambat: 0 });
-                }
-                const st = studentStatsMap.get(nisStr);
-                if (a.status === 'A') st.alpa++;
-                if (a.status === 'S') st.sakit++;
-                const rmk = (a.remark || '').toLowerCase();
-                if (rmk.includes('kesiangan') || rmk.includes('terlambat')) st.terlambat++;
-            });
-
-            const callLogsMap = MOCK_DB.callLogs || {};
-
-            const statuses = [
-                { val: 'H', label: 'H', desc: 'Hadir', active: 'bg-emerald-500 text-white border-emerald-500 shadow-md scale-105', base: 'hover:bg-emerald-50 text-emerald-600 border-emerald-200' },
-                { val: 'I', label: 'I', desc: 'Izin', active: 'bg-amber-500 text-white border-amber-500 shadow-md scale-105', base: 'hover:bg-amber-50 text-amber-600 border-amber-200' },
-                { val: 'S', label: 'S', desc: 'Sakit', active: 'bg-blue-500 text-white border-blue-500 shadow-md scale-105', base: 'hover:bg-blue-50 text-blue-600 border-blue-200' },
-                { val: 'A', label: 'A', desc: 'Alpa', active: 'bg-rose-500 text-white border-rose-500 shadow-md scale-105', base: 'hover:bg-rose-50 text-rose-600 border-rose-200' },
-                { val: 'D', label: 'D', desc: 'Disp', active: 'bg-purple-500 text-white border-purple-500 shadow-md scale-105', base: 'hover:bg-purple-50 text-purple-600 border-purple-200' },
-                { val: 'L', label: 'L', desc: 'Libur', active: 'bg-sky-500 text-white border-sky-500 shadow-md scale-105', base: 'hover:bg-sky-50 text-sky-600 border-sky-200' }
-            ];
-
-            const rowsArr = new Array(classStudents.length);
-
-            for (let idx = 0; idx < classStudents.length; idx++) {
-                const student = classStudents[idx];
-                const nisStr = student.nis.toString();
-                const existing = attMap.get(nisStr);
-                const status = existing ? existing.status : '';
-                const remark = existing ? (existing.remark || '') : '';
-                const updatedBy = existing ? (existing.updatedBy || '') : '';
-                const tempFile = window[`attached_file_${student.nis}`];
-                
-                let attachName = '';
-                if (tempFile) attachName = tempFile.name;
-                else if (existing && (existing.attachment || existing.attachmentUrl || existing.attachmentName)) {
-                    attachName = (existing.attachment ? existing.attachment.name : existing.attachmentName) || 'Surat Bukti';
-                }
-
-                let radioHtml = `<div class="flex items-center gap-1 justify-center">`;
-                for (let sIdx = 0; sIdx < statuses.length; sIdx++) {
-                    const st = statuses[sIdx];
-                    const isActive = st.val === status;
-                    radioHtml += `
-                        <label class="cursor-pointer relative">
-                            <input type="radio" name="status-${student.nis}" value="${st.val}" ${isActive ? 'checked' : ''} onchange="handleStatusChange('${student.nis}', '${st.val}')" class="sr-only">
-                            <span id="label-${student.nis}-${st.val}" class="touch-pill flex flex-col items-center justify-center rounded-xl border text-[11px] font-extrabold transition-all w-8 h-8 sm:w-9 sm:h-9 active:scale-95 ${isActive ? st.active : st.base}">
-                                ${st.label}
-                                <span class="text-[6px] font-bold opacity-80 block">${st.desc}</span>
-                            </span>
-                        </label>
-                    `;
-                }
-                radioHtml += `</div>`;
-
-                const showUpdatedBadge = updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit mt-0.5"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${updatedBy}</span>` : '';
-
-                // AKUMULASI PERINGATAN LOGIKA BARU
-                const stStat = studentStatsMap.get(nisStr) || { alpa: 0, sakit: 0, terlambat: 0 };
-                const cLog = callLogsMap[nisStr] || { called: false, note: '', lastAlpa: 0, lastTerlambat: 0, lastSakit: 0 };
-
-                const netAlpa = stStat.alpa - (cLog.called ? (cLog.lastAlpa || 0) : 0);
-                const netTerlambat = stStat.terlambat - (cLog.called ? (cLog.lastTerlambat || 0) : 0);
-                const netSakit = stStat.sakit - (cLog.called ? (cLog.lastSakit || 0) : 0);
-
-                let warningHtml = '';
-                if (netAlpa > 2 || netTerlambat > 2) {
-                    warningHtml += `<div class="mt-1 p-1 bg-red-100 border border-red-300 text-red-800 rounded-lg text-[9px] font-bold flex items-center gap-1"><i class="ph-bold ph-warning"></i> ⚠️ Perlu Pemanggilan Orang Tua / Pembinaan (Alpa: ${stStat.alpa}x, Lambat: ${stStat.terlambat}x)</div>`;
-                }
-                if (netSakit > 2) {
-                    warningHtml += `<div class="mt-1 p-1 bg-amber-100 border border-amber-300 text-amber-800 rounded-lg text-[9px] font-bold flex items-center gap-1"><i class="ph-bold ph-first-aid"></i> 🩺 Perlu Home Visit / Dijenguk (Sakit: ${stStat.sakit}x)</div>`;
-                }
-
-                // KOLOM KOTAK CEKLIS & CATATAN PEMANGGILAN OTOMATIS TERSIMPAN
-                let callColTd = '';
-                if (isShowCallCol) {
-                    callColTd = `
-                        <td class="px-2 py-2 min-w-[200px]">
-                            <div class="flex flex-col gap-1 bg-slate-50 border p-1.5 rounded-xl">
-                                <label class="flex items-center gap-1.5 text-[10px] font-extrabold text-slate-700 cursor-pointer">
-                                    <input type="checkbox" id="call-check-${student.nis}" ${cLog.called ? 'checked' : ''} onchange="autoSaveCallLog('${student.nis}')" class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500">
-                                    <span>Sudah Dipanggil / Dibina</span>
-                                </label>
-                                <input type="text" id="call-note-${student.nis}" value="${cLog.note || ''}" oninput="autoSaveCallLog('${student.nis}')" placeholder="Catatan hasil pemanggilan..." class="w-full bg-white border rounded-lg px-2 py-1 text-[10px] font-semibold">
-                            </div>
-                        </td>
-                    `;
-                }
-
-                rowsArr[idx] = `
-                    <tr class="hover:bg-slate-50 transition-colors text-xs">
-                        <td class="px-1.5 py-2 font-bold text-slate-400 text-center">${idx + 1}</td>
-                        <td class="px-1.5 py-2 font-mono font-bold text-slate-700 text-[11px]">${student.nis}</td>
-                        <td class="px-2 py-2 font-extrabold text-slate-800 truncate max-w-[150px]">
-                            ${student.name}
-                            ${warningHtml}
-                        </td>
-                        <td class="px-1 py-2 text-center"><span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1 py-0.5 rounded inline-block">${student.classId}</span></td>
-                        <td class="px-2 py-2 text-center">${radioHtml}</td>
-                        <td class="px-2 py-2 min-w-[220px]">
-                            <div id="ket-container-${student.nis}" class="flex flex-col gap-1">
-                                <input type="text" id="ket-input-${student.nis}" value="${remark}" onchange="isFormDirty=true" placeholder="Catatan / Alasan S, I, A, D..." class="w-full bg-slate-50 border rounded-xl px-2.5 py-1 text-[11px] font-semibold">
-                                
-                                <div id="updater-badge-${student.nis}">
-                                    ${showUpdatedBadge}
-                                </div>
-
-                                <div class="flex items-center gap-1.5 flex-wrap mt-0.5">
-                                    <button type="button" onclick="setQuickRemark('${student.nis}', 'Kesiangan')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-1.5 py-0.5 rounded text-[9px] active:scale-95 transition-transform">+ Kesiangan</button>
-                                    <button type="button" onclick="setQuickRemark('${student.nis}', 'Bolos', true)" class="bg-rose-100 hover:bg-rose-200 text-rose-900 font-bold px-1.5 py-0.5 rounded text-[9px] active:scale-95 transition-transform">+ Bolos (Alpa)</button>
-
-                                    <button type="button" onclick="triggerCameraCapture('${student.nis}')" class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all">
-                                        <i class="ph-bold ph-camera text-xs"></i> Kamera
-                                    </button>
-                                    <input type="file" id="file-cam-${student.nis}" accept="image/*" capture="environment" onchange="handleFileUpload(event, '${student.nis}')" class="hidden">
-                                    
-                                    <button type="button" onclick="triggerFileSelect('${student.nis}')" class="cursor-pointer bg-slate-800 hover:bg-slate-900 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all">
-                                        <i class="ph-bold ph-folder text-xs"></i> File/PDF
-                                    </button>
-                                    <input type="file" id="file-doc-${student.nis}" accept="image/*,application/pdf" onchange="handleFileUpload(event, '${student.nis}')" class="hidden">
-
-                                    <div id="upload-indicator-${student.nis}" class="${attachName ? '' : 'hidden-app'} flex items-center gap-1 bg-brand-50 border border-brand-200 text-brand-900 px-2 py-1 rounded-lg text-[10px] shadow-2xs">
-                                        <i class="ph-bold ph-paperclip text-brand-600"></i>
-                                        <span id="file-name-${student.nis}" class="font-bold truncate max-w-[70px]">${attachName}</span>
-                                        
-                                        <button type="button" onclick="viewAttachmentFromDailyForm('${student.nis}')" class="bg-brand-600 hover:bg-brand-700 text-white font-bold px-1.5 py-0.5 rounded text-[9px] flex items-center gap-0.5 active:scale-95 transition-transform" title="Pratinjau Surat">
-                                            <i class="ph-bold ph-eye"></i> Lihat
-                                        </button>
-                                        
-                                        <button type="button" onclick="downloadAttachmentDirect('${student.nis}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-1.5 py-0.5 rounded text-[9px] flex items-center gap-0.5 active:scale-95 transition-transform" title="Unduh Berkas Langsung">
-                                            <i class="ph-bold ph-download-simple"></i> Unduh
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        ${callColTd}
-                    </tr>
-                `;
-            }
-
-            tbody.innerHTML = rowsArr.join('');
-            updateLiveDailyRecap();
-        }
-
-        /**
-         * FUNGSI OTOMATIS TERSIMPAN - CATATAN PEMANGGILA
-         */
-        function autoSaveCallLog(nis) {
-            if (!MOCK_DB.callLogs) MOCK_DB.callLogs = {};
-
-            const chk = document.getElementById(`call-check-${nis}`);
-            const noteInput = document.getElementById(`call-note-${nis}`);
-            const isChecked = chk ? chk.checked : false;
-            const noteText = noteInput ? noteInput.value.trim() : '';
-
-            let stAlpa = 0, stTerlambat = 0, stSakit = 0;
-            (MOCK_DB.attendance || []).forEach(a => {
-                if (a.nis.toString() === nis.toString()) {
-                    if (a.status === 'A') stAlpa++;
-                    if (a.status === 'S') stSakit++;
-                    const rmk = (a.remark || '').toLowerCase();
-                    if (rmk.includes('kesiangan') || rmk.includes('terlambat')) stTerlambat++;
-                }
-            });
-
-            MOCK_DB.callLogs[nis] = {
-                called: isChecked,
-                note: noteText,
-                lastAlpa: isChecked ? stAlpa : (MOCK_DB.callLogs[nis] ? MOCK_DB.callLogs[nis].lastAlpa || 0 : 0),
-                lastTerlambat: isChecked ? stTerlambat : (MOCK_DB.callLogs[nis] ? MOCK_DB.callLogs[nis].lastTerlambat || 0 : 0),
-                lastSakit: isChecked ? stSakit : (MOCK_DB.callLogs[nis] ? MOCK_DB.callLogs[nis].lastSakit || 0 : 0),
-                updatedBy: currentUser ? currentUser.name : 'User',
-                updatedAt: new Date().toISOString()
-            };
-
-            // Simpan langsung ke penyimpanan lokal
             saveToStorage();
-
-            // Background Auto-Sync ke Firebase tanpa mengganggu input pengguna
-            clearTimeout(window.callLogSyncTimer);
-            window.callLogSyncTimer = setTimeout(() => {
-                callCloudAPI("saveBulkAttendance", { records: [], callLogs: MOCK_DB.callLogs });
-            }, 1000);
+            document.getElementById('form-add-kelas').reset();
+            initMenuKelas();
+            showMessage('Sukses', 'Data kelas berhasil disimpan & disinkronkan.');
+            await callCloudAPI("saveKelas", { id, name, department: dept, oldId: editId });
         }
 
-        function filterDailyTable() {
-            const q = document.getElementById('search-daily-input').value.toLowerCase();
-            document.querySelectorAll('#bulk-absen-table-body tr').forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
-            });
+        function openEditKelasModal(id) {
+            const cls = MOCK_DB.classes.find(c => c.id === id);
+            if (!cls) return;
+            document.getElementById('add-kelas-name').value = cls.name;
+            document.getElementById('add-kelas-dept').value = cls.department;
+            window.editingKelasId = id;
+            document.getElementById('add-kelas-name').focus();
         }
 
-        function filterRecapTable() {
-            const q = document.getElementById('search-rekap-input').value.toLowerCase();
-            document.querySelectorAll('#rekap-matrix-table-body tr').forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
-            });
+        async function deleteKelas(id) {
+            if (!confirm(`Apakah Anda yakin ingin menghapus kelas ${id}?`)) return;
+            MOCK_DB.classes = MOCK_DB.classes.filter(c => c.id !== id);
+            saveToStorage();
+            initMenuKelas();
+            showMessage('Sukses', `Kelas ${id} berhasil dihapus.`);
+            await callCloudAPI("deleteClass", { id });
         }
 
-        function handleStatusChange(nis, newStatus) {
-            isFormDirty = true;
-            const statuses = ['H', 'I', 'S', 'A', 'D', 'L'];
-            const styles = {
-                'H': { active: 'bg-emerald-500 text-white border-emerald-500 shadow-md scale-105', base: 'hover:bg-emerald-50 text-emerald-600 border-emerald-200' },
-                'I': { active: 'bg-amber-500 text-white border-amber-500 shadow-md scale-105', base: 'hover:bg-amber-50 text-amber-600 border-amber-200' },
-                'S': { active: 'bg-blue-500 text-white border-blue-500 shadow-md scale-105', base: 'hover:bg-blue-50 text-blue-600 border-blue-200' },
-                'A': { active: 'bg-rose-500 text-white border-rose-500 shadow-md scale-105', base: 'hover:bg-rose-50 text-rose-600 border-rose-200' },
-                'D': { active: 'bg-purple-500 text-white border-purple-500 shadow-md scale-105', base: 'hover:bg-purple-50 text-purple-600 border-purple-200' },
-                'L': { active: 'bg-sky-500 text-white border-sky-500 shadow-md scale-105', base: 'hover:bg-sky-50 text-sky-600 border-sky-200' }
-            };
+        // KELOLA SISWA
+        function openAddSiswaModal() {
+            document.getElementById('siswa-edit-mode').value = 'add';
+            document.getElementById('modal-siswa-title').textContent = 'Tambah Data Siswa';
+            document.getElementById('siswa-nis').disabled = false;
+            document.getElementById('form-siswa').reset();
+            
+            const select = document.getElementById('siswa-class');
+            select.innerHTML = MOCK_DB.classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
 
-            statuses.forEach(st => {
-                const span = document.getElementById(`label-${nis}-${st}`);
-                if (span) {
-                    if (st === newStatus) span.className = `touch-pill flex flex-col items-center justify-center rounded-xl border text-[11px] font-extrabold transition-all w-8 h-8 sm:w-9 sm:h-9 active:scale-95 ${styles[st].active}`;
-                    else span.className = `touch-pill flex flex-col items-center justify-center rounded-xl border text-[11px] font-extrabold transition-all w-8 h-8 sm:w-9 sm:h-9 active:scale-95 ${styles[st].base}`;
+            const modal = document.getElementById('modal-siswa');
+            modal.classList.remove('hidden-app');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function openEditSiswaModal(nis) {
+            const st = MOCK_DB.students.find(s => s.nis.toString() === nis.toString());
+            if (!st) return;
+
+            document.getElementById('siswa-edit-mode').value = 'edit';
+            document.getElementById('modal-siswa-title').textContent = 'Edit Data Siswa';
+            document.getElementById('siswa-nis').value = st.nis;
+            document.getElementById('siswa-nis').disabled = true;
+            document.getElementById('siswa-name').value = st.name;
+            document.getElementById('siswa-pass').value = st.pass || st.nis;
+
+            const select = document.getElementById('siswa-class');
+            select.innerHTML = MOCK_DB.classes.map(c => `<option value="${c.id}" ${c.id === st.classId ? 'selected' : ''}>${c.name}</option>`).join('');
+
+            const modal = document.getElementById('modal-siswa');
+            modal.classList.remove('hidden-app');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeSiswaModal() {
+            const modal = document.getElementById('modal-siswa');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden-app'), 300);
+        }
+
+        async function saveSiswa(e) {
+            e.preventDefault();
+            const mode = document.getElementById('siswa-edit-mode').value;
+            const nis = document.getElementById('siswa-nis').value.trim();
+            const name = document.getElementById('siswa-name').value.trim();
+            const classId = document.getElementById('siswa-class').value;
+            const pass = document.getElementById('siswa-pass').value.trim();
+
+            if (mode === 'add') {
+                if (MOCK_DB.students.some(s => s.nis.toString() === nis)) {
+                    showMessage('Peringatan', 'NIS siswa tersebut sudah terdaftar.');
+                    return;
                 }
+                MOCK_DB.students.push({ nis, name, classId, pass });
+            } else {
+                const idx = MOCK_DB.students.findIndex(s => s.nis.toString() === nis);
+                if (idx !== -1) MOCK_DB.students[idx] = { nis, name, classId, pass };
+            }
+
+            saveToStorage();
+            closeSiswaModal();
+            initMenuSiswa();
+            showMessage('Sukses', 'Data siswa disimpan & terintegrasi ke seluruh perangkat.');
+            await callCloudAPI("saveSiswa", { nis, name, classId, pass });
+        }
+
+        async function deleteSiswa(nis) {
+            if (!confirm(`Hapus data siswa NIS: ${nis}?`)) return;
+            MOCK_DB.students = MOCK_DB.students.filter(s => s.nis.toString() !== nis.toString());
+            saveToStorage();
+            initMenuSiswa();
+            showMessage('Sukses', `Siswa NIS ${nis} berhasil dihapus.`);
+            await callCloudAPI("deleteSiswa", { nis, id: nis });
+        }
+
+        // KELOLA GURU / WALI / WAKASEK / PIMPINAN
+        function openAddWaliModal() {
+            document.getElementById('wali-edit-mode').value = 'add';
+            document.getElementById('modal-wali-title').textContent = 'Tambah Guru / Akun Pimpinan';
+            document.getElementById('wali-nip').disabled = false;
+            document.getElementById('form-wali').reset();
+
+            const selectClass = document.getElementById('wali-class');
+            selectClass.innerHTML = `<option value="ALL">Semua Kelas / Tanpa Kelas Khusus</option>` + MOCK_DB.classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+            const modal = document.getElementById('modal-wali');
+            modal.classList.remove('hidden-app');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function openEditTeacherModal(nip) {
+            const tr = MOCK_DB.teachers.find(t => t.nip.toString() === nip.toString());
+            if (!tr) return;
+
+            document.getElementById('wali-edit-mode').value = 'edit';
+            document.getElementById('modal-wali-title').textContent = 'Edit Data Akun Guru/Pimpinan';
+            document.getElementById('wali-nip').value = tr.nip;
+            document.getElementById('wali-nip').disabled = true;
+            document.getElementById('wali-name').value = tr.name;
+            document.getElementById('wali-dept').value = tr.dept || 'Wali Kelas';
+            document.getElementById('wali-pass').value = tr.pass || tr.nip;
+
+            const selectClass = document.getElementById('wali-class');
+            selectClass.innerHTML = `<option value="ALL">Semua Kelas / Tanpa Kelas Khusus</option>` + MOCK_DB.classes.map(c => `<option value="${c.id}" ${c.id === tr.classId ? 'selected' : ''}>${c.name}</option>`).join('');
+
+            const modal = document.getElementById('modal-wali');
+            modal.classList.remove('hidden-app');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeWaliModal() {
+            const modal = document.getElementById('modal-wali');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden-app'), 300);
+        }
+
+        async function saveTeacher(e) {
+            e.preventDefault();
+            const mode = document.getElementById('wali-edit-mode').value;
+            const nip = document.getElementById('wali-nip').value.trim();
+            const name = document.getElementById('wali-name').value.trim();
+            const dept = document.getElementById('wali-dept').value;
+            const classId = document.getElementById('wali-class').value;
+            const pass = document.getElementById('wali-pass').value.trim();
+
+            if (mode === 'add') {
+                if (MOCK_DB.teachers.some(t => t.nip.toString() === nip)) {
+                    showMessage('Peringatan', 'NIP / ID Guru ini sudah terdaftar.');
+                    return;
+                }
+                MOCK_DB.teachers.push({ nip, name, dept, classId, pass });
+            } else {
+                const idx = MOCK_DB.teachers.findIndex(t => t.nip.toString() === nip);
+                if (idx !== -1) MOCK_DB.teachers[idx] = { nip, name, dept, classId, pass };
+            }
+
+            saveToStorage();
+            closeWaliModal();
+            if (document.getElementById('wali-table-body')) initMenuWali();
+            showMessage('Sukses', 'Data akun berhasil disimpan & disinkronkan.');
+            await callCloudAPI("saveTeacher", { nip, name, dept, classId, pass });
+        }
+
+        async function deleteWali(nip) {
+            if (!confirm(`Hapus guru/wali NIP: ${nip}?`)) return;
+            MOCK_DB.teachers = MOCK_DB.teachers.filter(t => t.nip.toString() !== nip.toString());
+            saveToStorage();
+            initMenuWali();
+            showMessage('Sukses', `Data guru ${nip} berhasil dihapus.`);
+            await callCloudAPI("deleteTeacher", { nip, id: nip });
+        }
+
+        function openDiagnosticModal() {
+            document.getElementById('diag-total-kelas').textContent = MOCK_DB.classes.length;
+            document.getElementById('diag-total-siswa').textContent = MOCK_DB.students.length;
+            document.getElementById('diag-total-guru').textContent = MOCK_DB.teachers.length;
+
+            const modal = document.getElementById('modal-diagnostic');
+            modal.classList.remove('hidden-app');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeDiagnosticModal() {
+            const modal = document.getElementById('modal-diagnostic');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden-app'), 300);
+        }
+
+        // KELOLA PASSWORD & BUAT AKUN BARU
+        function openManageUsersModal() {
+            populateAdminTargetUsers();
+            const selectClass = document.getElementById('admin-new-user-class');
+            selectClass.innerHTML = `<option value="ALL">Semua Kelas / Tanpa Kelas Khusus</option>` + MOCK_DB.classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+            const modal = document.getElementById('modal-manage-users');
+            modal.classList.remove('hidden-app');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeManageUsersModal() {
+            const modal = document.getElementById('modal-manage-users');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden-app'), 300);
+        }
+
+        function populateAdminTargetUsers() {
+            const type = document.getElementById('admin-target-type').value;
+            const select = document.getElementById('admin-target-user');
+            let html = `<option value="NEW_USER">+ TAMBAH AKUN BARU KATEGORI INI...</option>`;
+
+            if (type === 'admin') {
+                const pimpinanTeachers = MOCK_DB.teachers.filter(t => t.dept === 'Wakasek' || t.dept === 'Kepala Sekolah');
+                html += MOCK_DB.admins.map(a => `<option value="${a.username}">${a.name} (${a.username})</option>`).join('');
+                html += pimpinanTeachers.map(t => `<option value="${t.nip}">${t.name} - ${t.dept} (${t.nip})</option>`).join('');
+            } else if (type === 'guru') {
+                html += MOCK_DB.teachers.map(t => `<option value="${t.nip}">${t.name} - ${t.dept} (${t.nip})</option>`).join('');
+            } else {
+                html += MOCK_DB.students.map(s => `<option value="${s.nis}">${s.name} - ${s.classId} (${s.nis})</option>`).join('');
+            }
+            select.innerHTML = html;
+            toggleNewUserFields();
+        }
+
+        function toggleNewUserFields() {
+            const target = document.getElementById('admin-target-user').value;
+            const type = document.getElementById('admin-target-type').value;
+            const inputId = document.getElementById('admin-new-user-id');
+            const inputName = document.getElementById('admin-new-user-name');
+            const selectDept = document.getElementById('admin-new-user-dept');
+            const selectClass = document.getElementById('admin-new-user-class');
+            const inputPass = document.getElementById('admin-target-pass');
+
+            if (target === 'NEW_USER') {
+                inputId.value = '';
+                inputName.value = '';
+                inputPass.value = '';
+                document.getElementById('lbl-user-id').textContent = type === 'siswa' ? 'NIS Siswa Baru' : (type === 'admin' ? 'Username Admin Baru' : 'NIP / ID Guru Baru');
+            } else {
+                let found = null;
+                if (type === 'admin') {
+                    found = MOCK_DB.admins.find(a => a.username.toString() === target) || MOCK_DB.teachers.find(t => t.nip.toString() === target);
+                    if (found) {
+                        inputId.value = found.username || found.nip;
+                        inputName.value = found.name;
+                        inputPass.value = found.pass || '';
+                        if (found.dept) selectDept.value = found.dept;
+                    }
+                } else if (type === 'guru') {
+                    found = MOCK_DB.teachers.find(t => t.nip.toString() === target);
+                    if (found) {
+                        inputId.value = found.nip;
+                        inputName.value = found.name;
+                        inputPass.value = found.pass || '';
+                        if (found.dept) selectDept.value = found.dept;
+                        if (found.classId) selectClass.value = found.classId;
+                    }
+                } else {
+                    found = MOCK_DB.students.find(s => s.nis.toString() === target);
+                    if (found) {
+                        inputId.value = found.nis;
+                        inputName.value = found.name;
+                        inputPass.value = found.pass || '';
+                        if (found.classId) selectClass.value = found.classId;
+                    }
+                }
+                document.getElementById('lbl-user-id').textContent = 'Edit Username / NIP / NIS';
+            }
+
+            if (type === 'siswa') {
+                document.getElementById('admin-new-user-dept-wrapper').classList.add('hidden-app');
+            } else {
+                document.getElementById('admin-new-user-dept-wrapper').classList.remove('hidden-app');
+            }
+        }
+
+        async function saveUserPasswordByAdmin(e) {
+            e.preventDefault();
+            const type = document.getElementById('admin-target-type').value;
+            const targetId = document.getElementById('admin-target-user').value.toString();
+            const newId = document.getElementById('admin-new-user-id').value.trim();
+            const newName = document.getElementById('admin-new-user-name').value.trim();
+            const newDept = document.getElementById('admin-new-user-dept').value;
+            const newClass = document.getElementById('admin-new-user-class').value;
+            const newPass = document.getElementById('admin-target-pass').value.trim();
+
+            if (!newId || !newName || !newPass) {
+                showMessage('Peringatan', 'Username/ID, Nama, dan Password wajib diisi!');
+                return;
+            }
+
+            if (targetId === 'NEW_USER') {
+                if (type === 'admin') {
+                    if (newDept === 'Wakasek' || newDept === 'Kepala Sekolah') {
+                        const item = { nip: newId, name: newName, dept: newDept, classId: newClass, pass: newPass };
+                        MOCK_DB.teachers.push(item);
+                        await callCloudAPI("saveTeacher", item);
+                    } else {
+                        const item = { username: newId, name: newName, pass: newPass };
+                        MOCK_DB.admins.push(item);
+                        await callCloudAPI("addAdminUser", { data: item });
+                    }
+                } else if (type === 'guru') {
+                    const item = { nip: newId, name: newName, dept: newDept, classId: newClass, pass: newPass };
+                    MOCK_DB.teachers.push(item);
+                    await callCloudAPI("saveTeacher", item);
+                } else {
+                    const item = { nis: newId, name: newName, classId: newClass, pass: newPass };
+                    MOCK_DB.students.push(item);
+                    await callCloudAPI("saveSiswa", item);
+                }
+            } else {
+                if (type === 'admin') {
+                    let adm = MOCK_DB.admins.find(a => a.username.toString() === targetId);
+                    if (adm) {
+                        adm.username = newId; adm.name = newName; adm.pass = newPass;
+                        await callCloudAPI("updateAdminPassword", { username: newId, pass: newPass });
+                    } else {
+                        let tr = MOCK_DB.teachers.find(t => t.nip.toString() === targetId);
+                        if (tr) { 
+                            tr.nip = newId; tr.name = newName; tr.pass = newPass; tr.dept = newDept; tr.classId = newClass; 
+                            await callCloudAPI("saveTeacher", { nip: newId, name: newName, dept: newDept, classId: newClass, pass: newPass });
+                        }
+                    }
+                } else if (type === 'guru') {
+                    let tr = MOCK_DB.teachers.find(t => t.nip.toString() === targetId);
+                    if (tr) { 
+                        tr.nip = newId; tr.name = newName; tr.pass = newPass; tr.dept = newDept; tr.classId = newClass; 
+                        await callCloudAPI("saveTeacher", { nip: newId, name: newName, dept: newDept, classId: newClass, pass: newPass });
+                    }
+                } else {
+                    let st = MOCK_DB.students.find(s => s.nis.toString() === targetId);
+                    if (st) { 
+                        st.nis = newId; st.name = newName; st.pass = newPass; st.classId = newClass; 
+                        await callCloudAPI("saveSiswa", { nis: newId, name: newName, classId: newClass, pass: newPass });
+                    }
+                }
+            }
+
+            saveToStorage();
+            closeManageUsersModal();
+            showMessage('Sukses', `Data akun (${newName}) berhasil diperbarui & disinkronkan.`);
+
+            callCloudAPI("syncAllUsers", {
+                teachers: MOCK_DB.teachers,
+                students: MOCK_DB.students,
+                admins: MOCK_DB.admins
             });
+        }
 
-            if (currentUser) {
-                const recorderTag = `${currentUser.name} (${getRoleLabelFormatted(currentUser)})`;
-                window[`recorder_tag_${nis}`] = recorderTag;
+        async function saveSelfPassword(e) {
+            e.preventDefault();
+            const newPass = document.getElementById('self-new-password').value.trim();
+            if (!newPass || !currentUser) return;
 
+            const id = (currentUser.nip || currentUser.nis || currentUser.username || currentUser.id).toString();
+            currentUser.pass = newPass;
+            localStorage.setItem('smkn5_user_session', JSON.stringify(currentUser));
+
+            const adm = MOCK_DB.admins.find(a => a.username.toString() === id);
+            if (adm) adm.pass = newPass;
+
+            const tr = MOCK_DB.teachers.find(t => t.nip.toString() === id);
+            if (tr) tr.pass = newPass;
+
+            const st = MOCK_DB.students.find(s => s.nis.toString() === id);
+            if (st) st.pass = newPass;
+
+            saveToStorage();
+            document.getElementById('self-new-password').value = '';
+            closeChangePasswordModal();
+            showMessage('Sukses', 'Kata sandi Anda berhasil diperbarui & disinkronkan.');
+
+            await callCloudAPI("updateSelfPassword", {
+                role: currentUser.role,
+                id: id,
+                pass: newPass
+            });
+        }
+
+        function setQuickRemark(nis, remarkText, isBolos = false) {
+            if (!currentUser) return;
+
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (checkDailyIsLocked(dateStr, classId)) return;
+
+            isFormDirty = true;
+            const input = document.getElementById(`ket-input-${nis}`);
+            if (input) input.value = remarkText;
+
+            if (isBolos) {
+                const radioA = document.querySelector(`input[name="status-${nis}"][value="A"]`);
+                if (radioA && !radioA.disabled) {
+                    radioA.checked = true;
+                    handleStatusChange(nis, 'A');
+                }
+            } else {
+                const radioH = document.querySelector(`input[name="status-${nis}"][value="H"]`);
+                if (radioH && !radioH.disabled) {
+                    radioH.checked = true;
+                    handleStatusChange(nis, 'H');
+                }
+            }
+
+            const recorderTag = `${currentUser.name} (${getRoleLabelFormatted(currentUser)})`;
+            window[`recorder_tag_${nis}`] = recorderTag;
+
+            if (currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah') {
                 const badgeContainer = document.getElementById(`updater-badge-${nis}`);
                 if (badgeContainer) {
                     badgeContainer.innerHTML = `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${recorderTag}</span>`;
                 }
             }
-
-            updateLiveDailyRecap();
-        }
-
-        function updateLiveDailyRecap() {
-            const selectedClasses = getSelectedClassIds();
-            if (selectedClasses.length === 0) return;
-            const classStudents = MOCK_DB.students.filter(s => selectedClasses.includes(s.classId));
-            const totalSiswa = classStudents.length;
-            if (totalSiswa === 0) return;
-
-            let h = 0, i = 0, s = 0, a = 0, dVal = 0, l = 0;
-            classStudents.forEach(student => {
-                const radioChecked = document.querySelector(`input[name="status-${student.nis}"]:checked`);
-                const currentStatus = radioChecked ? radioChecked.value : '';
-                if (currentStatus === 'H') h++;
-                else if (currentStatus === 'I') i++;
-                else if (currentStatus === 'S') s++;
-                else if (currentStatus === 'A') a++;
-                else if (currentStatus === 'D') dVal++;
-                else if (currentStatus === 'L') l++;
-            });
-
-            document.getElementById('recap-live-total').textContent = totalSiswa;
-            document.getElementById('recap-live-h').textContent = h;
-            document.getElementById('recap-live-i').textContent = i;
-            document.getElementById('recap-live-s').textContent = s;
-            document.getElementById('recap-live-a').textContent = a;
-            document.getElementById('recap-live-d').textContent = dVal;
-            document.getElementById('recap-live-l').textContent = l;
-
-            const totalActive = h + i + s + a + dVal;
-            const pct = totalActive > 0 ? Math.round(((h + dVal) / totalActive) * 100) : 100;
-            document.getElementById('recap-live-pct').textContent = pct + '%';
-            document.getElementById('recap-live-progress').style.width = pct + '%';
         }
 
         /**
-         * PENGUNGGAHAN KAMERA APK ANDROID & IOS (TETAP TERSIMPAN DI MEMORI LOKAL & FIRESTORE/FIREBASE)
+         * PERBAIKAN PENGUNGGAHAN FOTO KAMERA & BERKAS PADA APK ANDROID DAN IOS
          */
         function handleFileUpload(event, nis) {
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (checkDailyIsLocked(dateStr, classId)) return;
+
             const file = event.target.files && event.target.files[0];
             if (!file) return;
 
@@ -1540,7 +1585,7 @@
             const nameSpan = document.getElementById(`file-name-${nis}`);
             
             if (indicator && nameSpan) {
-                nameSpan.textContent = "Kompresi...";
+                nameSpan.textContent = "Memproses...";
                 indicator.classList.remove('hidden-app');
             }
 
@@ -1556,7 +1601,7 @@
                         const canvas = document.createElement('canvas');
                         let width = img.width;
                         let height = img.height;
-                        const maxDim = 800; // Ukuran kompresi pas untuk APK HP Android/iOS
+                        const maxDim = 1000;
 
                         if (width > maxDim || height > maxDim) {
                             if (width > height) {
@@ -1573,28 +1618,14 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.60);
-                        
-                        const fileObj = {
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.70);
+                        window[`attached_file_${nis}`] = {
                             name: fileName,
                             size: Math.round((compressedDataUrl.length * 0.75) / 1024) + ' KB',
                             type: 'image/jpeg',
                             data: compressedDataUrl,
                             url: compressedDataUrl
                         };
-
-                        // Simpan ke Variabel Sementara & array lokal MOCK_DB
-                        window[`attached_file_${nis}`] = fileObj;
-
-                        const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
-                        let att = MOCK_DB.attendance.find(a => a.nis.toString() === nis.toString() && normalizeDateStr(a.date) === dateStr);
-                        if (att) {
-                            att.attachment = fileObj;
-                            att.attachmentName = fileName;
-                            att.attachmentUrl = compressedDataUrl;
-                        }
-
-                        saveToStorage();
 
                         if (indicator && nameSpan) nameSpan.textContent = fileName;
                     };
@@ -1611,41 +1642,32 @@
         }
 
         function saveRawFilePayload(nis, name, size, type, dataUrl, indicator, nameSpan) {
-            const fileObj = {
+            window[`attached_file_${nis}`] = {
                 name: name,
                 size: size ? ((size / 1024).toFixed(1) + ' KB') : 'Selesai',
                 type: type || 'application/octet-stream',
                 data: dataUrl,
                 url: dataUrl
             };
-            window[`attached_file_${nis}`] = fileObj;
-
-            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
-            let att = MOCK_DB.attendance.find(a => a.nis.toString() === nis.toString() && normalizeDateStr(a.date) === dateStr);
-            if (att) {
-                att.attachment = fileObj;
-                att.attachmentName = name;
-                att.attachmentUrl = dataUrl;
-            }
-            saveToStorage();
-
             if (indicator && nameSpan) nameSpan.textContent = name;
         }
 
         function triggerCameraCapture(nis) {
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (checkDailyIsLocked(dateStr, classId)) return;
+
             const input = document.getElementById(`file-cam-${nis}`);
-            if (input) {
-                input.value = null; // Reset agar kamera APK bisa dipicu terus menerus
-                input.click();
-            }
+            if (input) input.click();
         }
 
         function triggerFileSelect(nis) {
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (checkDailyIsLocked(dateStr, classId)) return;
+
             const input = document.getElementById(`file-doc-${nis}`);
-            if (input) {
-                input.value = null;
-                input.click();
-            }
+            if (input) input.click();
         }
 
         function viewAttachmentFromDailyForm(nis) {
@@ -1691,6 +1713,9 @@
             return url;
         }
 
+        /**
+         * PRATINJAU UNIVERSAL TANPA PERLU LOGIN EMAIL GOOGLE
+         */
         function viewRealOrMockLetter(studentName, fileName, fileSize, fileUrl, fileType = '') {
             let finalViewUrl = convertDriveUrlToDirect(fileUrl);
             window.currentActiveAttachment = { studentName, name: fileName || "Surat_Bukti", size: fileSize || "Selesai", url: finalViewUrl, type: fileType };
@@ -1796,61 +1821,7 @@
             setTimeout(() => modal.classList.add('hidden-app'), 300);
         }
 
-        async function saveBulkAttendance(e) {
-            e.preventDefault();
-            const selectedClasses = getSelectedClassIds();
-            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
-
-            if (selectedClasses.length === 0) return showMessage('Peringatan', 'Silakan centang minimal satu kelas terlebih dahulu.');
-
-            const classStudents = MOCK_DB.students.filter(s => selectedClasses.includes(s.classId));
-            const recordsToSave = [];
-            const submitBtn = document.getElementById('btn-submit-bulk-absen');
-
-            const defaultRecorderTag = currentUser ? `${currentUser.name} (${getRoleLabelFormatted(currentUser)})` : 'Pengguna';
-
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = `<i class="ph-bold ph-spinner-gap text-base animate-spin"></i><span>Mengirim Data Absensi...</span>`;
-            }
-
-            classStudents.forEach(student => {
-                const radioChecked = document.querySelector(`input[name="status-${student.nis}"]:checked`);
-                if (!radioChecked) return;
-                const status = radioChecked.value;
-                const remarkInput = document.getElementById(`ket-input-${student.nis}`);
-                const remark = remarkInput ? remarkInput.value.trim() : '';
-                const tempFile = window[`attached_file_${student.nis}`];
-
-                const existing = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === dateStr);
-                const recorderTag = window[`recorder_tag_${student.nis}`] || (existing ? existing.updatedBy : defaultRecorderTag);
-
-                recordsToSave.push({
-                    nis: student.nis, date: dateStr, month: dateStr.slice(0, 7),
-                    status, remark, attachment: tempFile || (existing ? existing.attachment : null),
-                    updatedBy: recorderTag
-                });
-            });
-
-            recordsToSave.forEach(rec => {
-                const idx = MOCK_DB.attendance.findIndex(a => a.nis.toString() === rec.nis.toString() && normalizeDateStr(a.date) === dateStr);
-                if (idx !== -1) MOCK_DB.attendance[idx] = rec;
-                else MOCK_DB.attendance.push(rec);
-            });
-            
-            saveToStorage();
-            isFormDirty = false;
-
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `<span>Simpan Data Absensi</span>`;
-            }
-
-            showMessage('Berhasil', 'Data absensi harian berhasil disimpan & disinkronkan ke seluruh perangkat.');
-            loadStudentAttendanceForm();
-            await callCloudAPI("saveBulkAttendance", { records: recordsToSave, callLogs: MOCK_DB.callLogs });
-        }
-
+        // LOGIN ENGINE
         async function handleLogin(e) {
             e.preventDefault();
             const role = document.getElementById('login-role').value;
@@ -2000,6 +1971,7 @@
             }
         }
 
+        // DASHBOARD
         function initDashboardAdmin() {
             if (currentUser && currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah') {
                 const btnWrap = document.getElementById('admin-user-mgmt-btn-wrapper');
@@ -2130,6 +2102,600 @@
             }
         }
 
+        function initMenuKelas() {
+            const tbody = document.getElementById('kelas-table-body');
+            if (!tbody) return;
+
+            tbody.innerHTML = MOCK_DB.classes.map((cls, idx) => `
+                <tr>
+                    <td class="px-4 py-3 font-bold text-center">${idx + 1}</td>
+                    <td class="px-4 py-3 font-extrabold">${cls.name}</td>
+                    <td class="px-4 py-3">${cls.department}</td>
+                    <td class="px-4 py-3 text-center">
+                        <div class="flex justify-center items-center gap-1">
+                            <button onclick="openEditKelasModal('${cls.id}')" class="p-1.5 text-brand-600 hover:bg-brand-50 rounded-lg active:scale-95"><i class="ph-bold ph-pencil-simple text-base"></i></button>
+                            <button onclick="deleteKelas('${cls.id}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg active:scale-95"><i class="ph-bold ph-trash text-base"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            const select = document.getElementById('add-kelas-dept');
+            if (select) select.innerHTML = MOCK_DB.departments.map(d => `<option value="${d.name}">${d.name}</option>`).join('');
+        }
+
+        function initMenuSiswa() {
+            const tbody = document.getElementById('siswa-table-body');
+            if (!tbody) return;
+
+            const filterClass = document.getElementById('filter-siswa-kelas').value;
+            const students = filterClass === 'all' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === filterClass);
+
+            tbody.innerHTML = students.map((st, idx) => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-2.5 font-bold text-center text-slate-400">${idx + 1}</td>
+                    <td class="px-4 py-2.5 font-mono font-bold text-slate-700">${st.nis}</td>
+                    <td class="px-4 py-2.5 font-extrabold text-slate-800">${st.name}</td>
+                    <td class="px-4 py-2.5 font-bold text-emerald-700">${st.classId}</td>
+                    <td class="px-4 py-2.5 text-center">
+                        <div class="flex justify-center items-center gap-1">
+                            <button onclick="openEditSiswaModal('${st.nis}')" class="p-1.5 text-brand-600 hover:bg-brand-50 rounded-lg active:scale-95" title="Edit Siswa"><i class="ph-bold ph-pencil-simple text-base"></i></button>
+                            <button onclick="deleteSiswa('${st.nis}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg active:scale-95" title="Hapus Siswa"><i class="ph-bold ph-trash text-base"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('') || `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 font-bold">Tidak ada data siswa.</td></tr>`;
+
+            const select = document.getElementById('filter-siswa-kelas');
+            if (select && select.children.length <= 1) {
+                select.innerHTML += MOCK_DB.classes.map(cls => `<option value="${cls.id}">${cls.name}</option>`).join('');
+            }
+        }
+
+        function filterSiswaTableFast() {
+            const q = document.getElementById('search-siswa-input').value.toLowerCase();
+            document.querySelectorAll('#siswa-table-body tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function filterWaliTable() {
+            const q = document.getElementById('search-wali-input').value.toLowerCase();
+            document.querySelectorAll('#wali-table-body tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function initMenuWali() {
+            const tbody = document.getElementById('wali-table-body');
+            if (!tbody) return;
+
+            tbody.innerHTML = MOCK_DB.teachers.map((t, idx) => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 font-bold text-center">${idx + 1}</td>
+                    <td class="px-4 py-3 font-mono font-bold">${t.nip}</td>
+                    <td class="px-4 py-3 font-extrabold">${t.name}</td>
+                    <td class="px-4 py-3 font-bold text-emerald-700">${t.classId}</td>
+                    <td class="px-4 py-3 font-bold">${t.dept}</td>
+                    <td class="px-4 py-3 text-center">
+                        <div class="flex justify-center items-center gap-1">
+                            <button onclick="openEditTeacherModal('${t.nip}')" class="p-1.5 text-brand-600 hover:bg-brand-50 rounded-lg active:scale-95"><i class="ph-bold ph-pencil-simple text-base"></i></button>
+                            <button onclick="deleteWali('${t.nip}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg active:scale-95"><i class="ph-bold ph-trash text-base"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function initMenuAbsen() {
+            const inputDate = document.getElementById('input-absen-date');
+            const inputKelas = document.getElementById('input-absen-kelas');
+            const rekapKelas = document.getElementById('rekap-absen-kelas');
+            const todayStr = normalizeDateStr(new Date());
+
+            if (inputDate && !inputDate.value) inputDate.value = todayStr;
+            if (inputKelas) inputKelas.innerHTML = '';
+            if (rekapKelas) rekapKelas.innerHTML = '';
+
+            const opts = MOCK_DB.classes.map(cls => `<option value="${cls.id}">${cls.name}</option>`).join('');
+
+            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'guru_bp' || currentUser.role === 'guru_mapel')) {
+                if (inputKelas) inputKelas.innerHTML = `<option value="" selected>-- Pilih Kelas Terlebih Dahulu --</option><option value="SEMUA">-- Semua Kelas --</option>` + opts;
+                if (rekapKelas) rekapKelas.innerHTML = `<option value="" selected>-- Pilih Kelas Terlebih Dahulu --</option><option value="SEMUA">-- Semua Kelas --</option>` + opts;
+            } else if (currentUser) {
+                if (inputKelas) inputKelas.innerHTML = `<option value="${currentUser.classId}">${currentUser.classId}</option>`;
+                if (rekapKelas) rekapKelas.innerHTML = `<option value="${currentUser.classId}">${currentUser.classId}</option>`;
+            }
+
+            if (currentUser && currentUser.role === 'guru_bp') switchAbsenTab('rekap');
+            else switchAbsenTab('isi');
+        }
+
+        function switchAbsenTab(tab) {
+            activeAbsenTab = tab;
+            isFormDirty = false;
+            const btnIsi = document.getElementById('tab-absen-isi');
+            const btnRekap = document.getElementById('tab-absen-rekap');
+            const secIsi = document.getElementById('section-absen-isi');
+            const secRekap = document.getElementById('section-absen-rekap');
+
+            if (tab === 'isi') {
+                btnIsi.className = 'flex-1 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs uppercase bg-brand-600 text-white shadow-soft';
+                btnRekap.className = 'flex-1 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs uppercase text-slate-500 hover:bg-slate-50';
+                secIsi.classList.remove('hidden-app');
+                secRekap.classList.add('hidden-app');
+                loadStudentAttendanceForm();
+            } else {
+                btnIsi.className = 'flex-1 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs uppercase text-slate-500 hover:bg-slate-50';
+                btnRekap.className = 'flex-1 py-2.5 sm:py-3 rounded-xl font-bold text-[11px] sm:text-xs uppercase bg-brand-600 text-white shadow-soft';
+                secIsi.classList.add('hidden-app');
+                secRekap.classList.remove('hidden-app');
+                toggleFilterInputs();
+            }
+        }
+
+        function checkDailyIsLocked(selectedDateStr, classId) {
+            if (!currentUser) return true;
+
+            const todayStr = normalizeDateStr(new Date());
+            const isPastDate = selectedDateStr < todayStr;
+            const isFutureDate = selectedDateStr > todayStr;
+
+            const lockKeySpecific = `${selectedDateStr}_${classId}`;
+            const lockKeyAll = `${selectedDateStr}_SEMUA`;
+
+            const locks = MOCK_DB.dailyLocks || {};
+
+            if (locks[lockKeySpecific] !== undefined) {
+                const val = locks[lockKeySpecific];
+                if (val === true || val === 'true') return true;
+                if (val === false || val === 'false') return false;
+            }
+
+            if (locks[lockKeyAll] !== undefined || locks[selectedDateStr] !== undefined) {
+                const valAll = locks[lockKeyAll] !== undefined ? locks[lockKeyAll] : locks[selectedDateStr];
+                if (valAll === true || valAll === 'true') return true;
+                if (valAll === false || valAll === 'false') return false;
+            }
+
+            if (currentUser.role === 'admin') return false;
+            if (currentUser.role === 'guru_bp') return true;
+
+            if (isPastDate || isFutureDate) return true;
+            return false;
+        }
+
+        /**
+         * AKSELERASI SUPER KENCANG "SEMUA KELAS" (LOAD 1000+ SISWA DALAM HITUNGAN MILIDETIK)
+         */
+        function loadStudentAttendanceForm(isSilent = false) {
+            if (!currentUser) return;
+            if (isSilent && isFormDirty) return;
+
+            const classId = document.getElementById('input-absen-kelas') ? document.getElementById('input-absen-kelas').value : '';
+            const selectedDateStr = document.getElementById('input-absen-date') ? normalizeDateStr(document.getElementById('input-absen-date').value) : '';
+            const todayStr = normalizeDateStr(new Date());
+
+            const tbody = document.getElementById('bulk-absen-table-body');
+            const submitBar = document.getElementById('bulk-absen-submit-bar');
+            const dailyRecapBanner = document.getElementById('daily-recap-banner');
+            const actionBar = document.getElementById('bulk-absen-action-bar');
+            const colHeaderKet = document.getElementById('col-header-ket');
+
+            if (!tbody) return;
+
+            const isTrueAdmin = currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah' && currentUser.username !== 'kepsek';
+
+            if (colHeaderKet) {
+                colHeaderKet.textContent = isTrueAdmin ? "CATATAN, KESIANGAN/BOLOS & AKUN PENGISI DATA" : "CATATAN & OPSI KESIANGAN/BOLOS";
+            }
+
+            if (!classId) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-bold"><i class="ph-bold ph-hand-pointing text-3xl block mb-2 text-brand-600 animate-bounce"></i>Silakan pilih kelas terlebih dahulu untuk menampilkan daftar siswa.</td></tr>`;
+                if (submitBar) submitBar.classList.add('hidden-app'); 
+                if (actionBar) actionBar.classList.add('hidden-app'); 
+                if (dailyRecapBanner) dailyRecapBanner.classList.add('hidden-app');
+                return;
+            }
+
+            let classStudents = classId === 'SEMUA' ? [...MOCK_DB.students] : MOCK_DB.students.filter(s => s.classId === classId);
+            if (classStudents.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-semibold">Tidak ada siswa terdaftar</td></tr>`;
+                if (submitBar) submitBar.classList.add('hidden-app'); 
+                return;
+            }
+
+            classStudents.sort((a, b) => {
+                if (classId === 'SEMUA' && a.classId !== b.classId) {
+                    return a.classId.localeCompare(b.classId, 'id', { numeric: true });
+                }
+                return a.name.localeCompare(b.name, 'id');
+            });
+
+            const isLocked = checkDailyIsLocked(selectedDateStr, classId);
+            const isPastDate = selectedDateStr < todayStr;
+            const isFutureDate = selectedDateStr > todayStr;
+
+            const lockKeySpecific = `${selectedDateStr}_${classId}`;
+            const isExplicitlyClosed = MOCK_DB.dailyLocks && (MOCK_DB.dailyLocks[lockKeySpecific] === true || MOCK_DB.dailyLocks[lockKeySpecific] === 'true' || MOCK_DB.dailyLocks[`${selectedDateStr}_SEMUA`] === true);
+
+            const lockBanner = document.getElementById('lock-banner');
+            const lockText = document.getElementById('lock-banner-text');
+            if (lockBanner && lockText) {
+                if (isLocked) {
+                    lockBanner.classList.remove('hidden-app');
+                    if (isPastDate && !isExplicitlyClosed) {
+                        lockText.textContent = "Penginputan absen tanggal sebelumnya TERKUNCI. Hubungi Administrator untuk membuka kunci.";
+                    } else if (isFutureDate && !isExplicitlyClosed) {
+                        lockText.textContent = "Penginputan absen untuk tanggal mendatang ditutup.";
+                    } else if (isExplicitlyClosed) {
+                        lockText.textContent = `Penginputan absen tanggal ${selectedDateStr} untuk ${classId === 'SEMUA' ? 'Semua Kelas' : 'Kelas ' + classId} DITUTUP / DIKUNCI oleh Administrator.`;
+                    } else {
+                        lockText.textContent = "Formulir absensi tanggal ini dalam mode baca saja.";
+                    }
+                } else {
+                    lockBanner.classList.add('hidden-app');
+                }
+            }
+
+            const resetBar = document.getElementById('admin-reset-bar');
+            if (resetBar) resetBar.classList.toggle('hidden-app', !isTrueAdmin);
+
+            const closeAttendanceBar = document.getElementById('admin-close-attendance-bar');
+            if (closeAttendanceBar) {
+                if (isTrueAdmin) {
+                    closeAttendanceBar.classList.remove('hidden-app');
+                    const btn = document.getElementById('btn-toggle-daily-lock');
+                    const desc = document.getElementById('close-status-desc');
+                    const targetName = classId === 'SEMUA' ? 'Semua Kelas' : `Kelas ${classId}`;
+
+                    if (isLocked) {
+                        btn.className = "bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase shrink-0";
+                        btn.textContent = `Buka Kunci Absen (${targetName})`;
+                        desc.innerHTML = `Status penginputan absen <b class="text-amber-300">${targetName}</b> (${selectedDateStr}) saat ini <b class="text-rose-400">DITUTUP / TERKUNCI</b>.`;
+                    } else {
+                        btn.className = "bg-rose-600 hover:bg-rose-700 active:scale-95 transition-transform text-white font-bold py-2 px-3.5 rounded-xl text-xs uppercase shrink-0";
+                        btn.textContent = `Kunci Absen (${targetName})`;
+                        desc.innerHTML = `Status penginputan absen <b class="text-amber-300">${targetName}</b> (${selectedDateStr}) saat ini <b class="text-emerald-400">DIBUKA</b>.`;
+                    }
+                } else {
+                    closeAttendanceBar.classList.add('hidden-app');
+                }
+            }
+
+            if (submitBar) submitBar.classList.toggle('hidden-app', isLocked);
+            if (actionBar) actionBar.classList.toggle('hidden-app', isLocked);
+
+            const btnPresent = document.getElementById('btn-mark-all-present');
+            const btnHoliday = document.getElementById('btn-mark-all-holiday');
+            if (btnPresent) btnPresent.disabled = isLocked;
+            if (btnHoliday) btnHoliday.disabled = isLocked;
+
+            dailyRecapBanner.classList.remove('hidden-app');
+
+            // HASH MAP UNTUK PERFORMANCE O(1)
+            const attMap = new Map();
+            const studentStatsMap = new Map();
+
+            (MOCK_DB.attendance || []).forEach(a => {
+                const nisStr = a.nis.toString();
+                if (normalizeDateStr(a.date) === selectedDateStr) {
+                    attMap.set(nisStr, a);
+                }
+
+                if (!studentStatsMap.has(nisStr)) {
+                    studentStatsMap.set(nisStr, { alpa: 0, sakit: 0, terlambat: 0 });
+                }
+                const st = studentStatsMap.get(nisStr);
+                if (a.status === 'A') st.alpa++;
+                if (a.status === 'S') st.sakit++;
+                const rmk = (a.remark || '').toLowerCase();
+                if (rmk.includes('kesiangan') || rmk.includes('terlambat')) st.terlambat++;
+            });
+
+            const statuses = [
+                { val: 'H', label: 'H', desc: 'Hadir', active: 'bg-emerald-500 text-white border-emerald-500 shadow-md scale-105', base: 'hover:bg-emerald-50 text-emerald-600 border-emerald-200' },
+                { val: 'I', label: 'I', desc: 'Izin', active: 'bg-amber-500 text-white border-amber-500 shadow-md scale-105', base: 'hover:bg-amber-50 text-amber-600 border-amber-200' },
+                { val: 'S', label: 'S', desc: 'Sakit', active: 'bg-blue-500 text-white border-blue-500 shadow-md scale-105', base: 'hover:bg-blue-50 text-blue-600 border-blue-200' },
+                { val: 'A', label: 'A', desc: 'Alpa', active: 'bg-rose-500 text-white border-rose-500 shadow-md scale-105', base: 'hover:bg-rose-50 text-rose-600 border-rose-200' },
+                { val: 'D', label: 'D', desc: 'Disp', active: 'bg-purple-500 text-white border-purple-500 shadow-md scale-105', base: 'hover:bg-purple-50 text-purple-600 border-purple-200' },
+                { val: 'L', label: 'L', desc: 'Libur', active: 'bg-sky-500 text-white border-sky-500 shadow-md scale-105', base: 'hover:bg-sky-50 text-sky-600 border-sky-200' }
+            ];
+
+            const showWarningBadges = currentUser.role === 'wali' || currentUser.role === 'guru_bp' || isTrueAdmin;
+
+            // ULTRA-FAST ARRAY BATCHING (INSTANT RENDER)
+            const rowsArr = new Array(classStudents.length);
+
+            for (let idx = 0; idx < classStudents.length; idx++) {
+                const student = classStudents[idx];
+                const existing = attMap.get(student.nis.toString());
+                const status = existing ? existing.status : '';
+                const remark = existing ? (existing.remark || '') : '';
+                const updatedBy = existing ? (existing.updatedBy || '') : '';
+                const tempFile = window[`attached_file_${student.nis}`];
+                
+                let attachName = '';
+                if (tempFile) attachName = tempFile.name;
+                else if (existing && (existing.attachment || existing.attachmentUrl || existing.attachmentName)) {
+                    attachName = (existing.attachment ? existing.attachment.name : existing.attachmentName) || 'Surat Bukti';
+                }
+
+                let radioHtml = `<div class="flex items-center gap-1 justify-center">`;
+                for (let sIdx = 0; sIdx < statuses.length; sIdx++) {
+                    const st = statuses[sIdx];
+                    const isActive = st.val === status;
+                    radioHtml += `
+                        <label class="${isLocked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} relative">
+                            <input type="radio" name="status-${student.nis}" value="${st.val}" ${isActive ? 'checked' : ''} ${isLocked ? 'disabled' : ''} onchange="handleStatusChange('${student.nis}', '${st.val}')" class="sr-only">
+                            <span id="label-${student.nis}-${st.val}" class="touch-pill flex flex-col items-center justify-center rounded-xl border text-[11px] font-extrabold transition-all w-8 h-8 sm:w-9 sm:h-9 active:scale-95 ${isActive ? st.active : st.base}">
+                                ${st.label}
+                                <span class="text-[6px] font-bold opacity-80 block">${st.desc}</span>
+                            </span>
+                        </label>
+                    `;
+                }
+                radioHtml += `</div>`;
+
+                const showUpdatedBadge = isTrueAdmin && updatedBy ? `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit mt-0.5"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${updatedBy}</span>` : '';
+
+                let warningHtml = '';
+                if (showWarningBadges) {
+                    const stStat = studentStatsMap.get(student.nis.toString()) || { alpa: 0, sakit: 0, terlambat: 0 };
+                    if (stStat.alpa >= 3 || stStat.terlambat >= 3) {
+                        warningHtml += `<div class="mt-1 p-1 bg-red-100 border border-red-300 text-red-800 rounded-lg text-[9px] font-bold flex items-center gap-1"><i class="ph-bold ph-warning"></i> ⚠️ Lakukan Pembinaan (Alpa: ${stStat.alpa}x, Lambat: ${stStat.terlambat}x)</div>`;
+                    }
+                    if (stStat.sakit >= 3) {
+                        warningHtml += `<div class="mt-1 p-1 bg-amber-100 border border-amber-300 text-amber-800 rounded-lg text-[9px] font-bold flex items-center gap-1"><i class="ph-bold ph-first-aid"></i> 🩺 Home Visit (Sakit: ${stStat.sakit}x)</div>`;
+                    }
+                }
+
+                rowsArr[idx] = `
+                    <tr class="hover:bg-slate-50 transition-colors text-xs">
+                        <td class="px-1.5 py-2 font-bold text-slate-400 text-center">${idx + 1}</td>
+                        <td class="px-1.5 py-2 font-mono font-bold text-slate-700 text-[11px]">${student.nis}</td>
+                        <td class="px-2 py-2 font-extrabold text-slate-800 truncate max-w-[150px]">
+                            ${student.name}
+                            ${warningHtml}
+                        </td>
+                        <td class="px-1 py-2 text-center"><span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1 py-0.5 rounded inline-block">${student.classId}</span></td>
+                        <td class="px-2 py-2 text-center">${radioHtml}</td>
+                        <td class="px-2 py-2 min-w-[220px]">
+                            <div id="ket-container-${student.nis}" class="flex flex-col gap-1">
+                                <input type="text" id="ket-input-${student.nis}" value="${remark}" ${!isLocked ? '' : 'disabled'} onchange="isFormDirty=true" placeholder="Catatan / Alasan S, I, A, D..." class="w-full bg-slate-50 border rounded-xl px-2.5 py-1 text-[11px] font-semibold">
+                                
+                                <div id="updater-badge-${student.nis}">
+                                    ${showUpdatedBadge}
+                                </div>
+
+                                <div class="flex items-center gap-1.5 flex-wrap mt-0.5">
+                                    ${!isLocked ? `
+                                        <button type="button" onclick="setQuickRemark('${student.nis}', 'Kesiangan')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-1.5 py-0.5 rounded text-[9px] active:scale-95 transition-transform">+ Kesiangan</button>
+                                        <button type="button" onclick="setQuickRemark('${student.nis}', 'Bolos', true)" class="bg-rose-100 hover:bg-rose-200 text-rose-900 font-bold px-1.5 py-0.5 rounded text-[9px] active:scale-95 transition-transform">+ Bolos (Alpa)</button>
+                                    ` : ''}
+
+                                    <button type="button" onclick="triggerCameraCapture('${student.nis}')" class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all">
+                                        <i class="ph-bold ph-camera text-xs"></i> Kamera
+                                    </button>
+                                    <input type="file" id="file-cam-${student.nis}" accept="image/*" capture="environment" onchange="handleFileUpload(event, '${student.nis}')" class="hidden" ${isLocked ? 'disabled' : ''}>
+                                    
+                                    <button type="button" onclick="triggerFileSelect('${student.nis}')" class="${isLocked ? 'pointer-events-none opacity-40' : 'cursor-pointer'} bg-slate-800 hover:bg-slate-900 active:scale-95 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-xs transition-all">
+                                        <i class="ph-bold ph-folder text-xs"></i> File/PDF
+                                    </button>
+                                    <input type="file" id="file-doc-${student.nis}" accept="image/*,application/pdf" onchange="handleFileUpload(event, '${student.nis}')" class="hidden" ${isLocked ? 'disabled' : ''}>
+
+                                    <div id="upload-indicator-${student.nis}" class="${attachName ? '' : 'hidden-app'} flex items-center gap-1 bg-brand-50 border border-brand-200 text-brand-900 px-2 py-1 rounded-lg text-[10px] shadow-2xs">
+                                        <i class="ph-bold ph-paperclip text-brand-600"></i>
+                                        <span id="file-name-${student.nis}" class="font-bold truncate max-w-[70px]">${attachName}</span>
+                                        
+                                        <button type="button" onclick="viewAttachmentFromDailyForm('${student.nis}')" class="bg-brand-600 hover:bg-brand-700 text-white font-bold px-1.5 py-0.5 rounded text-[9px] flex items-center gap-0.5 active:scale-95 transition-transform" title="Pratinjau Surat">
+                                            <i class="ph-bold ph-eye"></i> Lihat
+                                        </button>
+                                        
+                                        <button type="button" onclick="downloadAttachmentDirect('${student.nis}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-1.5 py-0.5 rounded text-[9px] flex items-center gap-0.5 active:scale-95 transition-transform" title="Unduh Berkas Langsung">
+                                            <i class="ph-bold ph-download-simple"></i> Unduh
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            tbody.innerHTML = rowsArr.join('');
+            updateLiveDailyRecap();
+        }
+
+        function filterDailyTable() {
+            const q = document.getElementById('search-daily-input').value.toLowerCase();
+            document.querySelectorAll('#bulk-absen-table-body tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function filterRecapTable() {
+            const q = document.getElementById('search-rekap-input').value.toLowerCase();
+            document.querySelectorAll('#rekap-matrix-table-body tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function handleStatusChange(nis, newStatus) {
+            isFormDirty = true;
+            const statuses = ['H', 'I', 'S', 'A', 'D', 'L'];
+            const styles = {
+                'H': { active: 'bg-emerald-500 text-white border-emerald-500 shadow-md scale-105', base: 'hover:bg-emerald-50 text-emerald-600 border-emerald-200' },
+                'I': { active: 'bg-amber-500 text-white border-amber-500 shadow-md scale-105', base: 'hover:bg-amber-50 text-amber-600 border-amber-200' },
+                'S': { active: 'bg-blue-500 text-white border-blue-500 shadow-md scale-105', base: 'hover:bg-blue-50 text-blue-600 border-blue-200' },
+                'A': { active: 'bg-rose-500 text-white border-rose-500 shadow-md scale-105', base: 'hover:bg-rose-50 text-rose-600 border-rose-200' },
+                'D': { active: 'bg-purple-500 text-white border-purple-500 shadow-md scale-105', base: 'hover:bg-purple-50 text-purple-600 border-purple-200' },
+                'L': { active: 'bg-sky-500 text-white border-sky-500 shadow-md scale-105', base: 'hover:bg-sky-50 text-sky-600 border-sky-200' }
+            };
+
+            statuses.forEach(st => {
+                const span = document.getElementById(`label-${nis}-${st}`);
+                if (span) {
+                    if (st === newStatus) span.className = `touch-pill flex flex-col items-center justify-center rounded-xl border text-[11px] font-extrabold transition-all w-8 h-8 sm:w-9 sm:h-9 active:scale-95 ${styles[st].active}`;
+                    else span.className = `touch-pill flex flex-col items-center justify-center rounded-xl border text-[11px] font-extrabold transition-all w-8 h-8 sm:w-9 sm:h-9 active:scale-95 ${styles[st].base}`;
+                }
+            });
+
+            if (currentUser) {
+                const recorderTag = `${currentUser.name} (${getRoleLabelFormatted(currentUser)})`;
+                window[`recorder_tag_${nis}`] = recorderTag;
+
+                if (currentUser.role === 'admin' && currentUser.dept !== 'Wakasek' && currentUser.dept !== 'Kepala Sekolah') {
+                    const badgeContainer = document.getElementById(`updater-badge-${nis}`);
+                    if (badgeContainer) {
+                        badgeContainer.innerHTML = `<span class="text-[9px] font-bold text-brand-800 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 w-fit"><i class="ph-bold ph-user-check text-brand-600"></i> Pengisi: ${recorderTag}</span>`;
+                    }
+                }
+            }
+
+            updateLiveDailyRecap();
+        }
+
+        function updateLiveDailyRecap() {
+            const classId = document.getElementById('input-absen-kelas').value;
+            if (!classId) return;
+            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
+            const totalSiswa = classStudents.length;
+            if (totalSiswa === 0) return;
+
+            let h = 0, i = 0, s = 0, a = 0, dVal = 0, l = 0;
+            classStudents.forEach(student => {
+                const radioChecked = document.querySelector(`input[name="status-${student.nis}"]:checked`);
+                const currentStatus = radioChecked ? radioChecked.value : '';
+                if (currentStatus === 'H') h++;
+                else if (currentStatus === 'I') i++;
+                else if (currentStatus === 'S') s++;
+                else if (currentStatus === 'A') a++;
+                else if (currentStatus === 'D') dVal++;
+                else if (currentStatus === 'L') l++;
+            });
+
+            document.getElementById('recap-live-total').textContent = totalSiswa;
+            document.getElementById('recap-live-h').textContent = h;
+            document.getElementById('recap-live-i').textContent = i;
+            document.getElementById('recap-live-s').textContent = s;
+            document.getElementById('recap-live-a').textContent = a;
+            document.getElementById('recap-live-d').textContent = dVal;
+            document.getElementById('recap-live-l').textContent = l;
+
+            const totalActive = h + i + s + a + dVal;
+            const pct = totalActive > 0 ? Math.round(((h + dVal) / totalActive) * 100) : 100;
+            document.getElementById('recap-live-pct').textContent = pct + '%';
+            document.getElementById('recap-live-progress').style.width = pct + '%';
+        }
+
+        async function saveBulkAttendance(e) {
+            e.preventDefault();
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+
+            if (!classId) return showMessage('Peringatan', 'Silakan pilih kelas terlebih dahulu.');
+
+            const isLocked = checkDailyIsLocked(dateStr, classId);
+            if (isLocked) {
+                showMessage('Gagal', 'Absensi kelas/tanggal ini TERKUNCI. Data tidak dapat disimpan.');
+                return;
+            }
+
+            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
+            const recordsToSave = [];
+            const submitBtn = document.getElementById('btn-submit-bulk-absen');
+
+            const defaultRecorderTag = currentUser ? `${currentUser.name} (${getRoleLabelFormatted(currentUser)})` : 'Pengguna';
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<i class="ph-bold ph-spinner-gap text-base animate-spin"></i><span>Mengirim Data Absensi...</span>`;
+            }
+
+            classStudents.forEach(student => {
+                const radioChecked = document.querySelector(`input[name="status-${student.nis}"]:checked`);
+                if (!radioChecked) return;
+                const status = radioChecked.value;
+                const remarkInput = document.getElementById(`ket-input-${student.nis}`);
+                const remark = remarkInput ? remarkInput.value.trim() : '';
+                const tempFile = window[`attached_file_${student.nis}`];
+
+                const existing = MOCK_DB.attendance.find(a => a.nis.toString() === student.nis.toString() && normalizeDateStr(a.date) === dateStr);
+                const recorderTag = window[`recorder_tag_${student.nis}`] || (existing ? existing.updatedBy : defaultRecorderTag);
+
+                recordsToSave.push({
+                    nis: student.nis, date: dateStr, month: dateStr.slice(0, 7),
+                    status, remark, attachment: tempFile || (existing ? existing.attachment : null),
+                    updatedBy: recorderTag
+                });
+            });
+
+            recordsToSave.forEach(rec => {
+                const idx = MOCK_DB.attendance.findIndex(a => a.nis.toString() === rec.nis.toString() && normalizeDateStr(a.date) === dateStr);
+                if (idx !== -1) MOCK_DB.attendance[idx] = rec;
+                else MOCK_DB.attendance.push(rec);
+            });
+            
+            saveToStorage();
+            isFormDirty = false;
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Simpan Data Absensi</span>`;
+            }
+
+            showMessage('Berhasil', 'Data absensi harian berhasil disimpan & disinkronkan ke seluruh perangkat.');
+            loadStudentAttendanceForm();
+            await callCloudAPI("saveBulkAttendance", { records: recordsToSave });
+        }
+
+        async function resetDailyAttendance() {
+            const classId = document.getElementById('input-absen-kelas').value;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            if (!classId) return;
+            if (!confirm(`RESET ABSENSI: Kosongkan seluruh data absen kelas ${classId} tanggal ${dateStr}?`)) return;
+
+            const classStudents = classId === 'SEMUA' ? MOCK_DB.students : MOCK_DB.students.filter(s => s.classId === classId);
+            const classStudentNises = classStudents.map(s => s.nis.toString());
+            
+            MOCK_DB.attendance = MOCK_DB.attendance.filter(a => !(classStudentNises.includes(a.nis.toString()) && normalizeDateStr(a.date) === dateStr));
+            saveToStorage();
+            isFormDirty = false;
+
+            showMessage('Sukses', `Data absensi kelas ${classId} tanggal ${dateStr} berhasil di-reset.`);
+            loadStudentAttendanceForm();
+            await callCloudAPI("resetDailyAttendance", { classId, date: dateStr });
+        }
+
+        async function toggleDailyLockByAdmin() {
+            if (!currentUser || currentUser.role !== 'admin' || currentUser.dept === 'Wakasek' || currentUser.dept === 'Kepala Sekolah') return;
+            const dateStr = normalizeDateStr(document.getElementById('input-absen-date').value);
+            const classId = document.getElementById('input-absen-kelas').value;
+            if (!dateStr || !classId) return showMessage('Peringatan', 'Pilih kelas terlebih dahulu.');
+
+            if (!MOCK_DB.dailyLocks) MOCK_DB.dailyLocks = {};
+
+            const lockKeySpecific = `${dateStr}_${classId}`;
+            const isCurrentlyLocked = checkDailyIsLocked(dateStr, classId);
+            const nextStatus = !isCurrentlyLocked;
+
+            MOCK_DB.dailyLocks[lockKeySpecific] = nextStatus;
+            if (classId === 'SEMUA') {
+                MOCK_DB.dailyLocks[dateStr] = nextStatus;
+                MOCK_DB.classes.forEach(c => {
+                    MOCK_DB.dailyLocks[`${dateStr}_${c.id}`] = nextStatus;
+                });
+            }
+            saveToStorage();
+
+            const targetLabel = classId === 'SEMUA' ? 'Semua Kelas' : `Kelas ${classId}`;
+            showMessage('Sukses', `Penginputan absen tanggal ${dateStr} untuk ${targetLabel} berhasil di-${nextStatus ? 'TUTUP / KUNCI' : 'BUKA'}.`);
+
+            loadStudentAttendanceForm();
+            await callCloudAPI("toggleDailyLock", { date: dateStr, classId, locked: nextStatus, lockKey: lockKeySpecific });
+        }
+
         function toggleFilterInputs() {
             const rekapType = document.getElementById('rekap-type').value;
             document.getElementById('filter-wrapper-daily').classList.add('hidden-app');
@@ -2138,6 +2704,7 @@
             document.getElementById(`filter-wrapper-${rekapType}`).classList.remove('hidden-app');
         }
 
+        // REKAPITULASI ACCELERATED FOR HIGH SPEED PRINTING & VIEWING
         function renderAttendanceRecap() {
             const classId = document.getElementById('rekap-absen-kelas').value;
             const type = document.getElementById('rekap-type').value;
@@ -2151,6 +2718,7 @@
 
             let classStudents = classId === 'SEMUA' ? [...MOCK_DB.students] : MOCK_DB.students.filter(s => s.classId === classId);
 
+            // URUTKAN ABJAD NAMA SISWA PERKELAS PADA SEMUA KELAS
             classStudents.sort((a, b) => {
                 if (classId === 'SEMUA' && a.classId !== b.classId) {
                     return a.classId.localeCompare(b.classId, 'id', { numeric: true });
@@ -2335,6 +2903,7 @@
             }
         }
 
+        // EXPORT EXCEL DENGAN REKAM AKUN PENGISI DATA
         function exportToExcel() {
             const classId = document.getElementById('rekap-absen-kelas').value;
             const type = document.getElementById('rekap-type').value;
@@ -2420,6 +2989,7 @@
             XLSX.writeFile(wb, `Laporan_Absensi_SMKN5_${classId}_${type}.xlsx`);
         }
 
+        // EXPORT WORD DENGAN KOP DOKUMEN DAN DATA LENGKAP
         async function exportToWord() {
             const classId = document.getElementById('rekap-absen-kelas').value;
             if (!classId) return showMessage('Peringatan', 'Silakan pilih kelas terlebih dahulu.');
@@ -2477,6 +3047,7 @@
             setTimeout(() => URL.revokeObjectURL(url), 500);
         }
 
+        // CETAK PRINT / PDF UNTUK ANDROID APK / IOS / BROWSER LAPTOP
         async function triggerPrint() {
             const classId = document.getElementById('rekap-absen-kelas').value;
             if (!classId) return showMessage('Peringatan', 'Silakan pilih kelas terlebih dahulu.');
@@ -2511,6 +3082,7 @@
             if (img) img.src = "https://i.ibb.co.com/HDHzkCT8/LVUke-CNhdr-Gdd-Ut6-Bnl-Bj-Mr9-XCSJb-Uy-Vxdv-CAzd-T.png"; 
         }
 
+        // INITIALISASI UTAMA APLIKASI WEB & APK ANDROID/IOS
         document.addEventListener('DOMContentLoaded', () => {
             setInterval(() => {
                 const clock = document.getElementById('current-time');
